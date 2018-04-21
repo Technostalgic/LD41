@@ -36,6 +36,19 @@ class player extends physicsObject{
         if(this.vel.y < 0)
             this.vel.y -= jumpLinger;
     }
+    action_usePrimary(){
+        var cardOb = state.cardSlots[1];
+        if(cardOb) cardOb.use();
+    }
+    action_useSecondary(){
+        var cardOb = state.cardSlots[0];
+        if(cardOb) cardOb.use();
+        else {
+            state.cardSlots[0] = state.cardSlots[1];
+            state.cardSlots[1] = null;
+            state.bumpCards();
+        }
+    }
 
     handleMovement(){
         this.applyMovement(this.xMove);
@@ -75,9 +88,8 @@ class player extends physicsObject{
         super.checkCollision(obj);
     }
     collide(obj){
-        console.log(obj);
         if(obj instanceof cardCollectable)
-            obj.pickUp();
+            obj.pickUp(this);
     }
 
     handleTerrainCollisions(terrains){

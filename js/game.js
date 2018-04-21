@@ -30,6 +30,7 @@ function init(){
 }
 function load(){
 	loadGraphic("player.png", "player");
+	loadGraphic("cardHUD.png", "cardHUD");
 	loadGraphic("cardItem.png", "cardItem");
 }
 

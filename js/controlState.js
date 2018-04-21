@@ -16,9 +16,10 @@ class controlState{
             up: 2,
             down: 3,
             jump: 4,
-            use: 5,
-            pause: 6,
-            start: 7
+            primary: 5,
+            secondary: 6,
+            pause: 7,
+            start: 8
         };
         controlState.controls = [
             37,
@@ -26,6 +27,7 @@ class controlState{
             38,
             40,
             90,
+            67,
             88,
             27,
             32

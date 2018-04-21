@@ -29,6 +29,8 @@ class physicsObject{
     }
 
     checkCollision(obj){
+        if(obj == this) return;
+        
         var coll = obj.hitBox.getCollision(this.hitBox)
         if(coll) this.collide(obj);
     }
