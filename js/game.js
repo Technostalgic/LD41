@@ -13,8 +13,12 @@ var renderCanvas,
 var lastRecordedTimeStamp = 0,
 	dt = 0;
 
+var state = new gameState();
+
 function init(){
 	getCanvas();
+	state = new gameState();
+	controlState.init();
 
 	requestAnimationFrame(step);
 }
