@@ -17,7 +17,7 @@ var state = new gameState();
 
 function init(){
 	getCanvas();
-	state = new gameState();
+	state = new gameState_gamePlay();
 	controlState.init();
 
 	requestAnimationFrame(step);
@@ -69,10 +69,11 @@ function step(){
 	lastRecordedTimeStamp = performance.now();
 }
 function update(){
+	state.update();
 }
 function draw(){
 	clearScreen();
-
+	state.draw();
 	printScreen();
 }
 function printScreen(){

@@ -34,12 +34,14 @@ class controlState{
     }
 
     static event_keyPress(e){
-        controlState.keysPressed.push(e.keyCode);
+        if(!controlState.keysPressed.includes(e.keyCode)){
+            controlState.keysPressed.push(e.keyCode);
 
-        var m = controlState.getControlID(e.keyCode);
-        if(m != null) state.controlTap(m);
-
-        console.log(e.key + ": " + e.keyCode);
+            var m = controlState.getControlID(e.keyCode);
+            if(m != null) state.controlTap(m);
+        }
+        
+        //console.log(e.key + ": " + e.keyCode);
     }
     static event_keyRelease(e){
         var keyIndex = controlState.keysPressed.indexOf(e.keyCode);
@@ -66,5 +68,11 @@ class controlState{
         });
 
         return r;
+    }
+    static update(){
+        var controlsPressed = controlState.getControlsPressed();
+        controlsPressed.forEach(function(controlID){
+            state.controlPress(controlID);
+        });
     }
 }
