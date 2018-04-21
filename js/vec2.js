@@ -188,6 +188,25 @@ class color{
 		return color.fromRGBA(r, g, b, alpha);
 	}
 	
+	static White(){
+		return color.fromHex("#FFF");
+	}
+	static LightGrey(){
+		return color.fromHex("#CCC");
+	}
+	static Grey(){
+		return color.fromHex("#888");
+	}
+	static DarkGrey(){
+		return color.fromHex("#333");
+	}
+	static Black(){
+		return color.fromHex("#000");
+	}
+	static Transparent(){
+		return color.fromHex("#000", 0);
+	}
+	
 	toRGB(){
 		return (
 			"rgb(" + 
