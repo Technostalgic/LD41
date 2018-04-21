@@ -13,13 +13,19 @@ class player extends physicsObject{
         this.acceleration = 1500;
         
         this.xMove = 0;
+        this.yAim = 0;
         this.isFlipped = false;
+        this.primaryEquipped = true;
     }
 
     preInput(){
+        this.yAim = 0;
         this.xMove = 0;
     }
 
+    action_aim(dir = 0){
+        this.yAim = Math.sign(dir);
+    }
     action_move(dir = 0){
         this.xMove += Math.sign(dir);
     }
@@ -37,17 +43,50 @@ class player extends physicsObject{
             this.vel.y -= jumpLinger;
     }
     action_usePrimary(){
-        var cardOb = state.cardSlots[1];
-        if(cardOb) cardOb.use();
+        var cardOb = this.getPrimary();
+        if(cardOb) {
+            this.primaryEquipped = true;
+            cardOb.use(this);
+        }
     }
     action_useSecondary(){
-        var cardOb = state.cardSlots[0];
-        if(cardOb) cardOb.use();
+        var cardOb = this.getSecondary();
+        if(cardOb) {
+            this.primaryEquipped = false;
+            cardOb.use(this);
+        }
         else {
             state.cardSlots[0] = state.cardSlots[1];
             state.cardSlots[1] = null;
             state.bumpCards();
         }
+    }
+    action_useHoldPrimary(){
+        var cardOb = this.getPrimary();
+        if(cardOb) {
+            cardOb.useHold(this);
+        }
+    }
+    action_useHoldSecondary(){
+        var cardOb = this.getSecondary();
+        if(cardOb) {
+            cardOb.useHold(this);
+        }
+    }
+
+    getAim(){
+        var aimvector = new vec2(this.xMove, this.yAim);
+        if(this.xMove == 0 && this.yAim == 0)
+            aimvector.x = this.isFlipped ? -1 : 1;
+        console.log(aimvector.toString());
+        return aimvector.direction();
+    }
+
+    getPrimary(){
+        return state.cardSlots[1];
+    }
+    getSecondary(){
+        return state.cardSlots[0];
     }
 
     handleMovement(){
@@ -87,7 +126,7 @@ class player extends physicsObject{
     checkCollision(obj){
         super.checkCollision(obj);
     }
-    collide(obj){
+    objectCollide(obj){
         if(obj instanceof cardCollectable)
             obj.pickUp(this);
     }
@@ -104,6 +143,20 @@ class player extends physicsObject{
     }
     updateHitBox(){
         this.hitBox.centerAtPoint(this.pos);
+    }
+
+    handleEquippedItems(){
+        if(this.getPrimary()) {
+            this.getPrimary().hold();
+            if(!this.getPrimary())
+                this.primaryEquipped = false;
+        }
+        if(this.getSecondary()) {
+            this.getSecondary().hold();
+            if(!this.getSecondary())
+                this.primaryEquipped = true;
+        }
+        else this.primaryEquipped = true;
     }
 
     getSprite(){
@@ -142,9 +195,23 @@ class player extends physicsObject{
         
         this.pos = this.pos.plus(this.vel.multiply(dt));
         this.updateHitBox();
+
+        this.handleEquippedItems();
     }
     draw(){
         this.getSprite().draw();
+        this.drawEquippedItem();
         //this.hitBox.draw();
+    }
+
+    drawHand(pos){
+
+    }
+    drawEquippedItem(){
+        if(this.primaryEquipped){
+            if(this.getPrimary()) this.getPrimary().drawOnPlayer(this);
+        }
+        else if(this.getSecondary())
+            this.getSecondary().drawOnPlayer(this);
     }
 }

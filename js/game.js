@@ -7,6 +7,8 @@
 
 var renderCanvas,
 	renderContext,
+	textCanvas,
+	textContext,
 	scaleCanvas,
 	scaleContext;
 
@@ -32,8 +34,25 @@ function load(){
 	loadGraphic("player.png", "player");
 	loadGraphic("cardHUD.png", "cardHUD");
 	loadGraphic("cardItem.png", "cardItem");
+	loadGraphic("cardGraphics.png", "cardGraphics");
+	loadGraphic("projectile.png", "projectile");
 }
 
+function fillText(txt, pos, size = 10, col = color.Black(), iterations = 1){
+	pos = pos.multiply(2);
+	textContext.font = size.toString() + "px sans-serif";
+	textContext.textAlign = "center";
+	col.setFill(textContext);
+	textContext.fillText(txt, pos.x, pos.y);
+}
+function outlineText(txt, pos, size = 10, col = color.Black(), thickness = 1){
+	pos = pos.multiply(2);
+	textContext.font = size.toString() + "px sans-serif";
+	textContext.textAlign = "center";
+	col.setStroke(textContext);
+	textContext.lineWidth = thickness;
+	textContext.strokeText(txt, pos.x, pos.y);
+}
 function loadGraphic(fileName, assetName){
 	var img = document.createElement("img");
 	img.src = "./gfx/" + fileName;
@@ -52,6 +71,11 @@ function getCanvas(){
 	renderCanvas.height = scaleCanvas.height / 2;
 	renderContext = renderCanvas.getContext("2d");
 	
+	textCanvas = document.createElement("canvas");
+	textCanvas.width = scaleCanvas.width;
+	textCanvas.height = scaleCanvas.height;
+	textContext = textCanvas.getContext("2d");
+
 	// disables scale smoothing
 	scaleContext.mozImageSmoothingEnabled    = false;
 	scaleContext.oImageSmoothingEnabled      = false;
@@ -70,6 +94,7 @@ function clearScreen(col = color.Grey()){
 	// clears the screen to a solid color
 	col.setFill();
 	renderContext.fillRect(0,0,renderCanvas.width, renderCanvas.height);
+	textContext.clearRect(0,0, textCanvas.width, textCanvas.height);
 }
 
 function step(){
@@ -94,6 +119,7 @@ function draw(){
 function printScreen(){
 	// prints the render canvas onto the scaling canvas
 	scaleContext.drawImage(renderCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
+	scaleContext.drawImage(textCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 }
 
 function getRandomScreenPos(){

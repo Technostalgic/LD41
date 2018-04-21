@@ -146,8 +146,12 @@ class gameState_gamePlay extends gameState{
             case controlState.controlEnum.right: 
                 this.player.action_move(1);
                 break;
-            case controlState.controlEnum.up: break;
-            case controlState.controlEnum.down: break;
+            case controlState.controlEnum.up: 
+                this.player.action_aim(-1);
+                break;
+            case controlState.controlEnum.down: 
+                this.player.action_aim(1);
+                break;
             case controlState.controlEnum.jump:
                 this.player.action_jumpSustain();
                 break;
