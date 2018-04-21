@@ -203,6 +203,9 @@ class color{
 	static Black(){
 		return color.fromHex("#000");
 	}
+	static Blue(){
+		return color.fromHex("#00F");
+	}
 	static Transparent(){
 		return color.fromHex("#000", 0);
 	}

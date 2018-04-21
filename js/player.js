@@ -7,18 +7,20 @@
 
 class player{
     constructor(){
-        this.hitBox = collisionModule.boxCollider(new vec2(20, 30));
+        this.hitBox = collisionModule.boxCollider(new vec2(8, 12));
         this.pos = new vec2();
         this.vel = new vec2();
-        this.maxSpeed = 500;
-        this.acceleration = 2500;
+        this.maxSpeed = 150;
+        this.acceleration = 1500;
+        
         this.xMove = 0;
+        this.isFlipped = false;
 
         this.onGround = false;
     }
 
     applyGravity(){
-        var gravity = 3000;
+        var gravity = 1250;
         this.vel = this.vel.plus(new vec2(0, gravity).multiply(dt));
     }
     applyAirFriction(){
@@ -27,30 +29,39 @@ class player{
         this.vel = this.vel.multiply(f);
     }
     applyGroundFriction(){
+        var frictionCoefficient = 0.5;
+        var f = ((frictionCoefficient - 1) * ((dt - 1) * frictionCoefficient + 1)) + 1;
+        this.vel.x *= f;
+    }
 
+    preInput(){
+        this.xMove = 0;
     }
 
     action_move(dir = 0){
         this.xMove += Math.sign(dir);
     }
     action_jump(){
-        var jumpPower = 750;
+        var jumpPower = 250;
 
         if(!this.onGround) return;
 
         this.vel.y -= jumpPower;
     }
     action_jumpSustain(){
-        var jumpLinger = 40;
+        var jumpLinger = 15;
 
         if(this.vel.y < 0)
             this.vel.y -= jumpLinger;
     }
 
     handleMovement(){
-        console.log(this.xMove);
         this.applyMovement(this.xMove);
-        this.xMove = 0;
+
+        if(this.xMove != 0)
+            this.isFlipped = this.xMove < 0;
+        else if(this.onGround)
+            this.applyGroundFriction();
     }
     applyMovement(dir){
         dir = Math.sign(dir);
@@ -71,24 +82,53 @@ class player{
         }
         // if the player's speed is above their max speed, apply friction to slow them down to their max speed
         else{
-            this.applyGroundFriction();
+            if(this.onGround)
+                this.applyGroundFriction();
             if(Math.abs(this.vel.x) < this.maxSpeed)
                 this.vel.x = this.maxSpeed * velDir;
         }
     }
 
     handleCollisions(){
-        var ground = 400;
-
         this.onGround = false;
+        var ths = this;
+        currentTerrain.forEach(function(terrain){
+            terrain.checkCollision(ths);
+        });
 
-        if(this.hitBox.colBox.bottom >= ground){
-            this.pos.y -= this.hitBox.colBox.bottom - ground;
-            this.onGround = true;
-            this.vel.y = 0;
-        }
-
+        this.updateHitBox();
+    }
+    updateHitBox(){
         this.hitBox.centerAtPoint(this.pos);
+    }
+
+    getSprite(){
+        var xframe = 0;
+        var yframe = this.isFlipped ? 1 : 0;
+        var spriteSize = new vec2(15, 20);
+
+        if(this.onGround){
+            if(this.xMove != 0){
+                xframe = Math.floor(state.timeElapsed / 33) % 5;
+            }
+        }
+        else{
+            if(this.vel.y < 0)
+                xframe = 5;
+            else xframe = 6;
+        }
+        
+        var sprBox = new spriteBox(
+            new vec2(xframe * spriteSize.x, yframe * spriteSize.y), 
+            spriteSize);
+
+        var sprite = new spriteContainer(
+            gfx.player, 
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone()) );
+            
+        sprite.bounds.setCenter(this.pos.plus(new vec2(0, -3)));
+        return sprite;
     }
 
     update(){
@@ -97,12 +137,13 @@ class player{
         this.applyAirFriction();
         
         this.pos = this.pos.plus(this.vel.multiply(dt));
-        this.hitBox.centerAtPoint(this.pos);
+        this.updateHitBox();
         
         this.handleCollisions();
 
     }
     draw(){
-        this.hitBox.draw();
+        this.getSprite().draw();
+        //this.hitBox.draw();
     }
 }

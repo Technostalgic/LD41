@@ -40,7 +40,7 @@ class controlState{
             var m = controlState.getControlID(e.keyCode);
             if(m != null) state.controlTap(m);
         }
-        
+
         //console.log(e.key + ": " + e.keyCode);
     }
     static event_keyRelease(e){
@@ -70,6 +70,8 @@ class controlState{
         return r;
     }
     static update(){
+        state.preInput();
+        
         var controlsPressed = controlState.getControlsPressed();
         controlsPressed.forEach(function(controlID){
             state.controlPress(controlID);

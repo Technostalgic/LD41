@@ -14,6 +14,7 @@ class gameState{
         return lastRecordedTimeStamp - this.startTime;
     }
 
+    preInput(){}
     controlTap(controlID){ }
     controlPress(controlID){ }
 
@@ -38,6 +39,9 @@ class gameState_gamePlay extends gameState{
         this.player.draw();
     }
 
+    preInput(){
+        this.player.preInput();
+    }
     controlTap(controlID){
         switch(controlID){
             case controlState.controlEnum.jump:

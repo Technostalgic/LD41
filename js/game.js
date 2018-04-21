@@ -10,6 +10,9 @@ var renderCanvas,
 	scaleCanvas,
 	scaleContext;
 
+var gfx = [],
+	sftx = [];
+
 var lastRecordedTimeStamp = 0,
 	dt = 0;
 
@@ -20,10 +23,20 @@ function init(){
 	state = new gameState_gamePlay();
 	controlState.init();
 
+	currentTerrain = getTerrainScreenBounds();
+
+	load();
 	requestAnimationFrame(step);
 }
 function load(){
+	loadGraphic("player.png", "player");
+}
 
+function loadGraphic(fileName, assetName){
+	var img = document.createElement("img");
+	img.src = "./gfx/" + fileName;
+
+	gfx[assetName] = img;
 }
 
 function getCanvas(){
@@ -33,8 +46,8 @@ function getCanvas(){
 
 	//create the canvas and context for rendering all the graphics on to
 	renderCanvas = document.createElement("canvas");
-	renderCanvas.width = 600;
-	renderCanvas.height = 700;
+	renderCanvas.width = scaleCanvas.width / 2;
+	renderCanvas.height = scaleCanvas.height / 2;
 	renderContext = renderCanvas.getContext("2d");
 	
 	// disables scale smoothing
