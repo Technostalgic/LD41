@@ -28,14 +28,33 @@ class physicsObject{
         this.vel.x *= f;
     }
 
-    handleCollisions(terrains){
+    checkCollision(obj){
+        var coll = obj.hitBox.getCollision(this.hitBox)
+        if(coll) this.collide(obj);
+    }
+    collide(obj){
+    }
+
+    remove(){
+        var index = state.physObjects.indexOf(this);
+        if(index >= 0)
+            state.physObjects.splice(index, 1);
+    }
+
+    handleTerrainCollisions(terrains){
         this.onGround = false;
 
         var ths = this;
         terrains.forEach(function(terrain){
             terrain.checkCollision(ths);
         });
-
+        this.updateHitBox();
+    }
+    handleObjectCollisions(phyObjs){
+        var ths = this;
+        phyObjs.forEach(function(obj){
+            ths.checkCollision(obj);
+        });
         this.updateHitBox();
     }
     updateHitBox(){
@@ -47,11 +66,9 @@ class physicsObject{
         this.applyAirFriction();
         if(this.onGround)
             this.applyGroundFriction();
-
+        
         this.pos = this.pos.plus(this.vel.multiply(dt));
         this.updateHitBox();
-        
-        this.handleCollisions(state.terrain);
     }
     draw(){
         this.hitBox.draw();

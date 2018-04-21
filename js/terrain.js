@@ -12,6 +12,7 @@ class terrainObject{
 
     checkCollision(obj){
         var coll = this.hitBox.getCollision(obj.hitBox);
+        
         if(coll) this.collideWith(obj, coll);
     }
     collideWith(obj, colbox){ }

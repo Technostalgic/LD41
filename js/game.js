@@ -30,6 +30,7 @@ function init(){
 }
 function load(){
 	loadGraphic("player.png", "player");
+	loadGraphic("cardItem.png", "cardItem");
 }
 
 function loadGraphic(fileName, assetName){
@@ -92,6 +93,13 @@ function draw(){
 function printScreen(){
 	// prints the render canvas onto the scaling canvas
 	scaleContext.drawImage(renderCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
+}
+
+function getRandomScreenPos(){
+	return new vec2(
+		Math.random() * 400,
+		Math.random() * 350
+	);
 }
 
 window.addEventListener("load", init);

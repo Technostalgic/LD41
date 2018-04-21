@@ -29,18 +29,41 @@ class gameState_gamePlay extends gameState{
         this.player = new player();
         this.player.pos = new vec2(renderCanvas.width / 2);
 
-        this.enemies = [];
-        this.props = [];
+        this.physObjects = [
+            this.player
+        ];
+
+        var cards = [];
+        for(let i = 6; i > 0; i--){
+            let c = new cardCollectable();
+            c.pos = getRandomScreenPos();
+            c.updateHitBox();
+            cards.push(c);
+        }
+        this.physObjects = this.physObjects.concat(cards);
 
         this.terrain = getTerrainScreenBounds();
     }
 
     update(){
         controlState.update();
-        this.player.update();
+        
+        this.physObjects.forEach(function(obj){
+            obj.update();
+        });
+
+        var ths = this;
+        this.physObjects.forEach(function(obj){
+            obj.handleTerrainCollisions(ths.terrain);
+        });
+        this.physObjects.forEach(function(obj){
+            obj.handleObjectCollisions(ths.physObjects);
+        });
     }
     draw(){
-        this.player.draw();
+        this.physObjects.slice().reverse().forEach(function(obj){
+            obj.draw();
+        });
         
         this.terrain.forEach(function(terrain){
             terrain.draw();

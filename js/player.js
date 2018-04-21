@@ -71,11 +71,20 @@ class player extends physicsObject{
         }
     }
 
-    handleCollisions(){
+    checkCollision(obj){
+        super.checkCollision(obj);
+    }
+    collide(obj){
+        console.log(obj);
+        if(obj instanceof cardCollectable)
+            obj.pickUp();
+    }
+
+    handleTerrainCollisions(terrains){
         this.onGround = false;
 
         var ths = this;
-        state.terrain.forEach(function(terrain){
+        terrains.forEach(function(terrain){
             terrain.checkCollision(ths);
         });
 
@@ -121,9 +130,6 @@ class player extends physicsObject{
         
         this.pos = this.pos.plus(this.vel.multiply(dt));
         this.updateHitBox();
-        
-        this.handleCollisions();
-
     }
     draw(){
         this.getSprite().draw();

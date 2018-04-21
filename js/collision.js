@@ -22,6 +22,9 @@ class collisionModule{
     }
 
     centerAtPoint(point){ }
+    getBoundingBox(){
+        return new collisionBox();
+    }
     getCollision(other){ return null; }
 
     draw(col = color.Blue){}
@@ -33,9 +36,15 @@ class collisionModule_circle extends collisionModule{
         this.radius = radius;
         this.origin = new vec2();
     }
-
+    
     centerAtPoint(point){
         this.origin = point;
+    }
+    getBoundingBox(){
+        var r = new collisionBox(new vec2(), new vec2(this.radius * 2))
+        r.setCenter(this.origin);
+
+        return r;
     }
 
     draw(col = color.Blue()){
@@ -65,8 +74,12 @@ class collisionModule_box extends collisionModule{
     centerAtPoint(point){
         this.colBox.setCenter(point);
     }
+    getBoundingBox(){
+        return this.colBox.clone();
+    }
 
     getCollision(other){
+        if(other instanceof collisionModule_box) return this.getCollision_box(other);
         if(other instanceof collisionModule_horizontalPlane) return this.getCollision_hPlane(other);
         if(other instanceof collisionModule_verticalPlane) return this.getCollision_vPlane(other);
     }
@@ -102,6 +115,14 @@ class collisionModule_box extends collisionModule{
             );
         }
     }
+    getCollision_box(other){
+        var maxLeft = Math.max(this.colBox.left, other.colBox.left);
+        var minRight = Math.min(this.colBox.right, other.colBox.right);
+        var maxTop = Math.max(this.colBox.top, other.colBox.top);
+        var minBottom = Math.min(this.colBox.bottom, other.colBox.bottom);
+        if(maxLeft > minRight || maxTop > minBottom) return null;
+        return collisionBox.fromSides(maxLeft, maxTop, minRight, minBottom); 
+    }
 
     draw(col = color.Blue()){
         this.colBox.drawOutline(renderContext, col.toRGBA(), 1);
@@ -116,6 +137,19 @@ class collisionModule_horizontalPlane{
 
     centerAtPoint(point){
         this.range = point.y;
+    }
+    getBoundingBox(){
+        var r = new collisionBox();
+
+        r.size.x = renderCanvas.width;
+
+        if(this.mode) {
+            r.pos.y = this.range;
+            r.size.y = renderCanvas.height - this.range;
+        }
+        else r.size.y = this.range;
+
+        return r;
     }
 
     getCollision(other){
@@ -144,6 +178,19 @@ class collisionModule_verticalPlane{
 
     centerAtPoint(point){
         this.range = point.x;
+    }
+    getBoundingBox(){
+        var r = new collisionBox();
+
+        r.size.y = renderCanvas.height;
+
+        if(this.mode){
+            r.pos.x = this.range;
+            r.size.x = renderCanvas.width - this.range;
+        }
+        else r.size.x = this.range;
+
+        return r;
     }
     
     getCollision(other){
