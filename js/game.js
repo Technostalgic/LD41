@@ -32,6 +32,20 @@ function getCanvas(){
 	renderCanvas.width = 600;
 	renderCanvas.height = 700;
 	renderContext = renderCanvas.getContext("2d");
+	
+	// disables scale smoothing
+	scaleContext.mozImageSmoothingEnabled    = false;
+	scaleContext.oImageSmoothingEnabled      = false;
+	scaleContext.webkitImageSmoothingEnabled = false;
+	scaleContext.msImageSmoothingEnabled     = false;
+	scaleContext.imageSmoothingEnabled       = false;
+
+	// disables render smoothing
+	renderContext.mozImageSmoothingEnabled     = false;
+	renderContext.oImageSmoothingEnabled       = false;
+	renderContext.webkitImageSmoothingEnabled  = false;
+	renderContext.msImageSmoothingEnabled      = false;
+	renderContext.imageSmoothingEnabled        = false;
 }
 function clearScreen(col = color.Grey()){
 	// clears the screen to a solid color
@@ -39,7 +53,7 @@ function clearScreen(col = color.Grey()){
 	renderContext.fillRect(0,0,renderCanvas.width, renderCanvas.height);
 }
 
-function step(){	
+function step(){
 	update();
 	draw();
 	
@@ -51,7 +65,6 @@ function step(){
 	lastRecordedTimeStamp = performance.now();
 }
 function update(){
-
 }
 function draw(){
 	clearScreen();
