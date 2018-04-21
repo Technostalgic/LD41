@@ -122,7 +122,7 @@ class collisionModule_horizontalPlane{
         if(other instanceof collisionModule_box) return other.getCollision_hPlane(this);
     }
     
-    draw(col = color.Blue){
+    draw(col = color.Blue()){
         var sy = this.range;
         var sx0 = 0;
         var sx1 = renderCanvas.width;
@@ -150,7 +150,7 @@ class collisionModule_verticalPlane{
         if(other instanceof collisionModule_box) return other.getCollision_vPlane(this);
     }
     
-    draw(col = color.Blue){
+    draw(col = color.Blue()){
         var sx = this.range;
         var sy0 = 0;
         var sy1 = renderCanvas.height;

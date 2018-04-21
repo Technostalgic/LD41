@@ -5,8 +5,6 @@
 ///	twitter @technostalgicGM
 ///
 
-var currentTerrain = [];
-
 class terrainObject{
     constructor(){
         this.hitBox = new collisionModule();
@@ -35,6 +33,13 @@ class terrain_bottomBoundary extends terrainObject{
         obj.vel.y = Math.min(0, obj.vel.y);
         obj.updateHitBox();
     }
+
+    draw(){
+        var col = color.Black();
+        col.setFill();
+
+        renderContext.fillRect(0, this.hitBox.range, renderCanvas.width, renderCanvas.height - this.hitBox.range);
+    }
 }
 class terrain_topBoundary extends terrainObject{
     constructor(ypos){
@@ -46,6 +51,13 @@ class terrain_topBoundary extends terrainObject{
         obj.pos.y += colbox.height;
         obj.vel.y = Math.max(0, obj.vel.y);
         obj.updateHitBox();
+    }
+
+    draw(){
+        var col = color.Black();
+        col.setFill();
+
+        renderContext.fillRect(0, 0, renderCanvas.width, this.hitBox.range - renderCanvas.height);
     }
 }
 class terrain_rightBoundary extends terrainObject{
@@ -59,6 +71,13 @@ class terrain_rightBoundary extends terrainObject{
         obj.vel.x = Math.min(0, obj.vel.x);
         obj.updateHitBox();
     }
+
+    draw(){
+        var col = color.Black();
+        col.setFill();
+
+        renderContext.fillRect(this.hitBox.range, 0, renderCanvas.width - this.hitBox.range, renderCanvas.height);
+    }
 }
 class terrain_leftBoundary extends terrainObject{
     constructor(xpos){
@@ -70,6 +89,13 @@ class terrain_leftBoundary extends terrainObject{
         obj.pos.x += colbox.width;
         obj.vel.x = Math.max(0, obj.vel.x);
         obj.updateHitBox();
+    }
+
+    draw(){
+        var col = color.Black();
+        col.setFill();
+
+        renderContext.fillRect(0, 0, this.hitBox.range, renderCanvas.height);
     }
 }
 

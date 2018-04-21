@@ -5,33 +5,15 @@
 ///	twitter @technostalgicGM
 ///
 
-class player{
+class player extends physicsObject{
     constructor(){
+        super();
         this.hitBox = collisionModule.boxCollider(new vec2(8, 12));
-        this.pos = new vec2();
-        this.vel = new vec2();
         this.maxSpeed = 150;
         this.acceleration = 1500;
         
         this.xMove = 0;
         this.isFlipped = false;
-
-        this.onGround = false;
-    }
-
-    applyGravity(){
-        var gravity = 1250;
-        this.vel = this.vel.plus(new vec2(0, gravity).multiply(dt));
-    }
-    applyAirFriction(){
-        var frictionCoefficient = 0.8;
-        var f = ((frictionCoefficient - 1) * ((dt - 1) * frictionCoefficient + 1)) + 1;
-        this.vel = this.vel.multiply(f);
-    }
-    applyGroundFriction(){
-        var frictionCoefficient = 0.5;
-        var f = ((frictionCoefficient - 1) * ((dt - 1) * frictionCoefficient + 1)) + 1;
-        this.vel.x *= f;
     }
 
     preInput(){
@@ -91,8 +73,9 @@ class player{
 
     handleCollisions(){
         this.onGround = false;
+
         var ths = this;
-        currentTerrain.forEach(function(terrain){
+        state.terrain.forEach(function(terrain){
             terrain.checkCollision(ths);
         });
 

@@ -27,8 +27,12 @@ class gameState_gamePlay extends gameState{
         super();
 
         this.player = new player();
+        this.player.pos = new vec2(renderCanvas.width / 2);
+
         this.enemies = [];
         this.props = [];
+
+        this.terrain = getTerrainScreenBounds();
     }
 
     update(){
@@ -37,6 +41,20 @@ class gameState_gamePlay extends gameState{
     }
     draw(){
         this.player.draw();
+        
+        this.terrain.forEach(function(terrain){
+            terrain.draw();
+        });
+
+        this.drawHUD();
+    }
+
+    drawHUD(){
+        var col = color.White();
+        col.a = 0.35;
+
+        col.setFill();
+        renderContext.fillRect(0, 0, renderCanvas.width, 125);
     }
 
     preInput(){
