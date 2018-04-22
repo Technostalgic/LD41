@@ -28,7 +28,7 @@ class physicsObject{
         this.vel.x *= f;
     }
 
-    checkCollision(obj){
+    checkObjectCollision(obj){
         if(obj == this) return;
         
         var coll = obj.hitBox.getCollision(this.hitBox)
@@ -57,7 +57,7 @@ class physicsObject{
     handleObjectCollisions(phyObjs){
         var ths = this;
         phyObjs.forEach(function(obj){
-            ths.checkCollision(obj);
+            ths.checkObjectCollision(obj);
         });
         this.updateHitBox();
     }

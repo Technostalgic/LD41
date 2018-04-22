@@ -11,3 +11,9 @@ class prop extends physicsObject{
     }
 }
 
+class corpse extends prop{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.boxCollider(new vec2(10));
+    }
+}

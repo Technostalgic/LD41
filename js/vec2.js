@@ -365,3 +365,166 @@ class spriteContainer{
 		ctx.translate(-tTot.x, -tTot.y);
 	}
 }
+
+class ray{
+	constructor(pos = new vec2(), angle = 0, length = Infinity){
+		this.length = length;
+		this._origin = pos;
+		this._m = 0;
+		this._b = 0;
+		this._isVertical = false;
+		this._angle = 0;
+		
+		this.setAngle(angle);
+		// would normally need to call this.recalculate but since it is
+		// already called inside of this.setAngle, it would be redundant
+	}
+	
+	getPosition(){
+		return this._origin;
+	}
+	setPosition(pos){
+		this._origin = pos;
+		this.recalculate();
+	}
+	getEndPosition(){
+		var mag = this.length;
+		if(mag == Infinity)
+			mag = 999999;
+		return this._origin.plus(vec2.fromAng(this._angle).multiply(mag));
+	}
+	setEndPosition(pos){
+		var mag = this._origin.distance(pos);
+		var dir = pos.minus(this._origin).direction();
+		this.length = mag;
+		this._angle = dir;
+		this.recalculate();
+	}
+	getAngle(){
+		return this._angle;
+	}
+	setAngle(angle){
+		//sets the angle that the ray points in
+		//ensures that any given angle is wrapped between (-pi, pi]
+		if(Math.abs(angle) > Math.PI)
+			angle = angle % Math.PI * -1;
+		if(angle == -Math.PI)
+			angle = Math.PI;
+		
+		this._angle = angle;
+		this.recalculate();
+	}
+	getSlope(){
+		if(this._isVertical)
+			return this._m * Infinity;
+		return this._m;
+	}
+	getOffsetY(){
+		if(this.isVertical)
+		return this._m * -1 * Infinity;
+		return this._b;
+	}
+	getY(x, limit = null){
+		//returns the y value that lies on the ray, given x
+		if(this._isVertical){
+			return limit;
+		}
+		//the ray is stored as a simple formula in slope intercept form: 
+		//y = m * x + b
+		return this._m * x + this._b;
+	}
+	getX(y){
+		//returns the x value on the ray, given y
+		if(this._m === 0)
+			return this._origin.y;
+		//x = (y-b)/m
+		return (y - this._b) / this._m;
+	}
+	recalculate(){
+		//recalculate the ray's slope intercept formula variables
+		if(Math.abs(Math.abs(this._angle) - Math.PI / 2) <= 0.0000001){	//if the angle is vertical,
+			this._m = Math.sign(this._angle);	 //_m stores the direcction that
+			this._b = 0; //the ray is pointing in, while
+			this._isVertical = true; //_b is truncated
+		}
+		else{ //if the angle is not vertical
+			this._m = Math.tan(this._angle); //convert the angle to a slope
+			this._b = this._origin.y - (this._m * this._origin.x);	//and find 
+			this._isVertical = false; //the line's vertical offset
+		}
+	}
+	
+	getBoxCollision(colBox){
+		var siders = [];
+
+		var sy = Math.sin(this.getAngle());
+		if(sy > 0) siders.push(side.up);
+		else if(sy < 0) siders.push(side.down);
+
+		var cx = Math.cos(this.getAngle());
+		if(cx > 0) siders.push(side.left);
+		else if(cx < 0) siders.push(side.right);
+
+		var vec = null;
+		var colside = null;
+		for(let i = siders.length - 1; i >= 0; i--){
+			var x = null;
+			var y = null;
+			
+			if(siders[i] == side.left) x = colBox.left;
+			else if(siders[i] == side.right) x = colBox.right;
+			else if(siders[i] == side.up) y = colBox.top;
+			else if(siders[i] == side.down) y = colBox.bottom;
+			
+			if(x == null && y == null) continue;
+			
+			if(x == null) {
+				x = this.getX(y);
+				if(x >= colBox.left && x <= colBox.right){
+					vec = new vec2(x, y);
+					colside = siders[i];
+					break;
+				}
+			}
+			else if(y == null){
+				y = this.getY(x);
+				if(y >= colBox.top && y <= colBox.bottom){
+					vec = new vec2(x, y);
+					colside = siders[i];
+					break;
+				}
+			}
+		}
+		if(!vec) return null;
+		if(this.getPosition().plus(this.getEndPosition()).multiply(0.5).distance(vec) > this.length / 2)
+			return null;
+		return {point: vec, colSide: colside};
+	}
+	
+	draw(ctx, color = "#f00", width = 1){
+		ctx.strokeStyle = color;
+		ctx.lineWidth = width;
+		ctx.beginPath();
+		ctx.moveTo(this.getPosition().x, this.getPosition().y);
+		var end = this.getEndPosition();
+		ctx.lineTo(end.x, end.y);
+		ctx.stroke();
+	}
+	
+	static fromRayData(m, b, length = Infinity){
+		var r	= new ray();
+		r._angle = null;
+		r._m = m;
+		r._b = b;
+		r.length = length;
+		r._origin = new vec2();
+		return r;
+	}
+	
+	static fromPoints(start, end){
+		var ang = end.minus(start).direction();
+		var length = end.distance(start);
+		var r = new ray(start, ang, length);
+		return r;
+	}
+}

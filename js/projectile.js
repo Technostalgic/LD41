@@ -27,11 +27,13 @@ class projectile extends physicsObject{
     applyGravity(){}
     applyAirFriction(){}
 
-    objectCollide(obj){
+    checkObjectCollision(obj){
         for(let type of this.ignoreTypes)
             if(obj instanceof type) return;
         if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
-
+        super.checkObjectCollision(obj);
+    }
+    objectCollide(obj){
         var force = this.vel.normalized(this.knockback);
         obj.vel = obj.vel.plus(force);
 
