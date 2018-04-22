@@ -12,6 +12,7 @@ class projectile extends physicsObject{
         this.ignoreTypes = [];
         this.damage = 3;
         this.knockback = 100;
+        this.lifetime = 5;
     }
 
     static fire(projType, pos, speed, angle, ignoreTypes = []){
@@ -33,7 +34,7 @@ class projectile extends physicsObject{
         if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
         super.checkObjectCollision(obj);
     }
-    objectCollide(obj){
+    objectCollide(obj, colbox){
         var force = this.vel.normalized(this.knockback);
         obj.vel = obj.vel.plus(force);
 
@@ -43,7 +44,7 @@ class projectile extends physicsObject{
         var coll = this.hitBox.getCollision(obj.hitBox);
         this.burst(coll);
     }
-    terrainCollide(terrain){
+    terrainCollide(terrain, colbox){
         var coll = this.hitBox.getCollision(terrain.hitBox);
         this.burst(coll);
     }
@@ -51,6 +52,12 @@ class projectile extends physicsObject{
         this.remove();
     }
 
+    update(){
+        super.update();
+        this.lifetime -= dt;
+        if(this.lifetime <= 0)
+            this.remove();
+    }
     draw(){
         var sprBox = new spriteBox(
             new vec2(),
@@ -64,5 +71,114 @@ class projectile extends physicsObject{
         sprite.bounds.setCenter(this.pos);
 
         sprite.draw();
+    }
+}
+
+class proj_shotgun extends projectile{
+    constructor(){
+        super();
+        this.damage = 4;
+        this.knockback = 250;
+    }
+}
+class proj_lazer extends projectile{
+    constructor(){
+        super();
+        this.damage = 3;
+        this.knockback = 100;
+        this.lifetime = 0.5;
+
+        this.rayCol = null;
+        this.cols = [];
+        this.closestCol = null;
+        this.firstDraw = true;
+    }
+    setRay(){
+        this.rayCol = new ray(this.pos, this.vel.direction(), 500);
+    }
+
+    objectCollide(obj){
+        if(obj.damage)
+            obj.damage(this.damage);
+
+        obj.vel = this.vel.clone();
+    }
+    checkTerrainCollision(terrain){
+        var coll = this.rayCol.getBoxCollision(terrain.hitBox.getBoundingBox());
+
+        if(coll)
+            this.cols.push({point: coll.point, ob: null});
+    }
+    checkObjectCollision(obj){
+        for(let type of this.ignoreTypes)
+            if(obj instanceof type) return;
+        if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
+
+        var coll = this.rayCol.getBoxCollision(obj.hitBox.getBoundingBox());
+        
+        if(coll)
+            this.cols.push({point: coll.point, ob: obj});
+    }
+    handleTerrainCollisions(terrains){
+        this.cols = [];
+        var ths = this;
+        terrains.forEach(function(terrain){
+            ths.checkTerrainCollision(terrain);
+        });
+    }
+
+    update(){
+        this.lifetime -= dt;
+        if(this.lifetime <= 0)
+            this.remove()
+
+        var ths = this;
+        this.cols.sort(function(a, b){
+            return a.point.distance(ths.pos) - b.point.distance(ths.pos);
+        });
+
+        if(this.cols.length > 0){
+            this.closestCol = this.cols[0];
+            var ths = this;
+            this.cols.forEach(function(col){
+                if(col.point.distance(ths.pos) < ths.closestCol.point.distance(ths.pos))
+                    ths.closestCol = col;
+            });
+        }
+        if(this.closestCol)
+            if(this.closestCol.ob)
+                this.objectCollide(this.closestCol.ob, null);
+
+        state.player.pos = this.pos;
+        state.player.vel = new vec2();
+        state.player.hide = true;
+    }
+    draw(){
+        var sprite = new spriteContainer(
+            gfx.lazerFace,
+            new spriteBox(new vec2(16, 0), new vec2(16,16))
+        );
+        sprite.bounds.setCenter(this.pos);
+        
+        var ang = this.vel.direction();
+        sprite.rotation = ang;
+        sprite.isFlippedY = this.vel.x <= 0;
+        
+        sprite.draw();
+        if(this.firstDraw) {
+            this.firstDraw = false;
+            return;
+        }
+
+        var endpos = this.pos.plus(vec2.fromAng(ang, 500));
+        if(this.closestCol) endpos = this.closestCol.point;
+        
+        renderContext.strokeStyle = "#8CF";
+        renderContext.lineWidth = 6; 
+        renderContext.beginPath();
+        renderContext.moveTo(this.pos.x, this.pos.y);
+        renderContext.lineTo(endpos.x, endpos.y);
+        renderContext.stroke();
+
     }
 }

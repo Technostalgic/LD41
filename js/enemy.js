@@ -29,8 +29,10 @@ class enemy extends physicsObject{
         this.health -= dmg;
         if(this.health <= 0)
             this.kill();
+        this.findPlayer();
     }
     kill(){
+        state.addScore(this.points);
         this.remove();
     }
 
@@ -38,6 +40,25 @@ class enemy extends physicsObject{
         this.seekDir = state.player.pos.minus(this.pos).normalized();
     }
     seekPlayer(){
+    }
+    canSeePlayer(){
+        var rayTest = ray.fromPoints(this.pos, state.player.pos);
+        var raycols = [];
+        state.terrain.forEach(function(terrain){
+            let col = rayTest.getBoxCollision(terrain.hitBox.getBoundingBox());
+            if(col)
+                raycols.push(col);
+        });
+        return raycols.length <= 0;
+    }
+
+    handleObjectCollisions(physObjs){
+        if(this.isSpawning)
+            return false;
+
+        super.handleObjectCollisions(physObjs);
+
+        return true;
     }
 
     update(){
@@ -62,10 +83,11 @@ class enemy_zombie extends enemy{
         super();
         this.hitBox = collisionModule.boxCollider(new vec2(12, 19));
         this.health = 10;
-        this.maxSpeed = 100;
+        this.maxSpeed = 45 + Math.random() * 25;
         this.acceleration = 250;
 
         this.xMove = 0;
+        this.playerSeekCountdown = 1;
     }
 
     applyGroundFriction(){
@@ -73,15 +95,77 @@ class enemy_zombie extends enemy{
         super.applyGroundFriction();
     }
     findPlayer(){
-        this.seekDir.x = state.player.pos.x > this.pos.x ? 1 : -1;
+        if(this.canSeePlayer)
+            this.seekDir.x = state.player.pos.x > this.pos.x ? 1 : -1;
+        this.seekDir.x = Math.sign(Math.random() - 0.5);
     }
     seekPlayer(){
-        this.findPlayer();
-        this.xMove = Math.sign(this.seekDir.x);
+        this.playerSeekCountdown -= dt;
+        if(this.playerSeekCountdown <= 0){
+            this.findPlayer();
+            this.playerSeekCountdown = Math.random() + 2.5;
+        }
         if(this.onGround)
-            this.applyMovement(this.xMove);
+            this.xMove = Math.sign(this.seekDir.x);
+        this.applyMovement(this.xMove);
+    }
+    jump(){
+        if(!this.onGround) return;
+        var jumpPow = 375;
+        this.vel.y = -jumpPow;
     }
     
+    kill(){
+        this.spawnCorpse();
+        super.kill();
+    }
+    spawnCorpse(){
+        var c = new corpse();
+        c.pos = this.pos;
+        c.updateHitBox();
+        c.spritesheet = gfx.enemy1;
+        c.risingSprite = new spriteBox(
+            new vec2(0, 19),
+            new vec2(18, 11)
+        );
+        c.fallingSprite = new spriteBox(
+            new vec2(18, 19),
+            new vec2(18, 11)
+        );
+        c.lyingSprite = new spriteBox(
+            new vec2(36, 19),
+            new vec2(18, 11)
+        );
+        c.vel = this.vel;
+        c.isFlipped = this.xMove > 0;
+
+        state.physObjects.push(c);
+    }
+
+    hitPlayer(plr){
+        plr.damage(15);
+
+        var force = Math.sign(plr.pos.x - this.pos.x) * 300;
+        plr.vel.x = force;
+        plr.vel.y = -150;
+
+        this.vel.x = -force;
+        this.vel.y = -150;
+
+        this.findPlayer();
+    }
+
+    objectCollide(obj){
+        if(obj instanceof player)
+            this.hitPlayer(obj);
+    }
+    terrainCollide(terrain){
+        var col = this.hitBox.getCollision(terrain.hitBox);
+        if(!col) return;
+        if(col.height > col.width)
+            this.jump();
+    }
+
     applyMovement(dir){
         dir = Math.sign(dir);
         var velDir = Math.sign(this.vel.x);
@@ -92,7 +176,7 @@ class enemy_zombie extends enemy{
         var fvel = this.vel.x + accel;
 
         // if the enemy speed is below their max speed, only allow it to accelerate to their max speed
-        if(this.vel.x <= this.maxSpeed){
+        if(Math.abs(this.vel.x) <= this.maxSpeed){
             if(Math.abs(fvel) <= this.maxSpeed)
                 this.vel.x = fvel;
             else if(Math.abs(fvel) > this.maxSpeed)
@@ -141,7 +225,7 @@ class enemy_zombie extends enemy{
             new collisionBox(new vec2(), sprBox.size.clone())
         );
         sprite.bounds.setCenter(this.pos);
-        sprite.isFlipped = this.xMove < 0;
+        sprite.isFlippedX = this.xMove < 0;
 
         sprite.draw();
         return true;

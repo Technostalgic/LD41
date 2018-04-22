@@ -17,6 +17,7 @@ class cardCollectable extends physicsObject{
     pickUp(plyr){
         this.remove();
         state.addCard(this.cardItem);
+        state.addScore(10);
     }
 
     draw(){
@@ -49,7 +50,12 @@ class card{
     }
 
     static randomCard(){
-        return new card_revolver();
+        var m = [
+            card_revolver,
+            card_shotgun,
+            card_lazer
+        ];
+        return new m[Math.floor(m.length * Math.random())]();
     }
 
     hold(plyr){ 
@@ -121,7 +127,7 @@ class card{
 class card_revolver extends card{
     constructor(){
         super();
-        this.name = "Revolver"
+        this.name = "Revolver";
         this.graphic = 0;
         this.type = "ATK - Ranged";
         this.text = ["Damage: 3"];
@@ -130,8 +136,102 @@ class card_revolver extends card{
         this.coolDown = 200;
     }
 
+    use(plr){
+        if(!super.use(plr)) return;
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+
+        projectile.fire(projectile, off, 250, ang, [player]);
+    }
+    drawOnPlayer(plr){
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 3).plus(vec2.fromAng(ang, -3));
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(),new vec2(8, 6))
+        );
+        sprite.bounds.setCenter(off);
+        sprite.rotation = ang;
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
+    }
+}
+class card_shotgun extends card{
+    constructor(){
+        super();
+        this.name = "Shotgun";
+        this.graphic = 1;
+        this.type = "ATK - Ranged";
+        this.text = ["Damage: 15", "6x Pellets"];
+        
+        this.uses = 2;
+        this.coolDown = 1000;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+
+        for(let i = 6; i > 0; i--){
+            let spread = ((Math.random() - 0.5) * (Math.random() - 0.5)) * 2;
+            let spdVar = Math.random() * 25;
+            projectile.fire(proj_shotgun, off, 350 + spdVar, ang + spread, [player]);
+        }
+    }
+    drawOnPlayer(plr){
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 3).plus(vec2.fromAng(ang, -4));
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(9, 0), new vec2(11, 6))
+        );
+        sprite.bounds.setCenter(off);
+        sprite.rotation = ang;
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
+    }
+}
+class card_lazer extends card{
+    constructor(){
+        super();
+        this.name = "Lazer";
+        this.graphic = 2;
+        this.type = "ATK - LAZER";
+        this.text = ["Damage: 25", "IMA FIRIN' MAH", "LAAAAZERR!!"];
+        
+        this.uses = 1;
+        this.coolDown = 1000;
+    }
+
     use(plyr){
         if(!super.use(plyr)) return;
-        projectile.fire(projectile, plyr.pos, 250, plyr.getAim(), [player]);
+        
+        var off = new vec2();
+        var proj = new proj_lazer();
+        proj.pos = plyr.pos.plus(off);
+        proj.vel = vec2.fromAng(plyr.getAim(), 250);
+        proj.setRay();
+        state.physObjects.push(proj);
+    }
+
+    drawOnPlayer(plr){
+        var sprite = new spriteContainer(
+            gfx.lazerFace,
+            new spriteBox(new vec2(), new vec2(16, 16))
+        );
+        sprite.bounds.setCenter(plr.pos.plus(new vec2(0, -7)));
+        sprite.rotation = plr.getAim();
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
     }
 }

@@ -32,10 +32,13 @@ function init(){
 }
 function load(){
 	loadGraphic("player.png", "player");
+	loadGraphic("playerHand.png", "playerHand");
 	loadGraphic("cardHUD.png", "cardHUD");
 	loadGraphic("cardItem.png", "cardItem");
 	loadGraphic("cardGraphics.png", "cardGraphics");
 	loadGraphic("projectile.png", "projectile");
+	loadGraphic("weapons.png", "weapons");
+	loadGraphic("lazerFace.png", "lazerFace");
 	loadGraphic("enemy1.png", "enemy1");
 }
 

@@ -12,10 +12,10 @@ class terrainObject{
 
     checkCollision(obj){
         var coll = this.hitBox.getCollision(obj.hitBox);
-        
         if(coll) {
+            if(coll.width <= 0 || coll.height<= 0) return;
             this.collideWith(obj, coll);
-            obj.terrainCollide(this);
+            obj.terrainCollide(this, coll);
         }
     }
     collideWith(obj, colbox){ }
@@ -73,26 +73,22 @@ class terrain_solid extends terrainObject{
         }
     }
     leftCollision(obj, colbox){
-        console.log("lcol");
         obj.pos.x -= colbox.width;
         obj.vel.x = Math.min(0, obj.vel.x);
         obj.updateHitBox();
     }
     rightCollision(obj, colbox){
-        console.log("rcol");
         obj.pos.x += colbox.width;
         obj.vel.x = Math.max(0, obj.vel.x);
         obj.updateHitBox();
     }
     topCollision(obj, colbox){
-        console.log("tcol");
         obj.onGround = true;
         obj.pos.y -= colbox.height;
         obj.vel.y = Math.min(0, obj.vel.y);
         obj.updateHitBox();
     }
     bottomCollision(obj, colbox){
-        console.log("bcol");
         obj.pos.y += colbox.height;
         obj.vel.y = Math.max(0, obj.vel.y);
         obj.updateHitBox();
@@ -190,21 +186,63 @@ function getTerrainScreenBounds(ceiling = false){
 
     var b = new collisionBox(
         new vec2(),
-        new vec2(50, 20)
+        new vec2(70, 20)
     );
-    b.setCenter(new vec2(200, 300));
+    b.setCenter(new vec2(210, 275));
     r.push(new terrain_solid(b));
     b = new collisionBox(
         new vec2(),
-        new vec2(50, 30)
+        new vec2(30, 40)
     );
-    b.setCenter(new vec2(100, 340));
+    b.setCenter(new vec2(220, 200));
     r.push(new terrain_solid(b));
     b = new collisionBox(
         new vec2(),
-        new vec2(50, 30)
+        new vec2(50, 10)
     );
-    b.setCenter(new vec2(300, 340));
+    b.setCenter(new vec2(180, 185));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(150, 30)
+    );
+    b.setCenter(new vec2(75, 340));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(100, 20)
+    );
+    b.setCenter(new vec2(50, 250));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(100, 30)
+    );
+    b.setCenter(new vec2(350, 340));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(100, 20)
+    );
+    b.setCenter(new vec2(320, 210));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(10, 20)
+    );
+    b.setCenter(new vec2(320, 200));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(10, 20)
+    );
+    b.setCenter(new vec2(275, 190));
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(30, 20)
+    );
+    b.setCenter(new vec2(390, 250));
     r.push(new terrain_solid(b));
 
     if(ceiling)

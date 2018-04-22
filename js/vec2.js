@@ -64,6 +64,10 @@ class vec2{
 			Math.abs(this.x - vec.x) <= leniency) && (
 			Math.abs(this.y - vec.y) <= leniency);
 	}
+	round(){
+		this.x = Math.round(this.x);
+		this.y = Math.round(this.y);
+	}
 	
 	direction(){
 		//returns the angle this vector is pointing in radians
@@ -316,7 +320,8 @@ class spriteContainer{
 			this.bounds = new collisionBox(new vec2(), sprite.size);
 		
 		this.rotation = null;
-		this.isFlipped = false;
+		this.isFlippedX = false;
+		this.isFlippedY = false;
 	}
 	
 	clone(){
@@ -331,7 +336,8 @@ class spriteContainer{
 	
 	draw(ctx = renderContext){
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
-		if(this.rotation || this.isFlipped){
+		this.bounds.pos.round();
+		if(this.rotation || this.isFlippedX || this.isFlippedY){
 			this.drawTransformed(ctx);
 			return;
 		}
@@ -349,8 +355,8 @@ class spriteContainer{
 		var tTot = this.bounds.pos.minus(cCorrect);
 		
 		ctx.translate(tTot.x, tTot.y);
-		if(this.isFlipped) ctx.scale(-1, 1)
 		if(this.rotation) ctx.rotate(this.rotation);
+		ctx.scale(this.isFlippedX ? -1 : 1, this.isFlippedY ? -1 : 1)
 		
 		ctx.drawImage(
 			this.spriteSheet,
@@ -359,9 +365,9 @@ class spriteContainer{
 			cCorrect.x, cCorrect.y,
 			this.bounds.width, this.bounds.height
 			);
-			
+		
+		ctx.scale(this.isFlippedX ? -1 : 1, this.isFlippedY ? -1 : 1)
 		if(this.rotation) ctx.rotate(-this.rotation);
-		if(this.isFlipped) ctx.scale(-1, 1)
 		ctx.translate(-tTot.x, -tTot.y);
 	}
 }
@@ -456,6 +462,17 @@ class ray{
 	
 	getBoxCollision(colBox){
 		var siders = [];
+		
+		if(this._isVertical){
+			var colside = this._origin.y < this.getEndPosition().y ? side.up : side.down;
+			var vec = new vec2(this._origin.x, colside == side.up ? colBox.top : colBox.bottom);
+			
+			if(vec.x < colBox.left || vec.x > colBox.right)
+				return null;
+			if(this.getPosition().plus(this.getEndPosition()).multiply(0.5).distance(vec) > this.length / 2)
+				return null;
+			return {point: vec, colSide: colside};
+		}
 
 		var sy = Math.sin(this.getAngle());
 		if(sy > 0) siders.push(side.up);
@@ -473,8 +490,12 @@ class ray{
 			
 			if(siders[i] == side.left) x = colBox.left;
 			else if(siders[i] == side.right) x = colBox.right;
-			else if(siders[i] == side.up) y = colBox.top;
-			else if(siders[i] == side.down) y = colBox.bottom;
+			else if(siders[i] == side.up) { 
+				y = colBox.top;
+			}
+			else if(siders[i] == side.down) {
+				y = colBox.bottom;
+			}
 			
 			if(x == null && y == null) continue;
 			

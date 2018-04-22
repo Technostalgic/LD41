@@ -32,7 +32,7 @@ class physicsObject{
         if(obj == this) return;
         
         var coll = obj.hitBox.getCollision(this.hitBox)
-        if(coll) this.objectCollide(obj);
+        if(coll) this.objectCollide(obj, coll);
     }
     objectCollide(obj){
     }

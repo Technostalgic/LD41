@@ -13,6 +13,7 @@ class player extends physicsObject{
         this.acceleration = 1500;
         this.health = 100;
 
+        this.hide = false;
         this.xMove = 0;
         this.yAim = 0;
         this.isFlipped = false;
@@ -31,7 +32,7 @@ class player extends physicsObject{
         this.xMove += Math.sign(dir);
     }
     action_jump(){
-        var jumpPower = 250;
+        var jumpPower = 350;
 
         if(!this.onGround) return;
 
@@ -104,6 +105,8 @@ class player extends physicsObject{
     }
     applyMovement(dir){
         dir = Math.sign(dir);
+        var maxSpeed = this.maxSpeed;
+        if(this.yAim != 0 && this.onGround) maxSpeed *= 0.35;
         var velDir = Math.sign(this.vel.x);
         var accel = this.acceleration * dt;
         accel *= dir;
@@ -112,19 +115,19 @@ class player extends physicsObject{
         var fvel = this.vel.x + accel;
 
         // if the players speed is below their max speed, only allow the player to accelerate to their max speed
-        if(this.vel.x <= this.maxSpeed){
-            if(Math.abs(fvel) <= this.maxSpeed)
+        if(Math.abs(this.vel.x) <= maxSpeed){
+            if(Math.abs(fvel) <= maxSpeed)
                 this.vel.x = fvel;
-            else if(Math.abs(fvel) > this.maxSpeed)
-                this.vel.x = this.maxSpeed * velDir;
+            else if(Math.abs(fvel) > maxSpeed)
+                this.vel.x = maxSpeed * velDir;
             return;
         }
         // if the player's speed is above their max speed, apply friction to slow them down to their max speed
         else{
             if(this.onGround)
                 this.applyGroundFriction();
-            if(Math.abs(this.vel.x) < this.maxSpeed)
-                this.vel.x = this.maxSpeed * velDir;
+            if(Math.abs(this.vel.x) < maxSpeed)
+                this.vel.x = maxSpeed * velDir;
         }
     }
 
@@ -204,19 +207,31 @@ class player extends physicsObject{
         this.handleEquippedItems();
     }
     draw(){
+        if(this.hide){
+            this.hide = false;
+            return;
+        }
         this.getSprite().draw();
         this.drawEquippedItem();
         //this.hitBox.draw();
     }
 
     drawHand(pos){
-
+        var sprite = new spriteContainer(
+            gfx.playerHand,
+            new spriteBox(new vec2(), new vec2(5, 5))
+        );
+        sprite.bounds.setCenter(pos);
+        sprite.isFlippedX = this.isFlipped;
+        sprite.draw();
     }
     drawEquippedItem(){
         if(this.primaryEquipped){
             if(this.getPrimary()) this.getPrimary().drawOnPlayer(this);
+            else this.primaryEquipped = false;
         }
         else if(this.getSecondary())
             this.getSecondary().drawOnPlayer(this);
+        else this.primaryEquipped = true;
     }
 }

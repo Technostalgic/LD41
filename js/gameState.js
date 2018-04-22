@@ -45,6 +45,7 @@ class gameState_gamePlay extends gameState{
         }
         this.physObjects = this.physObjects.concat(cards);
 
+        this.score = 0;
         this.terrain = getTerrainScreenBounds();
         this.cardSlots = [null, null, null, null, null, null];
     }
@@ -66,6 +67,10 @@ class gameState_gamePlay extends gameState{
             
         for(var i = 1; i < this.cardSlots.length; i++)
             this.cardSlots[i] = m.length > 0 ? m.splice(0, 1)[0] : null;
+    }
+
+    addScore(points){
+        this.score += points;
     }
 
     update(){
@@ -123,6 +128,11 @@ class gameState_gamePlay extends gameState{
                 cardOb.drawOnHUD(x);
             }
         });
+
+        var scorepos = new vec2(200, 100);
+        var scoreString = "Score: " + this.score.toString();
+        outlineText(scoreString, scorepos, 20, color.Black(), 4);
+        fillText(scoreString, scorepos, 20, color.fromHex("#FA0"));
     }
 
     preInput(){
