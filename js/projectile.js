@@ -10,7 +10,7 @@ class projectile extends physicsObject{
         super();
         this.hitBox = collisionModule.boxCollider(new vec2(2));
         this.ignoreTypes = [];
-        this.damage = 5;
+        this.damage = 3;
         this.knockback = 100;
     }
 
@@ -19,6 +19,7 @@ class projectile extends physicsObject{
         proj.pos = pos.clone();
         proj.updateHitBox();
         proj.vel = vec2.fromAng(angle, speed);
+        proj.ignoreTypes = ignoreTypes;
 
         state.physObjects.push(proj)
     }
@@ -27,11 +28,15 @@ class projectile extends physicsObject{
     applyAirFriction(){}
 
     objectCollide(obj){
-        if(obj.health)
-            obj.health -= this.damage;
+        for(let type of this.ignoreTypes)
+            if(obj instanceof type) return;
+        if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
 
         var force = this.vel.normalized(this.knockback);
         obj.vel = obj.vel.plus(force);
+
+        if(obj.damage)
+            obj.damage(this.damage);
 
         var coll = this.hitBox.getCollision(obj.hitBox);
         this.burst(coll);
@@ -42,11 +47,6 @@ class projectile extends physicsObject{
     }
     burst(collision){
         this.remove();
-    }
-
-    handleObjectCollisions(obj){
-        for(let type of this.ignoreTypes)
-            if(obj instanceof type) return;
     }
 
     draw(){

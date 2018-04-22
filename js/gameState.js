@@ -38,7 +38,10 @@ class gameState_gamePlay extends gameState{
             let c = new cardCollectable();
             c.pos = getRandomScreenPos();
             c.updateHitBox();
+            let z = new enemy_zombie();
+            z.pos = getRandomScreenPos();
             cards.push(c);
+            cards.push(z);
         }
         this.physObjects = this.physObjects.concat(cards);
 

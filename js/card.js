@@ -65,7 +65,6 @@ class card{
         return true;
     }
     useHold(plyr){
-
     }
     canUse(){
         return (state.timeElapsed >= this.lastUsed + this.coolDown);
@@ -125,7 +124,7 @@ class card_revolver extends card{
         this.name = "Revolver"
         this.graphic = 0;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 5"];
+        this.text = ["Damage: 3"];
         
         this.uses = 6;
         this.coolDown = 200;

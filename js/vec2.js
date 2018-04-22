@@ -276,6 +276,14 @@ class collisionBox{
 		return r;
 	}
 	
+	getIntersect(otherbox){
+        var maxLeft = Math.max(this.left, otherbox.left);
+        var minRight = Math.min(this.right, otherbox.right);
+        var maxTop = Math.max(this.top, otherbox.top);
+        var minBottom = Math.min(this.bottom, otherbox.bottom);
+        if(maxLeft > minRight || maxTop > minBottom) return null;
+        return collisionBox.fromSides(maxLeft, maxTop, minRight, minBottom); 
+	}
 	overlapsPoint(point){
 		return ( 
 			point.x >= this.left &&
@@ -308,6 +316,7 @@ class spriteContainer{
 			this.bounds = new collisionBox(new vec2(), sprite.size);
 		
 		this.rotation = null;
+		this.isFlipped = false;
 	}
 	
 	clone(){
@@ -322,8 +331,8 @@ class spriteContainer{
 	
 	draw(ctx = renderContext){
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
-		if(this.rotation){
-			this.drawRotated(ctx);
+		if(this.rotation || this.isFlipped){
+			this.drawTransformed(ctx);
 			return;
 		}
 		ctx.drawImage(
@@ -334,13 +343,14 @@ class spriteContainer{
 			this.bounds.width, this.bounds.height
 			);
 	}
-	drawRotated(ctx = renderContext){
+	drawTransformed(ctx = renderContext){
 		if(this.sprite.size.x <= 0 || this.sprite.size.y <= 0) return;
 		var cCorrect = this.bounds.size.multiply(-0.5);
 		var tTot = this.bounds.pos.minus(cCorrect);
 		
 		ctx.translate(tTot.x, tTot.y);
-		ctx.rotate(this.rotation);
+		if(this.isFlipped) ctx.scale(-1, 1)
+		if(this.rotation) ctx.rotate(this.rotation);
 		
 		ctx.drawImage(
 			this.spriteSheet,
@@ -350,7 +360,8 @@ class spriteContainer{
 			this.bounds.width, this.bounds.height
 			);
 			
-		ctx.rotate(-this.rotation);
+		if(this.rotation) ctx.rotate(-this.rotation);
+		if(this.isFlipped) ctx.scale(-1, 1)
 		ctx.translate(-tTot.x, -tTot.y);
 	}
 }

@@ -36,6 +36,7 @@ function load(){
 	loadGraphic("cardItem.png", "cardItem");
 	loadGraphic("cardGraphics.png", "cardGraphics");
 	loadGraphic("projectile.png", "projectile");
+	loadGraphic("enemy1.png", "enemy1");
 }
 
 function fillText(txt, pos, size = 10, col = color.Black(), iterations = 1){

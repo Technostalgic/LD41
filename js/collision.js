@@ -25,7 +25,9 @@ class collisionModule{
     getBoundingBox(){
         return new collisionBox();
     }
-    getCollision(other){ return null; }
+    getCollision(other){
+        return this.getBoundingBox().getIntersect(other.getBoundingBox());
+    }
 
     draw(col = color.Blue){}
 }
@@ -116,12 +118,7 @@ class collisionModule_box extends collisionModule{
         }
     }
     getCollision_box(other){
-        var maxLeft = Math.max(this.colBox.left, other.colBox.left);
-        var minRight = Math.min(this.colBox.right, other.colBox.right);
-        var maxTop = Math.max(this.colBox.top, other.colBox.top);
-        var minBottom = Math.min(this.colBox.bottom, other.colBox.bottom);
-        if(maxLeft > minRight || maxTop > minBottom) return null;
-        return collisionBox.fromSides(maxLeft, maxTop, minRight, minBottom); 
+        return this.colBox.getIntersect(other.colBox);
     }
 
     draw(col = color.Blue()){

@@ -11,7 +11,8 @@ class player extends physicsObject{
         this.hitBox = collisionModule.boxCollider(new vec2(8, 12));
         this.maxSpeed = 150;
         this.acceleration = 1500;
-        
+        this.health = 100;
+
         this.xMove = 0;
         this.yAim = 0;
         this.isFlipped = false;
@@ -78,7 +79,7 @@ class player extends physicsObject{
         var aimvector = new vec2(this.xMove, this.yAim);
         if(this.xMove == 0 && this.yAim == 0)
             aimvector.x = this.isFlipped ? -1 : 1;
-        console.log(aimvector.toString());
+        
         return aimvector.direction();
     }
 
@@ -87,6 +88,10 @@ class player extends physicsObject{
     }
     getSecondary(){
         return state.cardSlots[0];
+    }
+
+    damage(dmg){
+        this.health -= dmg;
     }
 
     handleMovement(){
