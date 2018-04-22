@@ -17,6 +17,15 @@ class enemy extends physicsObject{
         this.seekDir = new vec2(0, 0);
     }
 
+    static randomEnemy(){
+        var m = [
+            enemy_zombie,
+            enemy_eyball
+        ];
+
+        return new m[Math.floor(m.length * Math.random())]();
+    }
+
     spawn(pos){
         this.pos = pos;
         this.tilSpawn = 2.5;
@@ -37,7 +46,9 @@ class enemy extends physicsObject{
     }
 
     findPlayer(){
-        this.seekDir = state.player.pos.minus(this.pos).normalized();
+        if(this.canSeePlayer())
+            this.seekDir = state.player.pos.minus(this.pos).normalized();
+        else this.seekDir = vec2.fromAng(Math.random() * Math.PI * 2, 10);
     }
     seekPlayer(){
     }
@@ -87,7 +98,7 @@ class enemy_zombie extends enemy{
         this.acceleration = 250;
 
         this.xMove = 0;
-        this.playerSeekCountdown = 1;
+        this.playerSeekCountdown = 0;
     }
 
     applyGroundFriction(){
@@ -229,5 +240,80 @@ class enemy_zombie extends enemy{
 
         sprite.draw();
         return true;
+    }
+}
+
+class enemy_eyball extends enemy{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.circleCollider(8);
+        this.health = 20;
+        this.maxSpeed = 20 + Math.random() * 10;
+        this.moveDir = new vec2();
+        this.playerSeekCountdown = 0;
+    }
+
+    findPlayer(){
+        if(this.canSeePlayer())
+            this.seekDir = state.player.pos;
+        else this.seekDir = getRandomScreenPos();
+    }
+    seekPlayer(){
+        this.playerSeekCountdown -= dt;
+        if(this.playerSeekCountdown <= 0){
+            this.findPlayer();
+            this.playerSeekCountdown = Math.random() * 2 + 4;
+        }
+        if(this.pos.x > this.seekDir.x + 35 || this.pos.x < this.seekDir.x - 35){
+            this.moveDir = new vec2(Math.sign(this.seekDir.x - this.pos.x), (Math.random() - 0.5) * 0.5);
+            return;
+        }
+        this.moveDir = new vec2((Math.random() - 0.5) * 0.25, Math.sign(this.seekDir.y - this.pos.y));
+    }
+    applyMovement(){
+        var jitter = 10;
+        var acc = 50;
+        var accel = this.moveDir.multiply(acc).plus(vec2.fromAng(Math.random() * Math.PI * 2, jitter));
+        var fmov = this.vel.plus(accel.multiply(dt));
+
+        console.log(this.moveDir);
+
+        var spd0 = this.vel.distance();
+        var spd1 = fmov.distance();
+        if(spd1 >= this.maxSpeed){
+            if(spd0 > spd1) {
+                this.vel = fmov;
+                return;
+            }
+        }
+        this.vel = fmov;
+    }
+    applyGravity(){ }
+
+    update(){
+        if(!super.update()) return false;
+
+        this.seekPlayer();
+        this.applyMovement();
+
+        return true;
+    }
+
+    draw(){
+        if(this.isSpawning)
+            return false;
+        
+        var frame = Math.floor(state.timeElapsed / 100) % 4;
+        var sprBox = new spriteBox(
+            new vec2(22 * frame, 0),
+            new vec2(22, 15)
+        );
+        var sprite = new spriteContainer(
+            gfx.enemy2,
+            sprBox
+        );
+        sprite.bounds.setCenter(this.pos);
+
+        sprite.draw();
     }
 }

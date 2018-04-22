@@ -40,6 +40,7 @@ function load(){
 	loadGraphic("weapons.png", "weapons");
 	loadGraphic("lazerFace.png", "lazerFace");
 	loadGraphic("enemy1.png", "enemy1");
+	loadGraphic("enemy2.png", "enemy2");
 }
 
 function fillText(txt, pos, size = 10, col = color.Black(), iterations = 1){
