@@ -32,7 +32,7 @@ class terrain_solid extends terrainObject{
     }
 
     collideWith(obj, colbox){
-        var nCol = colbox.center.minus(obj.vel);
+        var nCol = colbox.center.minus(obj.vel.multiply(dt));
         var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(this.hitBox.getBoundingBox());
         if(nIntersect){
             this.sideCollision(nIntersect.colSide, obj, colbox);

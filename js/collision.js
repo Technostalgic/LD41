@@ -7,7 +7,6 @@
 
 class collisionModule{
     constructor(){ 
-
     }
 
     static circleCollider(radius){
@@ -26,7 +25,44 @@ class collisionModule{
         return new collisionBox();
     }
     getCollision(other){
+        if(other instanceof collisionModule_horizontalPlane) return this.getCollision_hPlane(other);
+        if(other instanceof collisionModule_verticalPlane) return this.getCollision_vPlane(other);
         return this.getBoundingBox().getIntersect(other.getBoundingBox());
+    }
+
+    getCollision_hPlane(other){
+        var colbox = this.getBoundingBox();
+        if(other.mode){
+            if(colbox.bottom < other.range) return null;
+            return new collisionBox(
+                new vec2(colbox.pos.x, other.range),
+                new vec2(colbox.size.x, colbox.bottom - other.range)
+            );
+        }
+        else{
+            if(colbox.top > other.range) return null;
+            return new collisionBox(
+                colbox.pos.clone(),
+                new vec2(colbox.size.x, other.range - colbox.top)
+            );
+        }
+    }
+    getCollision_vPlane(other){
+        var colbox = this.getBoundingBox();
+        if(other.mode){
+            if(colbox.right < other.range) return null;
+            return new collisionBox(
+                new vec2(other.range, colbox.pos.y),
+                new vec2(colbox.right - other.range, colbox.size.y)
+            );
+        }
+        else{
+            if(colbox.left > other.range) return null;
+            return new collisionBox(
+                colbox.pos.clone(),
+                new vec2(other.range - colbox.left, colbox.size.y)
+            );
+        }
     }
 
     draw(col = color.Blue){}
@@ -84,38 +120,7 @@ class collisionModule_box extends collisionModule{
         if(other instanceof collisionModule_box) return this.getCollision_box(other);
         if(other instanceof collisionModule_horizontalPlane) return this.getCollision_hPlane(other);
         if(other instanceof collisionModule_verticalPlane) return this.getCollision_vPlane(other);
-    }
-    getCollision_hPlane(other){
-        if(other.mode){
-            if(this.colBox.bottom < other.range) return null;
-            return new collisionBox(
-                new vec2(this.colBox.pos.x, other.range),
-                new vec2(this.colBox.size.x, this.colBox.bottom - other.range)
-            );
-        }
-        else{
-            if(this.colBox.top > other.range) return null;
-            return new collisionBox(
-                this.colBox.pos.clone(),
-                new vec2(this.colBox.size.x, other.range - this.colBox.top)
-            );
-        }
-    }
-    getCollision_vPlane(other){
-        if(other.mode){
-            if(this.colBox.right < other.range) return null;
-            return new collisionBox(
-                new vec2(other.range, this.colBox.pos.y),
-                new vec2(this.colBox.right - other.range, this.colBox.size.y)
-            );
-        }
-        else{
-            if(this.colBox.left > other.range) return null;
-            return new collisionBox(
-                this.colBox.pos.clone(),
-                new vec2(other.range - this.colBox.left, this.colBox.size.y)
-            );
-        }
+        return super.getCollision(other);
     }
     getCollision_box(other){
         return this.colBox.getIntersect(other.colBox);
@@ -150,7 +155,7 @@ class collisionModule_horizontalPlane{
     }
 
     getCollision(other){
-        if(other instanceof collisionModule_box) return other.getCollision_hPlane(this);
+        return other.getCollision_hPlane(this);
     }
     
     draw(col = color.Blue()){
@@ -191,7 +196,7 @@ class collisionModule_verticalPlane{
     }
     
     getCollision(other){
-        if(other instanceof collisionModule_box) return other.getCollision_vPlane(this);
+        return other.getCollision_vPlane(this);
     }
     
     draw(col = color.Blue()){

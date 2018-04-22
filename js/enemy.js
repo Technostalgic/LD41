@@ -20,7 +20,7 @@ class enemy extends physicsObject{
     static randomEnemy(){
         var m = [
             enemy_zombie,
-            enemy_eyball
+            enemy_eyeball
         ];
 
         return new m[Math.floor(m.length * Math.random())]();
@@ -106,7 +106,7 @@ class enemy_zombie extends enemy{
         super.applyGroundFriction();
     }
     findPlayer(){
-        if(this.canSeePlayer)
+        if(this.canSeePlayer())
             this.seekDir.x = state.player.pos.x > this.pos.x ? 1 : -1;
         this.seekDir.x = Math.sign(Math.random() - 0.5);
     }
@@ -114,7 +114,7 @@ class enemy_zombie extends enemy{
         this.playerSeekCountdown -= dt;
         if(this.playerSeekCountdown <= 0){
             this.findPlayer();
-            this.playerSeekCountdown = Math.random() + 2.5;
+            this.playerSeekCountdown = Math.random() + 2;
         }
         if(this.onGround)
             this.xMove = Math.sign(this.seekDir.x);
@@ -166,7 +166,7 @@ class enemy_zombie extends enemy{
         this.findPlayer();
     }
 
-    objectCollide(obj){
+    objectCollide(obj, colbox){
         if(obj instanceof player)
             this.hitPlayer(obj);
     }
@@ -243,11 +243,12 @@ class enemy_zombie extends enemy{
     }
 }
 
-class enemy_eyball extends enemy{
+class enemy_eyeball extends enemy{
     constructor(){
         super();
         this.hitBox = collisionModule.circleCollider(8);
         this.health = 20;
+        this.points = 100;
         this.maxSpeed = 20 + Math.random() * 10;
         this.moveDir = new vec2();
         this.playerSeekCountdown = 0;
@@ -264,19 +265,24 @@ class enemy_eyball extends enemy{
             this.findPlayer();
             this.playerSeekCountdown = Math.random() * 2 + 4;
         }
-        if(this.pos.x > this.seekDir.x + 35 || this.pos.x < this.seekDir.x - 35){
-            this.moveDir = new vec2(Math.sign(this.seekDir.x - this.pos.x), (Math.random() - 0.5) * 0.5);
+        var dif = this.seekDir.minus(this.pos);
+        if(this.pos.distance(this.seekDir) <= 50){
+            this.moveDir = dif.normalized();
             return;
         }
-        this.moveDir = new vec2((Math.random() - 0.5) * 0.25, Math.sign(this.seekDir.y - this.pos.y));
+        if(this.pos.x > this.seekDir.x + 35 || this.pos.x < this.seekDir.x - 35){
+            this.moveDir = new vec2(Math.sign(dif.x), (Math.random() - 0.5) * 0.5);
+            return;
+        }
+        this.moveDir = new vec2((Math.random() - 0.5) * 0.25, Math.sign(dif.y));
     }
     applyMovement(){
-        var jitter = 10;
+        var jitter = 200;
         var acc = 50;
         var accel = this.moveDir.multiply(acc).plus(vec2.fromAng(Math.random() * Math.PI * 2, jitter));
         var fmov = this.vel.plus(accel.multiply(dt));
 
-        console.log(this.moveDir);
+        console.log(accel);
 
         var spd0 = this.vel.distance();
         var spd1 = fmov.distance();
@@ -290,6 +296,46 @@ class enemy_eyball extends enemy{
     }
     applyGravity(){ }
 
+    objectCollide(obj, colbox){
+        if(obj instanceof player)
+            this.hitPlayer(obj);
+    }
+    hitPlayer(plr){
+        var force = plr.pos.minus(this.pos).normalized(200);
+        plr.vel = force;
+        this.vel = force.multiply(-1);
+
+        plr.damage(10);
+    }
+
+    kill(){
+        this.spawnCorpse();
+        super.kill();
+    }
+    spawnCorpse(){
+        var c = new corpse();
+        c.hitBox = collisionModule.boxCollider(new vec2(13, 8));
+        c.pos = this.pos;
+        c.updateHitBox();
+        c.spritesheet = gfx.enemy2;
+        c.risingSprite = new spriteBox(
+            new vec2(0, 15),
+            new vec2(18, 19)
+        );
+        c.fallingSprite = new spriteBox(
+            new vec2(18, 15),
+            new vec2(18, 19)
+        );
+        c.lyingSprite = new spriteBox(
+            new vec2(36, 15),
+            new vec2(18, 19)
+        );
+        c.vel = this.vel;
+        c.isFlipped = this.vel.x < 0;
+
+        state.physObjects.push(c);
+    }
+
     update(){
         if(!super.update()) return false;
 
@@ -298,7 +344,6 @@ class enemy_eyball extends enemy{
 
         return true;
     }
-
     draw(){
         if(this.isSpawning)
             return false;

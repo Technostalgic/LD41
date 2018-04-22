@@ -8,7 +8,7 @@
 class projectile extends physicsObject{
     constructor(){
         super();
-        this.hitBox = collisionModule.boxCollider(new vec2(2));
+        this.hitBox = collisionModule.circleCollider(2);
         this.ignoreTypes = [];
         this.damage = 3;
         this.knockback = 100;
@@ -32,6 +32,7 @@ class projectile extends physicsObject{
         for(let type of this.ignoreTypes)
             if(obj instanceof type) return;
         if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
+        if(obj instanceof enemy) if(obj.isSpawning) return;
         super.checkObjectCollision(obj);
     }
     objectCollide(obj, colbox){
