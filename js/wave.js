@@ -6,12 +6,14 @@
 ///
 
 class wave{
-    constructor(dif = 0){
-        this.difficluty = dif;
-        this.enemiesLeft = 10 + dif * 4;
+    constructor(dif = 1){
+		this.timeElapsed = 0;
+		
+        this.difficulty = dif;
+        this.enemiesLeft = 10 + dif * 5;
         this.enemyGroupSize = 2 + Math.floor(dif / 2);
         this.enemyGroupThreshold = 1 + dif;
-        this.enemySpawnInterval = Math.max(15 - (dif * 0.5), 7.5);
+        this.enemySpawnInterval = Math.max(15 - (dif), 7.5);
         this.enemyDifficulty = dif;
 
         this.cardSpawnInterval = 7.5;
@@ -21,7 +23,11 @@ class wave{
         this._nextGroupSpawn = 0;
         this._nextCardSpawn = 0;
     }
-
+	
+	static wavePoints(waveNum){
+		return (waveNum) * 250;
+	}
+	
     spawnCard(){
         var c = new cardCollectable();
         c.spawn();
@@ -47,6 +53,8 @@ class wave{
     }
 
     update(){
+		this.timeElapsed += dt;
+		
         this.handleSpawning();
         if(this.enemiesLeft <= 0 && state.enemies.length <= 0)
             this.nextWave();
@@ -62,7 +70,7 @@ class wave{
                 this.spawnCard();
     }
     handleEnemySpawning(){
-
+		if(this.timeElapsed < 3.5) return;
         if(state.timeElapsed >= this._nextEnemySpawn)
             this.spawnEnemy();
 
@@ -73,8 +81,18 @@ class wave{
                 (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
         }
     }
-
+	
+	drawStartingText(){
+		var tpos = new vec2(200);
+		drawText("Wave " + this.difficulty, tpos, 36);
+		
+		var pts = wave.wavePoints(this.difficulty - 1);
+		if(pts > 0)
+		drawText("+" + pts + " pts", tpos.plus(new vec2(0, 20)), 24, color.fromHex("#FF0"), color.fromHex("#330"));
+	}
+	
     nextWave(){
-        state.currentWave = new wave(this.difficluty + 1);
+		state.addScore(wave.wavePoints(this.difficulty));
+        state.currentWave = new wave(this.difficulty + 1);
     }
 }

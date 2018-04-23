@@ -232,7 +232,7 @@ class gameState_gamePlay extends gameState{
         this.player = new player();
         this.player.pos = new vec2(renderCanvas.width / 2);
 
-        this.currentWave = new wave(0);
+        this.currentWave = new wave(1);
         this.terrain = getRandomTerrainLayout();
         
         this.physObjects = [
@@ -316,6 +316,9 @@ class gameState_gamePlay extends gameState{
         });
 
         this.drawHUD();
+		
+		if(this.currentWave.timeElapsed <= 2.5)
+			this.currentWave.drawStartingText();
     }
 
     drawHUD(){
