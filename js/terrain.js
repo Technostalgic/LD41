@@ -55,7 +55,8 @@ class terrainObject{
             terrainObject.handleSolidCollision_leftSide(obj, colbox);
         else terrainObject.handleSolidCollision_rightSide(obj, colbox);
     }
-    static handleSolidSideCollision(colside, collidingObj, colbox){
+    
+	static handleSolidSideCollision(colside, collidingObj, colbox){
         switch(colside){
             case side.left: terrainObject.handleSolidCollision_leftSide(collidingObj, colbox); break;
             case side.right: terrainObject.handleSolidCollision_rightSide(collidingObj, colbox); break;
@@ -103,6 +104,24 @@ class terrain_solid extends terrainObject{
     draw(){
         this.hitBox.getBoundingBox().drawFill(renderContext, color.Black().toRGBA());
     }
+}
+class terrain_platform extends terrainObject{
+    constructor(colbox){
+        super();
+        this.hitBox = new collisionModule_box(colbox);
+    }
+	
+    collideWith(obj, colbox){
+        terrainObject.handlePlatformCollision(this.hitBox, obj, colbox)
+    }
+	
+	draw(){
+		var box = this.hitBox.getBoundingBox();
+		box.size.y = 5;
+		box.drawFill(renderContext, color.LightGrey().toRGBA());
+		box.size.y = 4;
+		box.drawFill(renderContext, color.Black().toRGBA());
+	}
 }
 
 class terrain_bottomBoundary extends terrainObject{
@@ -195,7 +214,7 @@ function getTerrainScreenBounds(ceiling = true){
         new vec2(70, 20)
     );
     b.setCenter(new vec2(210, 275));
-    r.push(new terrain_solid(b));
+    r.push(new terrain_platform(b));
     b = new collisionBox(
         new vec2(),
         new vec2(30, 40)

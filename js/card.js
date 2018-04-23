@@ -8,8 +8,8 @@
 class cardCollectable extends physicsObject{
     constructor(){
         super();
-
         this.hitBox = collisionModule.boxCollider(new vec2(10, 14));
+		this.fallThroughPlatforms = false;
         this.updateHitBox();
         this.cardItem = card.randomCard();
     }
