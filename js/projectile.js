@@ -46,6 +46,7 @@ class projectile extends physicsObject{
         this.burst(coll);
     }
     terrainCollide(terrain, colbox){
+        if(terrain instanceof terrain_platform) return;
         var coll = this.hitBox.getCollision(terrain.hitBox);
         this.burst(coll);
     }

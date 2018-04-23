@@ -33,6 +33,7 @@ class terrainObject{
         }
     }
     static handleSolidCollision(hitbox, obj, colbox){
+        console.log(colbox.height)
         var nCol = colbox.center.minus(obj.getVDisplacement());
         var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
         if(nIntersect){
@@ -65,11 +66,13 @@ class terrainObject{
         }
     }
     static handleSolidCollision_leftSide(obj, colbox){
+        if(colbox.height < 1) return;
         obj.pos.x -= colbox.width;
         obj.vel.x = Math.min(0, obj.vel.x);
         obj.updateHitBox();
     }
     static handleSolidCollision_rightSide(obj, colbox){
+        if(colbox.height < 1) return;
         obj.pos.x += colbox.width;
         obj.vel.x = Math.max(0, obj.vel.x);
         obj.updateHitBox();

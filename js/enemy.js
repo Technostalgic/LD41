@@ -298,9 +298,13 @@ class enemy_eyeball extends enemy{
         this.moveDir = new vec2();
         this.playerSeekCountdown = 0;
         this.fallThroughPlatforms = true;
+
+        this.bulletCooldown = 0;
     }
 
 	fireBullet(){
+        if(this.bulletCooldown > 0) return;
+        this.bulletCooldown = 0.5;
 		var dir = this.seekDir.minus(this.pos).direction();
 		dir += (Math.random() - 0.5) * 0.35;
 		projectile.fire(proj_enemyBullet, this.pos.clone(), 100, dir, [enemy]);
@@ -391,6 +395,7 @@ class enemy_eyeball extends enemy{
     update(){
         if(!super.update()) return false;
 
+        this.bulletCooldown -= dt;
         this.seekPlayer();
         this.applyMovement();
 
