@@ -99,10 +99,11 @@ class proj_lazer extends projectile{
         this.rayCol = new ray(this.pos, this.vel.direction(), 500);
     }
 
-    objectCollide(obj){
+    objectCollide(obj, colbox){
         if(obj.damage)
             obj.damage(this.dmg * dt);
 
+        effect.fx_explosionBlue(colbox.center);
         obj.vel = this.vel.clone();
     }
     checkTerrainCollision(terrain){
@@ -149,7 +150,7 @@ class proj_lazer extends projectile{
         }
         if(this.closestCol)
             if(this.closestCol.ob)
-                this.objectCollide(this.closestCol.ob, null);
+                this.objectCollide(this.closestCol.ob, new collisionBox(this.closestCol.point));
 
         state.player.pos = this.pos;
         state.player.vel = new vec2();

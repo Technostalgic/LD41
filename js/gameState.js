@@ -37,6 +37,7 @@ class gameState_gamePlay extends gameState{
         ];
         this.enemies = [];
         this.cardItems = [];
+        this.effects = [];
 
         this.score = 0;
         this.cardSlots = [null, null, null, null, null, null];
@@ -97,6 +98,10 @@ class gameState_gamePlay extends gameState{
         
         this.terrain.forEach(function(terrain){
             terrain.draw();
+        });
+
+        this.effects.slice().reverse().forEach(function(effect){
+            effect.draw();
         });
 
         this.drawHUD();

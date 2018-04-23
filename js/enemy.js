@@ -87,6 +87,10 @@ class enemy extends physicsObject{
         return raycols.length <= 0;
     }
 
+    hitPlayer(plr, colbox){
+        effect.fx_hit(colbox.center);
+    }
+
     handleObjectCollisions(physObjs){
         if(this.isSpawning)
             return false;
@@ -188,7 +192,8 @@ class enemy_zombie extends enemy{
         state.physObjects.push(c);
     }
 
-    hitPlayer(plr){
+    hitPlayer(plr, colbox){
+        super.hitPlayer(plr, colbox);
         plr.damage(15);
 
         var force = Math.sign(plr.pos.x - this.pos.x) * 300;
@@ -203,7 +208,7 @@ class enemy_zombie extends enemy{
 
     objectCollide(obj, colbox){
         if(obj instanceof player)
-            this.hitPlayer(obj);
+            this.hitPlayer(obj, colbox);
     }
     terrainCollide(terrain){
         var col = this.hitBox.getCollision(terrain.hitBox);
@@ -333,9 +338,10 @@ class enemy_eyeball extends enemy{
 
     objectCollide(obj, colbox){
         if(obj instanceof player)
-            this.hitPlayer(obj);
+            this.hitPlayer(obj, colbox);
     }
-    hitPlayer(plr){
+    hitPlayer(plr, colbox){
+        super.hitPlayer(plr, colbox);
         var force = plr.pos.minus(this.pos).normalized(200);
         plr.vel = force;
         this.vel = force.multiply(-1);
