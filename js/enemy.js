@@ -112,6 +112,7 @@ class enemy extends physicsObject{
         return true;
     }
     draw(){
+		this.updateLVPos();
         if(this.isSpawning){
             this.drawSpawning();
             return false;
@@ -253,6 +254,7 @@ class enemy_zombie extends enemy{
         return true;
     }
     draw(){
+		this.updateLVPos();
         if(this.isSpawning){
             this.drawSpawning();
             return false;
@@ -301,7 +303,7 @@ class enemy_eyeball extends enemy{
 	fireBullet(){
 		var dir = this.seekDir.minus(this.pos).direction();
 		dir += (Math.random() - 0.5) * 0.35;
-		projectile.fire(proj_enemy, this.pos.clone(), 100, dir, [enemy]);
+		projectile.fire(proj_enemyBullet, this.pos.clone(), 100, dir, [enemy]);
 	}
 	
     findPlayer(){
@@ -395,6 +397,7 @@ class enemy_eyeball extends enemy{
         return true;
     }
     draw(){
+		this.updateLVPos();
         if(this.isSpawning){
             this.drawSpawning()
             return false;

@@ -33,7 +33,7 @@ class terrainObject{
         }
     }
     static handleSolidCollision(hitbox, obj, colbox){
-        var nCol = colbox.center.minus(obj.vel.multiply(dt));
+        var nCol = colbox.center.minus(obj.getVDisplacement().multiply(dt));
         var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
         if(nIntersect){
             terrainObject.handleSolidSideCollision(nIntersect.colSide, obj, colbox);

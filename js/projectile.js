@@ -60,6 +60,7 @@ class projectile extends physicsObject{
             this.remove();
     }
     draw(){
+		this.updateLVPos();
         var sprBox = new spriteBox(
             new vec2(),
             new vec2(4, 4)

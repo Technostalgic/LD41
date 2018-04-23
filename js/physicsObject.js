@@ -8,6 +8,7 @@
 class physicsObject{
     constructor(){
         this.pos = new vec2();
+		this._lastVPos = null;
         this.vel = new vec2();
         this.hitBox = new collisionModule();
         this.onGround = false;
@@ -32,6 +33,13 @@ class physicsObject{
         this.vel.x *= f;
     }
 
+	getVDisplacement(){
+		// the difference between the pos and the last pos that it was drawn at
+		if(this._lastVPos)
+			return this.pos.minus(this._lastVPos);
+		return(this.vel.multiply(dt));
+	}
+	
     ignoresType(obj){
         for(var i = this.ignoreTypes.length - 1; i >= 0; i--)
             if(obj instanceof this.ignoreTypes[i])
@@ -79,6 +87,9 @@ class physicsObject{
         this.hitBox.centerAtPoint(this.pos);
     }
     
+	updateLVPos(){
+		this._lastVPos = this.pos.clone();
+	}
     update(){
         this.applyGravity();
         this.applyAirFriction();
@@ -89,6 +100,6 @@ class physicsObject{
         this.updateHitBox();
     }
     draw(){
-        this.hitBox.draw();
+		this.updateLVPos();
     }
 }

@@ -41,6 +41,7 @@ class anvil extends prop{
     }
 
     draw(){
+		this.updateLVPos();
         var sprBox = new spriteBox(new vec2(60,6), new vec2(20, 9));
         var sprite = new spriteContainer(
             gfx.cardGraphics,
@@ -99,6 +100,7 @@ class corpse extends prop{
     }
 
     draw(){
+		this.updateLVPos();
         var sprite = new spriteContainer(this.spritesheet, this.getSpriteBox());
         sprite.bounds.setCenter(this.pos);
         sprite.bounds.pos.round();

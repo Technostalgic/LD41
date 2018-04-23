@@ -226,6 +226,7 @@ class player extends physicsObject{
         this.handleEquippedItems();
     }
     draw(){
+		this.updateLVPos();
         if(this.hide){
             this.hide = false;
             return;
