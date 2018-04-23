@@ -201,7 +201,7 @@ class card_shotgun extends card{
         this.name = "Shotgun";
         this.graphic = 1;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 15", "6x Pellets"];
+        this.text = ["Damage: 15", "5x Pellets"];
         
         this.uses = 2;
         this.coolDown = 1000;
@@ -213,8 +213,8 @@ class card_shotgun extends card{
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
         playSound(sfx.shotgun)
-        for(let i = 6; i > 0; i--){
-            let spread = ((Math.random() - 0.5) * (Math.random() - 0.5)) * 2;
+        for(let i = 5; i > 0; i--){
+            let spread = ((Math.random() - 0.5) * (Math.random() - 0.5)) * 1.5;
             let spdVar = Math.random() * 25;
             projectile.fire(proj_shotgun, off, 350 + spdVar, ang + spread, [player]);
         }

@@ -9,8 +9,9 @@ class projectile extends physicsObject{
     constructor(){
         super();
         this.hitBox = collisionModule.circleCollider(2);
-        this.ignoreTypes = [];
-        this.dmg = 3;
+		this.airFriction = 1;
+		this.gravity = 0;
+        this.dmg = 5;
         this.knockback = 100;
         this.lifetime = 5;
     }
@@ -26,8 +27,6 @@ class projectile extends physicsObject{
     }
 
     damage(){}
-    applyGravity(){}
-    applyAirFriction(){}
 
     checkObjectCollision(obj){
         for(let type of this.ignoreTypes)
@@ -63,7 +62,32 @@ class projectile extends physicsObject{
     draw(){
         var sprBox = new spriteBox(
             new vec2(),
-            new vec2(gfx.projectile.width, gfx.projectile.height)
+            new vec2(4, 4)
+        );
+        var sprite = new spriteContainer(
+            gfx.projectile,
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone())
+        );
+        sprite.bounds.setCenter(this.pos);
+
+        sprite.draw();
+    }
+}
+class proj_enemyBullet extends projectile{
+	constructor(){
+		super();
+		this.ignoreTypes = [enemy];
+		this.dmg = 7;
+		this.knockback = 200;
+	}
+	
+	draw(){
+		var frame = Math.floor(state.timeElapsed / 100) % 2;
+		
+        var sprBox = new spriteBox(
+            new vec2(frame * 4, 0),
+            new vec2(4, 4)
         );
         var sprite = new spriteContainer(
             gfx.projectile,
@@ -79,8 +103,8 @@ class projectile extends physicsObject{
 class proj_shotgun extends projectile{
     constructor(){
         super();
-        this.dmg = 4;
-        this.knockback = 250;
+        this.dmg = 5;
+        this.knockback = 225;
     }
 }
 class proj_lazer extends projectile{

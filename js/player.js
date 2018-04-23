@@ -175,6 +175,11 @@ class player extends physicsObject{
     kill(){
         this.dead = true;
         this.remove();
+		
+		// lose the game 2.5 seconds after the player dies
+		setTimeout(function(){
+			loseGame()
+		}, 2500);
     }
 
     getSprite(){
