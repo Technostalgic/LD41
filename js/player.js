@@ -18,6 +18,7 @@ class player extends physicsObject{
         this.yAim = 0;
         this.isFlipped = false;
         this.primaryEquipped = true;
+        this.dead = false;
     }
 
     preInput(){
@@ -93,6 +94,8 @@ class player extends physicsObject{
 
     damage(dmg){
         this.health -= dmg;
+        if(this.health <= 0)
+            this.kill();
     }
 
     handleMovement(){
@@ -165,6 +168,11 @@ class player extends physicsObject{
                 this.primaryEquipped = true;
         }
         else this.primaryEquipped = true;
+    }
+
+    kill(){
+        this.dead = true;
+        this.remove();
     }
 
     getSprite(){

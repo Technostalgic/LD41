@@ -10,7 +10,7 @@ class projectile extends physicsObject{
         super();
         this.hitBox = collisionModule.circleCollider(2);
         this.ignoreTypes = [];
-        this.damage = 3;
+        this.dmg = 3;
         this.knockback = 100;
         this.lifetime = 5;
     }
@@ -25,6 +25,7 @@ class projectile extends physicsObject{
         state.physObjects.push(proj)
     }
 
+    damage(){}
     applyGravity(){}
     applyAirFriction(){}
 
@@ -40,7 +41,7 @@ class projectile extends physicsObject{
         obj.vel = obj.vel.plus(force);
 
         if(obj.damage)
-            obj.damage(this.damage);
+            obj.damage(this.dmg);
 
         var coll = this.hitBox.getCollision(obj.hitBox);
         this.burst(coll);
@@ -78,14 +79,14 @@ class projectile extends physicsObject{
 class proj_shotgun extends projectile{
     constructor(){
         super();
-        this.damage = 4;
+        this.dmg = 4;
         this.knockback = 250;
     }
 }
 class proj_lazer extends projectile{
     constructor(){
         super();
-        this.damage = 3;
+        this.dmg = 65;
         this.knockback = 100;
         this.lifetime = 0.5;
 
@@ -100,7 +101,7 @@ class proj_lazer extends projectile{
 
     objectCollide(obj){
         if(obj.damage)
-            obj.damage(this.damage);
+            obj.damage(this.dmg * dt);
 
         obj.vel = this.vel.clone();
     }

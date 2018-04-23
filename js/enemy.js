@@ -26,9 +26,27 @@ class enemy extends physicsObject{
         return new m[Math.floor(m.length * Math.random())]();
     }
 
-    spawn(pos){
-        this.pos = pos;
-        this.tilSpawn = 2.5;
+    findSpawnPos(){
+        var terrainOverlap = false;
+        do{
+            terrainOverlap = false;
+            this.pos = getRandomScreenPos();
+            this.updateHitBox();
+
+            for(let i = state.terrain.length - 1; i >= 0; i--){
+                if(this.hitBox.getCollision(state.terrain[i].hitBox)){
+                    terrainOverlap = true;
+                    break;
+                }
+            }
+        } while(terrainOverlap);
+        return this.pos;
+    }
+    spawn(){
+        this.pos = this.findSpawnPos();
+
+        state.enemies.push(this);
+        state.physObjects.push(this);
     }
     finishSpawn(){
         this.isSpawning = false;
@@ -43,6 +61,12 @@ class enemy extends physicsObject{
     kill(){
         state.addScore(this.points);
         this.remove();
+    }
+    remove(){
+        var index = state.enemies.indexOf(this); 
+        if(index >= 0)
+            state.enemies.splice(index, 1);
+        super.remove();
     }
 
     findPlayer(){
@@ -83,9 +107,20 @@ class enemy extends physicsObject{
         return true;
     }
     draw(){
-        if(this.isSpawning)
+        if(this.isSpawning){
+            this.drawSpawning();
             return false;
+        }
         return true;
+    }
+    drawSpawning(){
+        var box = this.hitBox.getBoundingBox();
+
+        var fillColor = state.timeElapsed / 100 % 2 < 1 ? 
+            color.fromHex("#F00", 1) : color.fromHex("#800", 1);
+        box.pos.round();
+        box.drawOutline(renderContext, color.Black().toRGBA(), 2);
+        box.drawFill(renderContext, fillColor.toRGBA());
     }
 }
 
@@ -212,8 +247,10 @@ class enemy_zombie extends enemy{
         return true;
     }
     draw(){
-        if(this.isSpawning)
+        if(this.isSpawning){
+            this.drawSpawning();
             return false;
+        }
         
         var frame = 0;
         var sprBox = new spriteBox();
@@ -282,8 +319,6 @@ class enemy_eyeball extends enemy{
         var accel = this.moveDir.multiply(acc).plus(vec2.fromAng(Math.random() * Math.PI * 2, jitter));
         var fmov = this.vel.plus(accel.multiply(dt));
 
-        console.log(accel);
-
         var spd0 = this.vel.distance();
         var spd1 = fmov.distance();
         if(spd1 >= this.maxSpeed){
@@ -345,8 +380,10 @@ class enemy_eyeball extends enemy{
         return true;
     }
     draw(){
-        if(this.isSpawning)
+        if(this.isSpawning){
+            this.drawSpawning()
             return false;
+        }
         
         var frame = Math.floor(state.timeElapsed / 100) % 4;
         var sprBox = new spriteBox(
@@ -358,6 +395,7 @@ class enemy_eyeball extends enemy{
             sprBox
         );
         sprite.bounds.setCenter(this.pos);
+        sprite.isFlippedX = this.vel.x < 0;
 
         sprite.draw();
     }

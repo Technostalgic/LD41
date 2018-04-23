@@ -23,9 +23,8 @@ var state = new gameState();
 function init(){
 	getCanvas();
 	state = new gameState_gamePlay();
+	//state.testSpawn();
 	controlState.init();
-
-	currentTerrain = getTerrainScreenBounds();
 
 	load();
 	requestAnimationFrame(step);
@@ -33,10 +32,13 @@ function init(){
 function load(){
 	loadGraphic("player.png", "player");
 	loadGraphic("playerHand.png", "playerHand");
+	loadGraphic("hud_border.png", "hud_border");
+	loadGraphic("hud_healthBar.png", "hud_healthBar");
 	loadGraphic("cardHUD.png", "cardHUD");
 	loadGraphic("cardItem.png", "cardItem");
 	loadGraphic("cardGraphics.png", "cardGraphics");
 	loadGraphic("projectile.png", "projectile");
+	loadGraphic("giblets.png", "giblets");
 	loadGraphic("weapons.png", "weapons");
 	loadGraphic("lazerFace.png", "lazerFace");
 	loadGraphic("enemy1.png", "enemy1");

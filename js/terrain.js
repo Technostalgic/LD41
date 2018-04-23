@@ -135,7 +135,7 @@ class terrain_topBoundary extends terrainObject{
         var col = color.Black();
         col.setFill();
 
-        renderContext.fillRect(0, 0, renderCanvas.width, this.hitBox.range - renderCanvas.height);
+        renderContext.fillRect(0, 0, renderCanvas.width, this.hitBox.range);
     }
 }
 class terrain_rightBoundary extends terrainObject{
@@ -177,7 +177,7 @@ class terrain_leftBoundary extends terrainObject{
     }
 }
 
-function getTerrainScreenBounds(ceiling = false){
+function getTerrainScreenBounds(ceiling = true){
     var r = [];
 
     r.push(new terrain_bottomBoundary(renderCanvas.height));
@@ -246,7 +246,7 @@ function getTerrainScreenBounds(ceiling = false){
     r.push(new terrain_solid(b));
 
     if(ceiling)
-        r.push(new terrain_topBoundary(0));
+        r.push(new terrain_topBoundary(125));
 
     return r;
 }

@@ -312,12 +312,14 @@ class collisionBox{
 }
 
 class spriteContainer{
-	constructor(spriteSheet, sprite, bounds = null){
+	constructor(spriteSheet, sprite = null, bounds = null){
 		this.spriteSheet = spriteSheet;
 		this.sprite = sprite;
+		if(sprite == null)
+			this.sprite = new spriteBox(new vec2(), new vec2(spriteSheet.width, spriteSheet.height));
 		this.bounds = bounds;
-		if(bounds == null && !!sprite)
-			this.bounds = new collisionBox(new vec2(), sprite.size);
+		if(bounds == null)
+			this.bounds = new collisionBox(new vec2(), this.sprite.size);
 		
 		this.rotation = null;
 		this.isFlippedX = false;

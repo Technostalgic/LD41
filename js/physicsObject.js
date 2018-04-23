@@ -11,24 +11,34 @@ class physicsObject{
         this.vel = new vec2();
         this.hitBox = new collisionModule();
         this.onGround = false;
+
+        this.gravity = 1250;
+        this.airFriction = 0.8;
+        this.groundFriction = 0.5;
+
+        this.ignoreTypes = [];
     }
 
     applyGravity(){
-        var gravity = 1250;
-        this.vel = this.vel.plus(new vec2(0, gravity).multiply(dt));
+        this.vel = this.vel.plus(new vec2(0, this.gravity).multiply(dt));
     }
     applyAirFriction(){
-        var frictionCoefficient = 0.8;
-        var f = ((frictionCoefficient - 1) * ((dt - 1) * frictionCoefficient + 1)) + 1;
+        var f = ((this.airFriction - 1) * ((dt - 1) * this.airFriction + 1)) + 1;
         this.vel = this.vel.multiply(f);
     }
     applyGroundFriction(){
-        var frictionCoefficient = 0.5;
-        var f = ((frictionCoefficient - 1) * ((dt - 1) * frictionCoefficient + 1)) + 1;
+        var f = ((this.groundFriction - 1) * ((dt - 1) * this.groundFriction + 1)) + 1;
         this.vel.x *= f;
     }
 
+    ignoresType(obj){
+        for(var i = this.ignoreTypes.length - 1; i >= 0; i--)
+            if(obj instanceof this.ignoreTypes[i])
+                return true;
+        return false;
+    }
     checkObjectCollision(obj){
+        if(this.ignoresType(obj)) return;
         if(obj == this) return;
         
         var coll = obj.hitBox.getCollision(this.hitBox)
@@ -39,6 +49,9 @@ class physicsObject{
     terrainCollide(terrain){
     }
 
+    add(){
+        state.physObjects.push(this);
+    }
     remove(){
         var index = state.physObjects.indexOf(this);
         if(index >= 0)

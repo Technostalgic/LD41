@@ -29,25 +29,25 @@ class gameState_gamePlay extends gameState{
         this.player = new player();
         this.player.pos = new vec2(renderCanvas.width / 2);
 
+        this.currentWave = new wave(0);
+        this.terrain = getTerrainScreenBounds(true);
+        
         this.physObjects = [
             this.player
         ];
-
-        var cards = [];
-        for(let i = 6; i > 0; i--){
-            let c = new cardCollectable();
-            c.pos = getRandomScreenPos();
-            c.updateHitBox();
-            let z = enemy.randomEnemy();
-            z.pos = getRandomScreenPos();
-            cards.push(c);
-            cards.push(z);
-        }
-        this.physObjects = this.physObjects.concat(cards);
+        this.enemies = [];
+        this.cardItems = [];
 
         this.score = 0;
-        this.terrain = getTerrainScreenBounds();
         this.cardSlots = [null, null, null, null, null, null];
+    }
+    testSpawn(){
+        for(let i = 6; i > 0; i--){
+            let c = new cardCollectable();
+            c.spawn();
+            let z = enemy.randomEnemy();
+            z.spawn();
+        }
     }
 
     getTopCardSlot(){
@@ -76,6 +76,8 @@ class gameState_gamePlay extends gameState{
     update(){
         controlState.update();
         
+        this.currentWave.update();
+
         this.physObjects.forEach(function(obj){
             obj.update();
         });
@@ -101,7 +103,7 @@ class gameState_gamePlay extends gameState{
     }
 
     drawHUD(){
-        var col = color.White();
+        var col = color.Black();
         col.a = 0.35;
         col.setFill();
         renderContext.fillRect(0, 0, renderCanvas.width, 125);
@@ -110,7 +112,7 @@ class gameState_gamePlay extends gameState{
         var x = 261.5;
         renderContext.moveTo(x, 25);
         renderContext.lineTo(x, 75);
-        color.Black().setStroke();
+        color.White().setStroke();
         renderContext.lineWidth = 1;
         renderContext.stroke();
 
@@ -121,7 +123,7 @@ class gameState_gamePlay extends gameState{
                 new vec2(x + 2.5, 12.5),
                 new vec2(46, 71)
             );
-            spot.drawOutline(renderContext, "#000", 1);
+            spot.drawOutline(renderContext, "#AAA", 1);
 
             if(cardOb) {
                 if(i <= 2) cardOb.isFlipped = true;
@@ -131,14 +133,49 @@ class gameState_gamePlay extends gameState{
 
         var scorepos = new vec2(200, 100);
         var scoreString = "Score: " + this.score.toString();
-        outlineText(scoreString, scorepos, 20, color.Black(), 4);
-        fillText(scoreString, scorepos, 20, color.fromHex("#FA0"));
+        outlineText(scoreString, scorepos, 20, color.fromHex("#330"), 4);
+        fillText(scoreString, scorepos, 20, color.fromHex("#DA0"));
+
+        var borderSprite = new spriteContainer(
+            gfx.hud_border
+        );
+        borderSprite.bounds.pos = new vec2(200, 116);
+        borderSprite.draw();
+        this.drawHealthBar();
+    }
+    drawHealthBar(){
+        var healthPercent = Math.min(1, Math.max(this.player.health / 100, 0));
+        
+        var fullBox = new spriteBox(
+            new vec2(),
+            new vec2(Math.floor(236 * healthPercent), 36)
+        );
+        var emptyBox = new spriteBox(
+            new vec2(0, 36),
+            new vec2(236, 36)
+        );
+        var fullSprite = new spriteContainer(
+            gfx.hud_healthBar,
+            fullBox
+        );
+        var emptySprite = new spriteContainer(
+            gfx.hud_healthBar,
+            emptyBox
+        );
+        var tpos = new vec2(0, 106);
+        fullSprite.bounds.pos = tpos
+        emptySprite.bounds.pos = tpos;
+
+        emptySprite.draw();
+        fullSprite.draw();
     }
 
     preInput(){
         this.player.preInput();
     }
     controlTap(controlID){
+        if(this.player.dead)
+            return;
         switch(controlID){
             case controlState.controlEnum.jump:
                 this.player.action_jump();
@@ -152,6 +189,8 @@ class gameState_gamePlay extends gameState{
         }
     }
     controlPress(controlID){
+        if(this.player.dead)
+            return;
         switch(controlID){
             case controlState.controlEnum.left:
                 this.player.action_move(-1);

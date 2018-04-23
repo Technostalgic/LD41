@@ -14,10 +14,39 @@ class cardCollectable extends physicsObject{
         this.cardItem = card.randomCard();
     }
 
+    findSpawnPos(){
+        var terrainOverlap = false;
+        do{
+            terrainOverlap = false;
+            this.pos = getRandomScreenPos();
+            this.updateHitBox();
+
+            for(let i = state.terrain.length - 1; i >= 0; i--){
+                if(this.hitBox.getCollision(state.terrain[i].hitBox)){
+                    terrainOverlap = true;
+                    break;
+                }
+            }
+        } while(terrainOverlap);
+        return this.pos;
+    }
+    spawn(){
+        this.pos = this.findSpawnPos();
+
+        state.cardItems.push(this);
+        state.physObjects.push(this);
+    }
+
     pickUp(plyr){
         this.remove();
         state.addCard(this.cardItem);
         state.addScore(10);
+    }
+    remove(){
+        var index = state.cardItems.indexOf(this); 
+        if(index >= 0)
+            state.cardItems.splice(index, 1);
+        super.remove();
     }
 
     draw(){
@@ -50,9 +79,13 @@ class card{
     }
 
     static randomCard(){
+        //return new card_anvil();
         var m = [
             card_revolver,
+            card_eyeball,
+            card_anvil,
             card_shotgun,
+            card_medkit,
             card_lazer
         ];
         return new m[Math.floor(m.length * Math.random())]();
@@ -233,5 +266,70 @@ class card_lazer extends card{
         sprite.isFlippedY = plr.isFlipped;
 
         sprite.draw();
+    }
+}
+class card_medkit extends card{
+    constructor(){
+        super();
+        this.name = "Med-Kit";
+        this.graphic = 6;
+        this.type = "RST - Health";
+        this.text = ["Health + 50"];
+        
+        this.uses = 1;
+        this.coolDown = 1000;
+    }
+    
+    use(plr){
+        if(!super.use(plr)) return;
+        plr.health += 50;
+        if(plr.health > 100) plr.health = 100;
+    }
+}
+class card_anvil extends card{
+    constructor(){
+        super();
+        this.name = "Anvil";
+        this.graphic = 3;
+        this.type = "Misc.";
+        this.text = ["DO NOT DROP"];
+
+        this.uses = 1;
+        this.coolDown = 1000;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        var off = new vec2(15 * (plr.isFlipped ? -1 : 1), 0);
+        var tpos = plr.pos.plus(off);
+
+        console.log(off);
+
+        var anv = new anvil();
+        anv.pos = tpos;
+        anv.vel = plr.vel.clone();
+        anv.updateHitBox();
+        state.physObjects.push(anv);
+    }
+}
+class card_eyeball extends card{
+    constructor(){
+        super();
+        this.name = "Eyeball";
+        this.graphic = 5;
+        this.type = "Misc.";
+        this.text = ["Reveals cards"];
+        this.uses = 1;
+        this.lastUsed = 0;
+        this.coolDown = 250;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+
+        state.cardSlots.forEach(function(card){
+            if(!card) return;
+            card.isFlipped = true;
+        });
     }
 }
