@@ -12,8 +12,8 @@ var renderCanvas,
 	scaleCanvas,
 	scaleContext;
 
-var gfx = [],
-	sftx = [];
+var gfx = {},
+	sfx = {};
 
 var lastRecordedTimeStamp = 0,
 	dt = 0;
@@ -46,6 +46,17 @@ function load(){
 	loadGraphic("hit.png", "effect_hit");
 	loadGraphic("explosion.png", "effect_explosion");
 	loadGraphic("explosionBlue.png", "effect_explosionBlue");
+
+	loadSound("enemyHit.wav", "enemyHit");
+	loadSound("explosion.wav", "explosion");
+	loadSound("gameover.wav", "gameover");
+	loadSound("heal.wav", "heal");
+	loadSound("hit.wav", "hit");
+	loadSound("jump.wav", "jump");
+	loadSound("lazer.wav", "lazer");
+	loadSound("pickup.wav", "pickup");
+	loadSound("shoot.wav", "shoot");
+	loadSound("shotgun.wav", "shotgun");
 }
 
 function fillText(txt, pos, size = 10, col = color.Black(), iterations = 1){
@@ -68,6 +79,11 @@ function loadGraphic(fileName, assetName){
 	img.src = "./gfx/" + fileName;
 
 	gfx[assetName] = img;
+}
+function loadSound(fileName, assetName){
+	var aud = new Audio("sfx/" + fileName);
+
+	sfx[assetName] = aud;
 }
 
 function getCanvas(){
@@ -105,6 +121,11 @@ function clearScreen(col = color.Grey()){
 	col.setFill();
 	renderContext.fillRect(0,0,renderCanvas.width, renderCanvas.height);
 	textContext.clearRect(0,0, textCanvas.width, textCanvas.height);
+}
+
+function playSound(sound, forceRepeat = true){
+	if(forceRepeat) sound.currentTime = 0;
+	sound.play();
 }
 
 function step(){

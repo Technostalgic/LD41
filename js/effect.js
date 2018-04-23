@@ -34,6 +34,11 @@ class effect{
         r.add();
     }
     static fx_explosionBlue(pos){
+        var r = effect.build(gfx.effect_explosion, 7, 33);
+        r.pos = pos.clone();
+        r.add();
+    }
+    static fx_explosionBlue(pos){
         var r = effect.build(gfx.effect_explosionBlue, 7, 33);
         r.pos = pos.clone();
         r.add();

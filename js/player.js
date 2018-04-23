@@ -37,6 +37,7 @@ class player extends physicsObject{
 
         if(!this.onGround) return;
 
+        playSound(sfx.jump);
         this.vel.y -= jumpPower;
     }
     action_jumpSustain(){

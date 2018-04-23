@@ -38,6 +38,7 @@ class cardCollectable extends physicsObject{
     }
 
     pickUp(plyr){
+        playSound(sfx.pickup);
         this.remove();
         state.addCard(this.cardItem);
         state.addScore(10);
@@ -174,6 +175,7 @@ class card_revolver extends card{
         var ang = plr.getAim();
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
+        playSound(sfx.shoot);
         projectile.fire(projectile, off, 250, ang, [player]);
     }
     drawOnPlayer(plr){
@@ -210,6 +212,7 @@ class card_shotgun extends card{
         var ang = plr.getAim();
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
+        playSound(sfx.shotgun)
         for(let i = 6; i > 0; i--){
             let spread = ((Math.random() - 0.5) * (Math.random() - 0.5)) * 2;
             let spdVar = Math.random() * 25;
@@ -248,6 +251,7 @@ class card_lazer extends card{
     use(plyr){
         if(!super.use(plyr)) return;
         
+        playSound(sfx.lazer);
         var off = new vec2();
         var proj = new proj_lazer();
         proj.pos = plyr.pos.plus(off);
@@ -282,6 +286,7 @@ class card_medkit extends card{
     
     use(plr){
         if(!super.use(plr)) return;
+        playSound(sfx.heal);
         plr.health += 50;
         if(plr.health > 100) plr.health = 100;
     }

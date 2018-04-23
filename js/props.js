@@ -14,7 +14,7 @@ class prop extends physicsObject{
 class anvil extends prop{
     constructor(){
         super();
-        this.hitBox = collisionModule.boxCollider(new vec2(20, 9));
+        this.hitBox = collisionModule.boxCollider(new vec2(14, 9));
         this.ignoreTypes = [player, projectile, anvil];
     }
 
