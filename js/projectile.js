@@ -78,7 +78,7 @@ class proj_enemyBullet extends projectile{
 	constructor(){
 		super();
 		this.ignoreTypes = [enemy];
-		this.dmg = 7;
+		this.dmg = 8;
 		this.knockback = 200;
 	}
 	

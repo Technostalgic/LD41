@@ -298,10 +298,17 @@ class enemy_eyeball extends enemy{
         this.fallThroughPlatforms = true;
     }
 
+	fireBullet(){
+		var dir = this.seekDir.minus(this.pos).direction();
+		dir += (Math.random() - 0.5) * 0.35;
+		projectile.fire(proj_enemy, this.pos.clone(), 100, dir, [enemy]);
+	}
+	
     findPlayer(){
         if(this.canSeePlayer())
             this.seekDir = state.player.pos;
         else this.seekDir = getRandomScreenPos();
+		this.fireBullet();
     }
     seekPlayer(){
         this.playerSeekCountdown -= dt;

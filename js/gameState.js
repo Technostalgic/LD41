@@ -20,49 +20,7 @@ class gameState{
 
     update(){}
     draw(){}
-}
-
-class gameState_startScreen extends gameState{
-	constructor(){
-		super();
-		
-		this.drawInstructions = false;
-	}
-	
-	controlTap(controlID){
-		if(controlID == controlState.controlEnum.start)
-			this.nextScreen();
-	}
-	nextScreen(){
-		if(!this.drawInstructions)
-			this.drawInstructions = true;
-		else startGame();
-	}
-	
-	draw(){
-		if(this.drawInstructions){
-			this.drawMockupHUD();
-			this.drawMockupHUDLabels();
-			this.drawStartPrompt();
-		}
-		else{
-			renderContext.fillStyle = "#000";
-			renderContext.fillRect(0, 0, 800, 700);
-			this.drawTitle();
-			this.drawStartPrompt();
-		}
-	}
-	drawStartPrompt(){
-		if(this.timeElapsed / 1000 % 1 >= 0.50)
-			return;
-		var tpos = new vec2(200, 300);
-		drawText("Press Space to Start", tpos, 20);
-	}
-	drawTitle(){
-		var tpos = new vec2(200, 75);
-		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 56, color.fromHex("#FAA"), color.fromHex("#600"), 8);
-	}
-	drawMockupHUD(){
+	static drawInstructions(){
         var col = color.Black();
         col.setFill();
         renderContext.fillRect(0, 0, renderCanvas.width, 125);
@@ -117,9 +75,8 @@ class gameState_startScreen extends gameState{
 		carditem.onGround = true;
 		carditem.pos = new vec2(300, 208);
 		carditem.draw();
-	}
-	drawMockupHUDLabels(){
-		if(this.timeElapsed / 1000 % 1 >= 0.50)
+		
+		if(state.timeElapsed / 1000 % 1 >= 0.50)
 			textContext.globalAlpha = 0.5;
 		
 		var playerpos = new vec2(100, 200);
@@ -130,6 +87,9 @@ class gameState_startScreen extends gameState{
 		var carditempos = new vec2(300, 200);
 		drawText("Card", carditempos.plus(new vec2(0, 25)), 16, color.fromHex("#A8F"));
 		drawText("Collect to put in your hand.", carditempos.plus(new vec2(0, 35)), 16);
+		
+		var pausepos = new vec2(200, 275);
+		drawText("Press ESCAPE while playing to pause the game and access these instructions", pausepos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
 		
 		var healthpos = new vec2(75, 105);
 		drawText("Health", healthpos.plus(new vec2(0, 0)), 24, color.fromHex("#F44"));
@@ -148,6 +108,47 @@ class gameState_startScreen extends gameState{
 		var secondarypos = new vec2(360, 40);
 		drawText("Secondary", secondarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
 		drawText("'X' to use card.", secondarypos.plus(new vec2(0, 10)), 14);
+	}
+}
+
+class gameState_startScreen extends gameState{
+	constructor(){
+		super();
+		
+		this.drawInstructions = false;
+	}
+	
+	controlTap(controlID){
+		if(controlID == controlState.controlEnum.start)
+			this.nextScreen();
+	}
+	nextScreen(){
+		if(!this.drawInstructions)
+			this.drawInstructions = true;
+		else startGame();
+	}
+	
+	draw(){
+		if(this.drawInstructions){
+			gameState.drawInstructions();
+			this.drawStartPrompt();
+		}
+		else{
+			renderContext.fillStyle = "#000";
+			renderContext.fillRect(0, 0, 800, 700);
+			this.drawTitle();
+			this.drawStartPrompt();
+		}
+	}
+	drawStartPrompt(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			return;
+		var tpos = new vec2(200, 300);
+		drawText("Press Space to Start", tpos, 20);
+	}
+	drawTitle(){
+		var tpos = new vec2(200, 75);
+		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 56, color.fromHex("#FAA"), color.fromHex("#600"), 8);
 	}
 }
 class gameState_gameoverScreen extends gameState{
@@ -177,11 +178,57 @@ class gameState_gameoverScreen extends gameState{
 		drawText("Press Space to Restart", tpos, 20);
 	}
 }
+class gameState_pauseScreen extends gameState{
+	constructor(resumeState){
+		super();
+		this.resumeState = resumeState;
+		this.showInstructions = false;
+	}
+	
+	controlTap(controlID){
+		if(controlID == controlState.controlEnum.pause)
+			this.resumeGame();
+		if(controlID == controlState.controlEnum.start)
+			this.drawInstructions = true;
+	}
+	
+	resumeGame(){
+		state = this.resumeState;
+	}
+	
+	draw(){
+		if(!this.drawInstructions){
+			renderContext.fillStyle = "#000";
+			renderContext.fillRect(0, 0, 800, 700);
+			this.drawTitle();
+			this.drawInstructionsPrompt();
+		}
+		else
+			gameState.drawInstructions();
+		this.drawResumePrompt();
+	}
+	drawTitle(){
+		var tpos = new vec2(200, 75);
+		drawText("-Paused-", tpos, 36, color.fromHex("#FFF"), color.fromHex("#000"), 8);
+	}
+	drawResumePrompt(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			return;
+		var tpos = new vec2(200, 300);
+		drawText("Press ESCAPE to Resume the Game", tpos, 20);
+	}
+	drawInstructionsPrompt(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			return;
+		var tpos = new vec2(200, 320);
+		drawText("Press Space for Instructions", tpos, 16);
+	}
+}
 
 class gameState_gamePlay extends gameState{
     constructor(){
         super();
-
+		this._timeElapsed = 0;
         this.player = new player();
         this.player.pos = new vec2(renderCanvas.width / 2);
 
@@ -207,6 +254,10 @@ class gameState_gamePlay extends gameState{
         }
     }
 
+	get timeElapsed(){
+		return this._timeElapsed * 1000;
+	}
+	
     getTopCardSlot(){
         for(let i = 1; i < this.cardSlots.length; i ++)
             if(!this.cardSlots[i]) return i;
@@ -226,13 +277,17 @@ class gameState_gamePlay extends gameState{
             this.cardSlots[i] = m.length > 0 ? m.splice(0, 1)[0] : null;
     }
 
+	pauseGame(){
+		state = new gameState_pauseScreen(this);
+	}
     addScore(points){
         this.score += points;
     }
 
     update(){
+		this._timeElapsed += dt;
+		
         controlState.update();
-        
         this.currentWave.update();
 
         this.physObjects.forEach(function(obj){
@@ -346,6 +401,9 @@ class gameState_gamePlay extends gameState{
                 break;
             case controlState.controlEnum.secondary: 
                 this.player.action_useSecondary();
+                break;
+            case controlState.controlEnum.pause: 
+                this.pauseGame();
                 break;
         }
     }
