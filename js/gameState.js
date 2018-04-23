@@ -46,8 +46,10 @@ class gameState_startScreen extends gameState{
 			this.drawStartPrompt();
 		}
 		else{
-		this.drawTitle();
-		this.drawStartPrompt();
+			renderContext.fillStyle = "#000";
+			renderContext.fillRect(0, 0, 800, 700);
+			this.drawTitle();
+			this.drawStartPrompt();
 		}
 	}
 	drawStartPrompt(){
@@ -58,7 +60,7 @@ class gameState_startScreen extends gameState{
 	}
 	drawTitle(){
 		var tpos = new vec2(200, 75);
-		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 36, color.fromHex("#FAA"), color.fromHex("#600"), 8);
+		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 56, color.fromHex("#FAA"), color.fromHex("#600"), 8);
 	}
 	drawMockupHUD(){
         var col = color.Black();
@@ -146,6 +148,34 @@ class gameState_startScreen extends gameState{
 		drawText("'X' to use card.", secondarypos.plus(new vec2(0, 10)), 14);
 	}
 }
+class gameState_gameoverScreen extends gameState{
+	constructor(){
+		super();
+	}
+	
+	controlTap(controlID){
+		if(controlID == controlState.controlEnum.start)
+			startGame();
+	}
+	
+	draw(){
+		renderContext.fillStyle = "#000";
+		renderContext.fillRect(0, 0, 800, 700);
+		this.drawTitle();
+		this.drawRestartPrompt();
+	}
+	drawTitle(){
+		var tpos = new vec2(200, 75);
+		drawText("GA҉ME҉ O҉҉V҉E҉R", tpos, 56, color.fromHex("#FAA"), color.fromHex("#600"), 8);
+	}
+	drawRestartPrompt(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			return;
+		var tpos = new vec2(200, 300);
+		drawText("Press Space to Restart", tpos, 20);
+	}
+}
+
 class gameState_gamePlay extends gameState{
     constructor(){
         super();

@@ -20,10 +20,13 @@ var lastRecordedTimeStamp = 0,
 
 var state = new gameState();
 
+var highScore = 0,
+	savekey = "technostalgic_LD41_highScore";
+
 function init(){
 	getCanvas();
 	load();
-	state = new gameState_startScreen();
+	state = new gameState_startScreen();//new gameState_startScreen();
 	controlState.init();
 
 	requestAnimationFrame(step);
@@ -56,6 +59,32 @@ function load(){
 	loadSound("pickup.wav", "pickup");
 	loadSound("shoot.wav", "shoot");
 	loadSound("shotgun.wav", "shotgun");
+	
+	loadHighScore();
+}
+
+function loadHighScore(){
+	try{
+		var hsdat = localStorage.getItem(savekey);
+		if(!hsdat) return;
+		highScore = parseInt(hsdat);
+	} 
+	catch(e){
+		console.log("Local storage disabled, high score not loaded");
+		highScore = 0;
+	}
+}
+function saveHighScore(){
+	try{
+		localStorage.setItem(savekey, this.highScore.toString());
+	}
+	catch(e){
+		console.log("Local storage disabled, high score saving aborted");
+	}
+}
+function loseGame(score){
+	if(score > highScore) saveHighScore();
+	state = new gameState_gameoverScreen();
 }
 
 function drawText(txt, pos, size, fillCol = color.White(), outlineCol = color.Black(), outlineThickness = 4){
@@ -100,6 +129,7 @@ function getCanvas(){
 	renderCanvas.height = scaleCanvas.height / 2;
 	renderContext = renderCanvas.getContext("2d");
 	
+	// create high resolution canvas for rendering legible text
 	textCanvas = document.createElement("canvas");
 	textCanvas.width = scaleCanvas.width;
 	textCanvas.height = scaleCanvas.height;
@@ -155,7 +185,7 @@ function draw(){
 	printScreen();
 }
 function printScreen(){
-	// prints the render canvas onto the scaling canvas
+	// prints the render canvas and text canvas onto the scaling canvas
 	scaleContext.drawImage(renderCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 	scaleContext.drawImage(textCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 	textContext.globalAlpha = 1;
