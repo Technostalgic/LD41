@@ -1,7 +1,7 @@
 ///
 ///	code by Isaiah Smith
 ///
-///	https://technostalgic.tech	
+///	https://technostalgic.tech
 ///	twitter @technostalgicGM
 ///
 
