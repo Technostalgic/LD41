@@ -22,6 +22,130 @@ class gameState{
     draw(){}
 }
 
+class gameState_startScreen extends gameState{
+	constructor(){
+		super();
+		
+		this.drawInstructions = false;
+	}
+	
+	controlTap(controlID){
+		if(controlID == controlState.controlEnum.start)
+			this.nextScreen();
+	}
+	nextScreen(){
+		if(!this.drawInstructions)
+			this.drawInstructions = true;
+		else startGame();
+	}
+	
+	draw(){
+		if(this.drawInstructions){
+			this.drawMockupHUD();
+			this.drawMockupHUDLabels();
+			this.drawStartPrompt();
+		}
+		else{
+		this.drawTitle();
+		this.drawStartPrompt();
+		}
+	}
+	drawStartPrompt(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			return;
+		var tpos = new vec2(200, 300);
+		drawText("Press Space to Start", tpos, 20);
+	}
+	drawTitle(){
+		var tpos = new vec2(200, 75);
+		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 36, color.fromHex("#FAA"), color.fromHex("#600"), 8);
+	}
+	drawMockupHUD(){
+        var col = color.Black();
+        col.setFill();
+        renderContext.fillRect(0, 0, renderCanvas.width, 125);
+
+        renderContext.beginPath();
+        var x = 261.5;
+        renderContext.moveTo(x, 25);
+        renderContext.lineTo(x, 75);
+        color.White().setStroke();
+        renderContext.lineWidth = 1;
+        renderContext.stroke();
+
+        for(var i = 0; i < 6; i++){
+            var x = 335 - (i * 60);
+            if(i > 1) x -= 20;
+            var spot = new collisionBox(
+                new vec2(x + 2.5, 12.5),
+                new vec2(46, 71)
+            );
+            spot.drawOutline(renderContext, "#AAA", 1);
+        }
+
+        var scorepos = new vec2(200, 100);
+        outlineText("Score", scorepos, 20, color.fromHex("#330"), 4);
+        fillText("Score", scorepos, 20, color.fromHex("#DA0"));
+
+        var borderSprite = new spriteContainer(
+            gfx.hud_border
+        );
+        borderSprite.bounds.pos = new vec2(200, 116);
+        borderSprite.draw();
+		
+        var healthSpritebox = new spriteBox(
+            new vec2(),
+            new vec2(Math.floor(236), 36)
+        );
+        var healthSprite = new spriteContainer(
+            gfx.hud_healthBar,
+            healthSpritebox
+        );
+        healthSprite.bounds.pos = new vec2(0, 106);
+        healthSprite.draw();
+		
+		var playerSprite = new spriteContainer(
+			gfx.player,
+			new spriteBox(new vec2(), new vec2(15, 20))
+		);
+		playerSprite.bounds.setCenter(new vec2(100, 200));
+		playerSprite.draw();
+		
+		var carditem = new cardCollectable();
+		carditem.onGround = true;
+		carditem.pos = new vec2(300, 208);
+		carditem.draw();
+	}
+	drawMockupHUDLabels(){
+		if(this.timeElapsed / 1000 % 1 >= 0.50)
+			textContext.globalAlpha = 0.5;
+		
+		var playerpos = new vec2(100, 200);
+		drawText("You", playerpos.plus(new vec2(0, 25)), 16, color.fromHex("#8CA"));
+		drawText("Use arrow keys for movement, 'Z' to jump.", playerpos.plus(new vec2(0, 35)), 16);
+		drawText("Avoid Scary looking things.", playerpos.plus(new vec2(0, 45)), 16);
+		
+		var carditempos = new vec2(300, 200);
+		drawText("Card", carditempos.plus(new vec2(0, 25)), 16, color.fromHex("#A8F"));
+		drawText("Collect to put in your hand.", carditempos.plus(new vec2(0, 35)), 16);
+		
+		var healthpos = new vec2(75, 105);
+		drawText("Health", healthpos.plus(new vec2(0, 0)), 24, color.fromHex("#F44"));
+		drawText("When it runs out, you die.", healthpos.plus(new vec2(0, 10)), 16);
+		
+		var cardspos = new vec2(150, 50);
+		drawText("Cards (Hand)", cardspos.plus(new vec2(0, 0)), 24);
+		drawText("Equip to secondary slot, or use in primary slot.", cardspos.plus(new vec2(0, 10)), 16);
+		
+		var primarypos = new vec2(300, 40);
+		drawText("Primary", primarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
+		drawText("'C' to use card.", primarypos.plus(new vec2(0, 10)), 14);
+		
+		var secondarypos = new vec2(360, 40);
+		drawText("Secondary", secondarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
+		drawText("'X' to use card.", secondarypos.plus(new vec2(0, 10)), 14);
+	}
+}
 class gameState_gamePlay extends gameState{
     constructor(){
         super();

@@ -22,11 +22,10 @@ var state = new gameState();
 
 function init(){
 	getCanvas();
-	state = new gameState_gamePlay();
-	//state.testSpawn();
+	load();
+	state = new gameState_startScreen();
 	controlState.init();
 
-	load();
 	requestAnimationFrame(step);
 }
 function load(){
@@ -59,6 +58,10 @@ function load(){
 	loadSound("shotgun.wav", "shotgun");
 }
 
+function drawText(txt, pos, size, fillCol = color.White(), outlineCol = color.Black(), outlineThickness = 4){
+	outlineText(txt, pos, size, outlineCol, outlineThickness);
+	fillText(txt, pos, size, fillCol);
+}
 function fillText(txt, pos, size = 10, col = color.Black(), iterations = 1){
 	pos = pos.multiply(2);
 	textContext.font = size.toString() + "px sans-serif";
@@ -101,6 +104,7 @@ function getCanvas(){
 	textCanvas.width = scaleCanvas.width;
 	textCanvas.height = scaleCanvas.height;
 	textContext = textCanvas.getContext("2d");
+	textContext.miterLimit = 3;
 
 	// disables scale smoothing
 	scaleContext.mozImageSmoothingEnabled    = false;
@@ -127,6 +131,9 @@ function playSound(sound, forceRepeat = true){
 	if(forceRepeat) sound.currentTime = 0;
 	sound.play();
 }
+function startGame(){
+	state = new gameState_gamePlay();
+}
 
 function step(){
 	update();
@@ -151,6 +158,7 @@ function printScreen(){
 	// prints the render canvas onto the scaling canvas
 	scaleContext.drawImage(renderCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 	scaleContext.drawImage(textCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
+	textContext.globalAlpha = 1;
 }
 
 function getRandomScreenPos(){
