@@ -11,6 +11,7 @@ class physicsObject{
         this.vel = new vec2();
         this.hitBox = new collisionModule();
         this.onGround = false;
+        this.fallThroughPlatforms = true;
 
         this.gravity = 1250;
         this.airFriction = 0.8;

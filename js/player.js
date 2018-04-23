@@ -12,6 +12,7 @@ class player extends physicsObject{
         this.maxSpeed = 150;
         this.acceleration = 1500;
         this.health = 100;
+        this.fallThroughPlatforms = false;
 
         this.hide = false;
         this.xMove = 0;
@@ -209,7 +210,11 @@ class player extends physicsObject{
         this.handleMovement();
         this.applyGravity();
         this.applyAirFriction();
-        
+
+        if(!this.onGround && this.yAim > 0)
+                this.fallThroughPlatforms = true;
+        else this.fallThroughPlatforms = false; 
+
         this.pos = this.pos.plus(this.vel.multiply(dt));
         this.updateHitBox();
 

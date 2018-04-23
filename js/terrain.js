@@ -20,6 +20,71 @@ class terrainObject{
     }
     collideWith(obj, colbox){ }
 
+    static handlePlatformCollision(hitbox, obj, colbox){
+        if(obj.fallThroughPlatforms) return;
+
+        var nCol = colbox.center.minus(obj.vel.multiply(dt));
+        var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
+        if(nIntersect){
+            if(nIntersect.colSide != side.up)
+                return;
+            terrainObject.handleSolidCollision_topSide(obj, colbox);
+            return;
+        }
+    }
+    static handleSolidCollision(hitbox, obj, colbox){
+        var nCol = colbox.center.minus(obj.vel.multiply(dt));
+        var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
+        if(nIntersect){
+            terrainObject.handleSolidSideCollision(nIntersect.colSide, obj, colbox);
+            return;
+        }
+        
+        if((
+            colbox.width == obj.hitBox.getBoundingBox().width ||
+            colbox.height == obj.hitBox.getBoundingBox().height || 
+            colbox.width > colbox.height
+            )){
+            if(colbox.center.y > hitbox.colBox.center.y)
+                terrainObject.handleSolidCollision_bottomSide(obj, colbox);
+            else terrainObject.handleSolidCollision_topSide(obj, colbox);
+            return;
+        }
+
+        if(colbox.center.x > hitbox.colBox.center.x)
+            terrainObject.handleSolidCollision_leftSide(obj, colbox);
+        else terrainObject.handleSolidCollision_rightSide(obj, colbox);
+    }
+    static handleSolidSideCollision(colside, collidingObj, colbox){
+        switch(colside){
+            case side.left: terrainObject.handleSolidCollision_leftSide(collidingObj, colbox); break;
+            case side.right: terrainObject.handleSolidCollision_rightSide(collidingObj, colbox); break;
+            case side.up: terrainObject.handleSolidCollision_topSide(collidingObj, colbox); break;
+            case side.down: terrainObject.handleSolidCollision_bottomSide(collidingObj, colbox); break;
+        }
+    }
+    static handleSolidCollision_leftSide(obj, colbox){
+        obj.pos.x -= colbox.width;
+        obj.vel.x = Math.min(0, obj.vel.x);
+        obj.updateHitBox();
+    }
+    static handleSolidCollision_rightSide(obj, colbox){
+        obj.pos.x += colbox.width;
+        obj.vel.x = Math.max(0, obj.vel.x);
+        obj.updateHitBox();
+    }
+    static handleSolidCollision_topSide(obj, colbox){
+        obj.onGround = true;
+        obj.pos.y -= colbox.height;
+        obj.vel.y = Math.min(0, obj.vel.y);
+        obj.updateHitBox();
+    }
+    static handleSolidCollision_bottomSide(obj, colbox){
+        obj.pos.y += colbox.height;
+        obj.vel.y = Math.max(0, obj.vel.y);
+        obj.updateHitBox();
+    }
+    
     draw(){
         this.hitBox.draw();
     }
@@ -32,66 +97,7 @@ class terrain_solid extends terrainObject{
     }
 
     collideWith(obj, colbox){
-        var nCol = colbox.center.minus(obj.vel.multiply(dt));
-        var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(this.hitBox.getBoundingBox());
-        if(nIntersect){
-            this.sideCollision(nIntersect.colSide, obj, colbox);
-            return;
-        }
-        if(colbox.width == obj.hitBox.getBoundingBox().width){
-            this.horizontalCollide(obj, colbox);
-            return;
-        }
-        if(colbox.height == obj.hitBox.getBoundingBox().height){
-            this.horizontalCollide(obj, colbox);
-            return;   
-        }
-
-        if(colbox.width > colbox.height){
-            this.horizontalCollide(obj, colbox);
-            return;
-        }
-        this.verticalCollide(obj, colbox);
-    }
-
-    horizontalCollide(obj, colbox){
-        if(colbox.center.y > this.hitBox.colBox.center.y)
-            this.bottomCollision(obj, colbox);
-        else this.topCollision(obj, colbox);
-    }
-    verticalCollide(obj, colbox){
-        if(colbox.center.x > this.hitBox.colBox.center.x)
-            this.leftCollision(obj, colbox);
-        else this.rightCollision(obj, colbox);
-    }
-    sideCollision(sideNum, obj, colbox){
-        switch(sideNum){
-            case side.left: this.leftCollision(obj, colbox); break;
-            case side.right: this.rightCollision(obj, colbox); break;
-            case side.up: this.topCollision(obj, colbox); break;
-            case side.down: this.bottomCollision(obj, colbox); break;
-        }
-    }
-    leftCollision(obj, colbox){
-        obj.pos.x -= colbox.width;
-        obj.vel.x = Math.min(0, obj.vel.x);
-        obj.updateHitBox();
-    }
-    rightCollision(obj, colbox){
-        obj.pos.x += colbox.width;
-        obj.vel.x = Math.max(0, obj.vel.x);
-        obj.updateHitBox();
-    }
-    topCollision(obj, colbox){
-        obj.onGround = true;
-        obj.pos.y -= colbox.height;
-        obj.vel.y = Math.min(0, obj.vel.y);
-        obj.updateHitBox();
-    }
-    bottomCollision(obj, colbox){
-        obj.pos.y += colbox.height;
-        obj.vel.y = Math.max(0, obj.vel.y);
-        obj.updateHitBox();
+        terrainObject.handleSolidCollision(this.hitBox, obj, colbox)
     }
 
     draw(){

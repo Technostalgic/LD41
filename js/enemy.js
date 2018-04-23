@@ -13,6 +13,7 @@ class enemy extends physicsObject{
         this.tilSpawn = 2.5;
         this.isSpawning = true;
         this.isFlipped = false;
+        this.fallThroughPlatforms = false;
 
         this.seekDir = new vec2(0, 0);
     }
@@ -294,6 +295,7 @@ class enemy_eyeball extends enemy{
         this.maxSpeed = 20 + Math.random() * 10;
         this.moveDir = new vec2();
         this.playerSeekCountdown = 0;
+        this.fallThroughPlatforms = true;
     }
 
     findPlayer(){

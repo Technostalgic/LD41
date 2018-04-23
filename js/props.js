@@ -14,15 +14,22 @@ class prop extends physicsObject{
 class anvil extends prop{
     constructor(){
         super();
+        this.fallThroughPlatforms = false;
         this.hitBox = collisionModule.boxCollider(new vec2(14, 9));
-        this.ignoreTypes = [player, projectile, anvil];
+        this.ignoreTypes = [projectile];
     }
 
-    objectCollide(obj){
+    objectCollide(obj, colbox){
         if(this.ignoresType(obj)) return;
+        if(this.onGround){
+            terrainObject.handlePlatformCollision(this.hitBox, obj, colbox);
+            return;
+        }
         if(this.vel.y <= 100)
             return;
         if(obj.vel.y >= this.vel.y)
+            return;
+        if(obj instanceof player)
             return;
         
         obj.vel.y = this.vel.y;
@@ -54,7 +61,7 @@ class corpse extends prop{
         this.risingSprite = null;
         this.lyingSprite = new spriteBox();
         this.isFlipped = false;
-        this.health = 20;
+        this.health = 10;
     }
 
     handleObjectCollisions(){}
