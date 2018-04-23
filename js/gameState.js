@@ -124,7 +124,7 @@ class gameState_startScreen extends gameState{
 		
 		var playerpos = new vec2(100, 200);
 		drawText("You", playerpos.plus(new vec2(0, 25)), 16, color.fromHex("#8CA"));
-		drawText("Use arrow keys for movement, 'Z' to jump.", playerpos.plus(new vec2(0, 35)), 16);
+		drawText("Use arrow keys for movement and aim, 'Z' to jump.", playerpos.plus(new vec2(0, 35)), 16);
 		drawText("Avoid Scary looking things.", playerpos.plus(new vec2(0, 45)), 16);
 		
 		var carditempos = new vec2(300, 200);
@@ -135,9 +135,11 @@ class gameState_startScreen extends gameState{
 		drawText("Health", healthpos.plus(new vec2(0, 0)), 24, color.fromHex("#F44"));
 		drawText("When it runs out, you die.", healthpos.plus(new vec2(0, 10)), 16);
 		
-		var cardspos = new vec2(150, 50);
+		var cardspos = new vec2(130, 35);
 		drawText("Cards (Hand)", cardspos.plus(new vec2(0, 0)), 24);
-		drawText("Equip to secondary slot, or use in primary slot.", cardspos.plus(new vec2(0, 10)), 16);
+		drawText("Cards received will stack from right to left.", cardspos.plus(new vec2(0, 10)), 16);
+		drawText("When you use your primary card, the next card will take it's place.", cardspos.plus(new vec2(0, 20)), 16);
+		drawText("Your secondary card slot will not fill up unless you equip a card to it.", cardspos.plus(new vec2(0, 30)), 16);
 		
 		var primarypos = new vec2(300, 40);
 		drawText("Primary", primarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
@@ -184,7 +186,7 @@ class gameState_gamePlay extends gameState{
         this.player.pos = new vec2(renderCanvas.width / 2);
 
         this.currentWave = new wave(0);
-        this.terrain = getTerrainScreenBounds(true);
+        this.terrain = getRandomTerrainLayout();
         
         this.physObjects = [
             this.player

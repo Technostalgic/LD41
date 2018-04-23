@@ -209,6 +209,27 @@ function getTerrainScreenBounds(ceiling = true){
     r.push(new terrain_rightBoundary(renderCanvas.width));
     r.push(new terrain_leftBoundary(0));
 
+    if(ceiling)
+        r.push(new terrain_topBoundary(125));
+
+    return r;
+}
+function getRandomTerrainLayout(){
+	var m = [
+		getTerrainLayout1,
+		getTerrainLayout2
+	];
+	
+	return m[Math.floor(Math.random() * m.length)]();
+}
+
+function getTerrainLayout1(){
+    var r = getTerrainScreenBounds(true);
+
+    r.push(new terrain_bottomBoundary(renderCanvas.height));
+    r.push(new terrain_rightBoundary(renderCanvas.width));
+    r.push(new terrain_leftBoundary(0));
+
     var b = new collisionBox(
         new vec2(),
         new vec2(70, 20)
@@ -270,8 +291,57 @@ function getTerrainScreenBounds(ceiling = true){
     b.setCenter(new vec2(390, 250));
     r.push(new terrain_solid(b));
 
-    if(ceiling)
-        r.push(new terrain_topBoundary(125));
-
     return r;
+}
+function getTerrainLayout2(){
+	var r = getTerrainScreenBounds();
+	
+    var b = new collisionBox(
+        new vec2(),
+        new vec2(80, 20)
+    );
+    b.setCenter(new vec2(200, 340));
+    r.push(new terrain_solid(b));
+	
+	b = new collisionBox(
+        new vec2(0, 270),
+        new vec2(80, 20)
+    );
+    r.push(new terrain_solid(b));
+	b = new collisionBox(
+        new vec2(320, 270),
+        new vec2(80, 20)
+    );
+    r.push(new terrain_solid(b));
+	b = new collisionBox(
+        new vec2(80, 270),
+        new vec2(240, 20)
+    );
+    r.push(new terrain_platform(b));
+	
+	b = new collisionBox(
+        new vec2(),
+        new vec2(20, 50)
+    );
+    b.setCenter(new vec2(200, 245));
+    r.push(new terrain_solid(b));
+	b = new collisionBox(
+        new vec2(150, 220),
+        new vec2(40, 20)
+    );
+    r.push(new terrain_platform(b));
+	b = new collisionBox(
+        new vec2(210, 220),
+        new vec2(40, 20)
+    );
+    r.push(new terrain_platform(b));
+	
+	b = new collisionBox(
+        new vec2(),
+        new vec2(60, 20)
+    );
+    b.setCenter(new vec2(200, 180));
+    r.push(new terrain_solid(b));
+	
+	return r;
 }
