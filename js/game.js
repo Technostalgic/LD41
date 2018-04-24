@@ -54,7 +54,6 @@ function load(){
 	loadSound("explosion.wav", "explosion");
 	loadSound("gameover.wav", "gameover");
 	loadSound("heal.wav", "heal");
-	loadSound("hit.wav", "hit");
 	loadSound("jump.wav", "jump");
 	loadSound("bump.wav", "bump");
 	loadSound("lazer.wav", "lazer");
