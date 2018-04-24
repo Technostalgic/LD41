@@ -50,15 +50,18 @@ function load(){
 	loadGraphic("explosionBlue.png", "effect_explosionBlue");
 
 	loadSound("enemyHit.wav", "enemyHit");
+	loadSound("playerHit.wav", "playerHit");
 	loadSound("explosion.wav", "explosion");
 	loadSound("gameover.wav", "gameover");
 	loadSound("heal.wav", "heal");
 	loadSound("hit.wav", "hit");
 	loadSound("jump.wav", "jump");
+	loadSound("bump.wav", "bump");
 	loadSound("lazer.wav", "lazer");
 	loadSound("pickup.wav", "pickup");
-	loadSound("shoot.wav", "shoot");
+	loadSound("enemyShoot.wav", "enemyShoot");
 	loadSound("shotgun.wav", "shotgun");
+	loadSound("revolver.wav", "revolver");
 	
 	loadHighScore();
 }
@@ -83,8 +86,11 @@ function saveHighScore(){
 	}
 }
 function loseGame(score){
-	if(score > highScore) saveHighScore();
-	state = new gameState_gameoverScreen();
+	if(score > highScore) {
+		highScore = score;
+		saveHighScore();
+	}
+	state = new gameState_gameoverScreen(score);
 }
 
 function drawText(txt, pos, size, fillCol = color.White(), outlineCol = color.Black(), outlineThickness = 4){

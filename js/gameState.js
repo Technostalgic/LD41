@@ -103,11 +103,12 @@ class gameState{
 		
 		var primarypos = new vec2(300, 40);
 		drawText("Primary", primarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
-		drawText("'C' to use card.", primarypos.plus(new vec2(0, 10)), 14);
+		drawText("'C' to use card", primarypos.plus(new vec2(0, 10)), 14);
 		
 		var secondarypos = new vec2(360, 40);
 		drawText("Secondary", secondarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
-		drawText("'X' to use card.", secondarypos.plus(new vec2(0, 10)), 14);
+		drawText("'X' to use or", secondarypos.plus(new vec2(0, 10)), 14);
+		drawText("equip card", secondarypos.plus(new vec2(0, 18)), 14);
 	}
 }
 
@@ -152,8 +153,9 @@ class gameState_startScreen extends gameState{
 	}
 }
 class gameState_gameoverScreen extends gameState{
-	constructor(){
-		super();
+	constructor(score){
+        super();
+        this.score = score;
 	}
 	
 	controlTap(controlID){
@@ -164,7 +166,9 @@ class gameState_gameoverScreen extends gameState{
 	draw(){
 		renderContext.fillStyle = "#000";
 		renderContext.fillRect(0, 0, 800, 700);
-		this.drawTitle();
+        this.drawTitle();
+        drawText("Score: " + this.score, new vec2(200), 22);
+        drawText("High: " + highScore, new vec2(200, 220), 16);
 		this.drawRestartPrompt();
 	}
 	drawTitle(){
@@ -352,8 +356,8 @@ class gameState_gamePlay extends gameState{
 
         var scorepos = new vec2(200, 100);
         var scoreString = "Score: " + this.score.toString();
-        outlineText(scoreString, scorepos, 20, color.fromHex("#330"), 4);
         fillText(scoreString, scorepos, 20, color.fromHex("#DA0"));
+        drawText("High: " + highScore, new vec2(200, 110), 16);
 
         var borderSprite = new spriteContainer(
             gfx.hud_border

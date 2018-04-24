@@ -11,14 +11,24 @@ class prop extends physicsObject{
     }
 }
 
-class anvil extends prop{
+class dynamicPlatform extends prop{
+    constructor(){super();}
+}
+
+class anvil extends dynamicPlatform{
     constructor(){
         super();
         this.fallThroughPlatforms = false;
         this.hitBox = collisionModule.boxCollider(new vec2(14, 9));
         this.ignoreTypes = [projectile];
+        this.health = 30;
     }
 
+    damage(dmg, colbox){
+        this.health -= dmg;
+        if(this.health <= 0)
+            this.remove();
+    }
     objectCollide(obj, colbox){
         if(this.ignoresType(obj)) return;
         if(this.onGround){
@@ -32,10 +42,13 @@ class anvil extends prop{
         if(obj instanceof player)
             return;
         
+        if(obj instanceof dynamicPlatform)
+            return;
+
         obj.vel.y = this.vel.y;
 
         if(obj.damage)
-            obj.damage(20);
+            obj.damage(20, colbox);
 
         this.vel.y = 0;
     }
@@ -62,7 +75,7 @@ class corpse extends prop{
         this.risingSprite = null;
         this.lyingSprite = new spriteBox();
         this.isFlipped = false;
-        this.health = 10;
+        this.health = 15;
     }
 
     handleObjectCollisions(){}
@@ -73,24 +86,11 @@ class corpse extends prop{
             this.burst();
     }
     burst(){
-        this.spawnGibs();
-        this.remove();
-    }
-    spawnGibs(){
-        var count = 6;
-        var angInc = 1 / count * Math.PI * 2;
-        var addVel = this.vel;
+        var advel = this.vel.clone();
         if(this.onGround)
-            addVel.y = -100;
-        for(let i = count; i >= 0; i--){
-            let ang = angInc * i + Math.random() * angInc;
-            let fvel = vec2.fromAng(ang, 50 + Math.random() * 150);
-            let gib = new giblet();
-            gib.pos = this.pos.clone();
-            gib.updateHitBox();
-            gib.vel = addVel.plus(fvel);
-            gib.add();
-        }
+            advel.y -= 100
+        giblet.spawnGibs(this.pos, 6, advel);
+        this.remove();
     }
 
     getSpriteBox(){
@@ -119,10 +119,31 @@ class giblet extends prop{
         this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
+        this.life = Math.random();
+    }
+
+    static spawnGibs(pos, count, vel = new vec2(), pow = 150){
+        var count = count;
+        var angInc = 1 / count * Math.PI * 2;
+        var addVel = vel;
+        
+        for(let i = count; i >= 0; i--){
+            let ang = angInc * i + Math.random() * angInc;
+            let fvel = vec2.fromAng(ang, 50 + Math.random() * pow);
+            let gib = new giblet();
+            gib.pos = pos.clone();
+            gib.updateHitBox();
+            gib.vel = addVel.plus(fvel);
+            gib.add();
+        }
     }
 
     terrainCollide(terrain){
-        this.remove();
+        if(terrain instanceof terrain_platform) return;
+        this.rotVel = 0;
+        this.life -= dt;
+        if(this.life <= 0)
+            this.remove();
     }
     handleObjectCollisions(){ }
 

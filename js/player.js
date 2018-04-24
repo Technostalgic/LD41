@@ -95,6 +95,7 @@ class player extends physicsObject{
     }
 
     damage(dmg){
+        playSound(sfx.playerHit);
         this.health -= dmg;
         if(this.health <= 0)
             this.kill();
@@ -175,10 +176,12 @@ class player extends physicsObject{
     kill(){
         this.dead = true;
         this.remove();
-		
+        
+        giblet.spawnGibs(this.pos, 10);
+        
 		// lose the game 2.5 seconds after the player dies
 		setTimeout(function(){
-			loseGame()
+			loseGame(state.score)
 		}, 2500);
     }
 

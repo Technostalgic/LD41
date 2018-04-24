@@ -33,7 +33,6 @@ class terrainObject{
         }
     }
     static handleSolidCollision(hitbox, obj, colbox){
-        console.log(colbox.height)
         var nCol = colbox.center.minus(obj.getVDisplacement());
         var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
         if(nIntersect){
@@ -80,6 +79,8 @@ class terrainObject{
     static handleSolidCollision_topSide(obj, colbox){
         obj.onGround = true;
         obj.pos.y -= colbox.height;
+        if(obj.vel.y >= 150)
+            playSound(sfx.bump);
         obj.vel.y = Math.min(0, obj.vel.y);
         obj.updateHitBox();
     }
@@ -238,7 +239,7 @@ function getTerrainLayout1(){
         new vec2(70, 20)
     );
     b.setCenter(new vec2(210, 275));
-    r.push(new terrain_platform(b));
+    r.push(new terrain_solid(b));
     b = new collisionBox(
         new vec2(),
         new vec2(30, 40)
@@ -250,13 +251,19 @@ function getTerrainLayout1(){
         new vec2(50, 10)
     );
     b.setCenter(new vec2(180, 185));
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(),
+        new vec2(100, 30)
+    );
+    b.setCenter(new vec2(50, 340));
     r.push(new terrain_solid(b));
     b = new collisionBox(
         new vec2(),
-        new vec2(150, 30)
+        new vec2(50, 30)
     );
-    b.setCenter(new vec2(75, 340));
-    r.push(new terrain_solid(b));
+    b.setCenter(new vec2(125, 340));
+    r.push(new terrain_platform(b));
     b = new collisionBox(
         new vec2(),
         new vec2(100, 20)
@@ -289,10 +296,10 @@ function getTerrainLayout1(){
     r.push(new terrain_solid(b));
     b = new collisionBox(
         new vec2(),
-        new vec2(30, 20)
+        new vec2(50, 20)
     );
-    b.setCenter(new vec2(390, 250));
-    r.push(new terrain_solid(b));
+    b.setCenter(new vec2(380, 270));
+    r.push(new terrain_platform(b));
 
     return r;
 }

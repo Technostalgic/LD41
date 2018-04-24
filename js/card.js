@@ -80,14 +80,16 @@ class card{
     }
 
     static randomCard(){
-        //return new card_anvil();
+        //return new card_c4();
         var m = [
             card_revolver,
             card_eyeball,
             card_anvil,
             card_shotgun,
             card_medkit,
-            card_lazer
+            card_crossbow,
+            card_lazer,
+            card_c4
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
@@ -164,7 +166,7 @@ class card_revolver extends card{
         this.name = "Revolver";
         this.graphic = 0;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 3"];
+        this.text = ["Damage: 4"];
         
         this.uses = 6;
         this.coolDown = 200;
@@ -175,7 +177,7 @@ class card_revolver extends card{
         var ang = plr.getAim();
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
-        playSound(sfx.shoot);
+        playSound(sfx.revolver);
         projectile.fire(projectile, off, 250, ang, [player]);
     }
     drawOnPlayer(plr){
@@ -234,6 +236,70 @@ class card_shotgun extends card{
 
         sprite.draw();
         plr.drawHand(off.plus(hOff));
+    }
+}
+class card_crossbow extends card{
+    constructor(){
+        super();
+        this.name = "Crossbow";
+        this.graphic = 4;
+        this.type = "ATK - Ranged";
+        this.text = ["Damage: 12"];
+        
+        this.uses = 3;
+        this.coolDown = 1000;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+
+        playSound(sfx.revolver);
+        var proj = projectile.fire(proj_arrow, off, 350, ang, [player]);
+        proj.ang = ang;
+        proj.isFlipped = plr.isFlipped;
+    }
+    drawOnPlayer(plr){
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 3).plus(vec2.fromAng(ang, -3));
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(21, 0),new vec2(11, 6))
+        );
+        sprite.bounds.setCenter(off);
+        sprite.rotation = ang;
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
+    }
+}
+class card_c4 extends card{
+    constructor(){
+        super();
+        this.name = "C4 Charge";
+        this.graphic = 7;
+        this.type = "EXP - Trap";
+        this.text = ["Damage: 12", "Remote", "Detonation"];
+        
+        this.uses = 2;
+        this.coolDown = 250;
+        this.charge = null;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        if(!this.charge){
+            this.charge = projectile.fire(proj_c4charge, plr.pos, 200, plr.getAim());
+            this.charge.vel = this.charge.vel.plus(plr.vel.multiply(0.5));
+            this.uses++;
+            return;
+        }
+        this.charge.detonate();
+        this.charge = null;
     }
 }
 class card_lazer extends card{

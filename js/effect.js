@@ -14,6 +14,7 @@ class effect{
         this.frameWidth = 0;
         this.isFlippedX = Math.random() >= 5;
         this.isFlippedY = Math.random() >= 5;
+        this.scale = 1;
 
         this._startTime = state.timeElapsed;
     }
@@ -33,9 +34,10 @@ class effect{
         r.pos = pos.clone();
         r.add();
     }
-    static fx_explosionBlue(pos){
+    static fx_explosion(pos, scale = 1){
         var r = effect.build(gfx.effect_explosion, 7, 33);
         r.pos = pos.clone();
+        r.scale = scale;
         r.add();
     }
     static fx_explosionBlue(pos){
@@ -71,6 +73,7 @@ class effect{
                 new vec2(this.frameWidth, this.spriteSheet.height)
             )
         );
+        r.bounds.size = r.bounds.size.multiply(this.scale);
         r.bounds.setCenter(this.pos);
         r.isFlippedX = this.isFlippedX;
         r.isFlippedY = this.isFlippedY;

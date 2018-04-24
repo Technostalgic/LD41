@@ -24,6 +24,7 @@ class projectile extends physicsObject{
         proj.ignoreTypes = ignoreTypes;
 
         state.physObjects.push(proj)
+        return proj;
     }
 
     damage(){}
@@ -40,7 +41,7 @@ class projectile extends physicsObject{
         obj.vel = obj.vel.plus(force);
 
         if(obj.damage)
-            obj.damage(this.dmg);
+            obj.damage(this.dmg, colbox);
 
         var coll = this.hitBox.getCollision(obj.hitBox);
         this.burst(coll);
@@ -102,6 +103,33 @@ class proj_enemyBullet extends projectile{
     }
 }
 
+class proj_arrow extends projectile{
+    constructor(){
+        super();
+        this.dmg = 12;
+        this.knockback = 250;
+        this.ang = 0;
+        this.isFlipped = false;
+        this.gravity = 300;
+    }
+    draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(
+            new vec2(0, 4),
+            new vec2(8, 4)
+        );
+        var sprite = new spriteContainer(
+            gfx.projectile,
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone())
+        );
+        sprite.bounds.setCenter(this.pos);
+        sprite.rotation = this.ang;
+        sprite.isFlippedY = this.isFlipped;
+
+        sprite.draw();
+    }
+}
 class proj_shotgun extends projectile{
     constructor(){
         super();
@@ -109,6 +137,54 @@ class proj_shotgun extends projectile{
         this.knockback = 225;
     }
 }
+
+class proj_c4charge extends projectile{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.boxCollider(new vec2(6));
+        this.gravity = 600;
+
+        this.locked = false;
+    }
+
+    detonate(){
+        effect.fx_explosion(this.pos, 2);
+        playSound(sfx.explosion);
+        explosion.explode(this.pos, 25, 12, 450);
+        this.remove();
+    }
+
+    terrainCollide(terrain, colbox){
+        if(terrain instanceof terrain_platform) return;
+        this.locked = true;
+    }
+    handleObjectCollisions(){}
+    handleTerrainCollisions(terrains){
+        if(this.locked) return;
+        super.handleTerrainCollisions(terrains);
+    }
+
+    update(){
+        if(this.locked) return;
+        super.update();
+    }
+    draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(
+            new vec2(8, 0),
+            new vec2(8, 8)
+        );
+        var sprite = new spriteContainer(
+            gfx.projectile,
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone())
+        );
+        sprite.bounds.setCenter(this.pos);
+
+        sprite.draw();
+    }
+}
+
 class proj_lazer extends projectile{
     constructor(){
         super();
@@ -133,6 +209,9 @@ class proj_lazer extends projectile{
         obj.vel = this.vel.clone();
     }
     checkTerrainCollision(terrain){
+        if(terrain instanceof terrain_platform)
+            return;
+            
         var coll = this.rayCol.getBoxCollision(terrain.hitBox.getBoundingBox());
 
         if(coll)
@@ -209,5 +288,45 @@ class proj_lazer extends projectile{
         renderContext.lineTo(endpos.x, endpos.y);
         renderContext.stroke();
 
+    }
+}
+
+class AOE extends projectile{
+    constructor(){ super(); }
+}
+class explosion extends AOE{
+    constructor(){
+        super();
+        this.isUpdated = false;
+    }
+
+    static explode(pos, radius, dmg, force){
+        var r = new explosion();
+
+        r.hitBox = collisionModule.circleCollider(radius);
+        r.pos = pos.clone();
+        r.updateHitBox();
+        r.dmg = dmg;
+        r.force = force;
+
+        r.handleObjectCollisions(state.physObjects);
+    }
+
+    objectCollide(obj, hitBox){
+        var fdir = obj.pos.minus(this.pos).direction();
+        var force = vec2.fromAng(fdir, this.force);
+        if(obj.damage)
+            obj.damage(this.dmg);
+        obj.vel = force;
+    }
+    handleObjectCollisions(physObjs){
+        super.handleObjectCollisions(physObjs);
+        this.isUpdated = true;
+    }
+
+    update(){
+        if(this.isUpdated)
+            this.remove();
+        super.update();
     }
 }

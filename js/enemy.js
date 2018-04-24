@@ -53,11 +53,13 @@ class enemy extends physicsObject{
         this.isSpawning = false;
     }
 
-    damage(dmg){
+    damage(dmg, colbox){
         this.health -= dmg;
+        playSound(sfx.enemyHit);
         if(this.health <= 0)
             this.kill();
         this.findPlayer();
+        if(colbox) effect.fx_hit(colbox.center);
     }
     kill(){
         state.addScore(this.points);
@@ -304,6 +306,7 @@ class enemy_eyeball extends enemy{
 
 	fireBullet(){
         if(this.bulletCooldown > 0) return;
+        playSound(sfx.enemyShoot);
         this.bulletCooldown = 0.5;
 		var dir = this.seekDir.minus(this.pos).direction();
 		dir += (Math.random() - 0.5) * 0.35;
@@ -314,7 +317,8 @@ class enemy_eyeball extends enemy{
         if(this.canSeePlayer())
             this.seekDir = state.player.pos;
         else this.seekDir = getRandomScreenPos();
-		this.fireBullet();
+        if(this.health > 0)
+		    this.fireBullet();
     }
     seekPlayer(){
         this.playerSeekCountdown -= dt;
@@ -386,7 +390,7 @@ class enemy_eyeball extends enemy{
             new vec2(36, 15),
             new vec2(18, 19)
         );
-        c.vel = this.vel;
+        c.vel = this.vel.clone();
         c.isFlipped = this.vel.x < 0;
 
         state.physObjects.push(c);
