@@ -82,7 +82,8 @@ class gameState{
 		var playerpos = new vec2(100, 200);
 		drawText("You", playerpos.plus(new vec2(0, 25)), 16, color.fromHex("#8CA"));
 		drawText("Use arrow keys for movement and aim, 'Z' to jump.", playerpos.plus(new vec2(0, 35)), 16);
-		drawText("Avoid Scary looking things.", playerpos.plus(new vec2(0, 45)), 16);
+		drawText("Fall through platforms by holding 'down' while falling.", playerpos.plus(new vec2(0, 45)), 16);
+		drawText("Avoid Scary looking things.", playerpos.plus(new vec2(0, 55)), 16);
 		
 		var carditempos = new vec2(300, 200);
 		drawText("Card", carditempos.plus(new vec2(0, 25)), 16, color.fromHex("#A8F"));
