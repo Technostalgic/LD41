@@ -108,8 +108,8 @@ class gameState{
 		
 		var secondarypos = new vec2(360, 40);
 		drawText("Secondary", secondarypos.plus(new vec2(0, 0)), 16, color.fromHex("#AAF"));
-		drawText("'X' to use or", secondarypos.plus(new vec2(0, 10)), 14);
-		drawText("equip card", secondarypos.plus(new vec2(0, 18)), 14);
+		drawText("'X' to swap", secondarypos.plus(new vec2(0, 10)), 14);
+		drawText("with primary", secondarypos.plus(new vec2(0, 18)), 14);
 	}
 }
 
@@ -408,7 +408,7 @@ class gameState_gamePlay extends gameState{
                 this.player.action_usePrimary();
                 break;
             case controlState.controlEnum.secondary: 
-                this.player.action_useSecondary();
+                this.player.action_swapSecondary();
                 break;
             case controlState.controlEnum.pause: 
                 this.pauseGame();

@@ -18,7 +18,6 @@ class player extends physicsObject{
         this.xMove = 0;
         this.yAim = 0;
         this.isFlipped = false;
-        this.primaryEquipped = true;
         this.dead = false;
     }
 
@@ -49,22 +48,16 @@ class player extends physicsObject{
     }
     action_usePrimary(){
         var cardOb = this.getPrimary();
-        if(cardOb) {
-            this.primaryEquipped = true;
+        if(cardOb){
             cardOb.use(this);
         }
     }
-    action_useSecondary(){
-        var cardOb = this.getSecondary();
-        if(cardOb) {
-            this.primaryEquipped = false;
-            cardOb.use(this);
-        }
-        else {
-            state.cardSlots[0] = state.cardSlots[1];
-            state.cardSlots[1] = null;
-            state.bumpCards();
-        }
+    action_swapSecondary(){
+		var cardOb = this.getPrimary();
+		if(cardOb) if(cardOb.uses <= 0) return;
+		state.cardSlots[1] = state.cardSlots[0];
+		state.cardSlots[0] = cardOb;
+        state.bumpCards();
     }
     action_useHoldPrimary(){
         var cardOb = this.getPrimary();
@@ -162,15 +155,7 @@ class player extends physicsObject{
     handleEquippedItems(){
         if(this.getPrimary()) {
             this.getPrimary().hold();
-            if(!this.getPrimary())
-                this.primaryEquipped = false;
         }
-        if(this.getSecondary()) {
-            this.getSecondary().hold();
-            if(!this.getSecondary())
-                this.primaryEquipped = true;
-        }
-        else this.primaryEquipped = true;
     }
 
     kill(){
@@ -249,12 +234,6 @@ class player extends physicsObject{
         sprite.draw();
     }
     drawEquippedItem(){
-        if(this.primaryEquipped){
-            if(this.getPrimary()) this.getPrimary().drawOnPlayer(this);
-            else this.primaryEquipped = false;
-        }
-        else if(this.getSecondary())
-            this.getSecondary().drawOnPlayer(this);
-        else this.primaryEquipped = true;
+        if(this.getPrimary()) this.getPrimary().drawOnPlayer(this);
     }
 }
