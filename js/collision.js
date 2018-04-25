@@ -24,6 +24,9 @@ class collisionModule{
     getBoundingBox(){
         return new collisionBox();
     }
+	getRayCollision(ray){
+		return ray.getBoxCollision(this.getBoundingBox());
+	}
     getCollision(other){
         if(other instanceof collisionModule_horizontalPlane) return this.getCollision_hPlane(other);
         if(other instanceof collisionModule_verticalPlane) return this.getCollision_vPlane(other);

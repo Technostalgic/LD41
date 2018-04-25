@@ -24,7 +24,7 @@ class terrainObject{
         if(obj.fallThroughPlatforms) return;
 
         var nCol = colbox.center.minus(obj.getVDisplacement());
-        var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
+        var nIntersect = hitbox.getRayCollision(ray.fromPoints(nCol, colbox.center));
         if(nIntersect){
             if(nIntersect.colSide != side.up)
                 return;
@@ -34,7 +34,7 @@ class terrainObject{
     }
     static handleSolidCollision(hitbox, obj, colbox){
         var nCol = colbox.center.minus(obj.getVDisplacement());
-        var nIntersect = ray.fromPoints(nCol, colbox.center).getBoxCollision(hitbox.getBoundingBox());
+        var nIntersect = hitbox.getRayCollision(ray.fromPoints(nCol, colbox.center));
         if(nIntersect){
             terrainObject.handleSolidSideCollision(nIntersect.colSide, obj, colbox);
             return;
