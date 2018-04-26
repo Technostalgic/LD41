@@ -89,6 +89,7 @@ class collisionModule_circle extends collisionModule{
     }
 	getRayCollision(rayOb){
 		var vec = rayOb.getCircleCollisionPoint(this.origin, this.radius);
+        if(!vec) return null;
 		var qds = rayOb.getQuadrantDirections();
 		var si = side.none;
 		
@@ -106,7 +107,7 @@ class collisionModule_circle extends collisionModule{
 			if(qds.includes(side.right)) si = side.left;
 			else si = side.right;
 		}
-		
+        
 		return {point: vec, colSide: si};
 	}
 	
@@ -156,8 +157,9 @@ class collisionModule_box extends collisionModule{
     }
 }
 
-class collisionModule_horizontalPlane{
+class collisionModule_horizontalPlane extends collisionModule{
     constructor(range, mode = 1){
+        super();
         this.range = range;
         this.mode = mode;
     }
@@ -197,8 +199,9 @@ class collisionModule_horizontalPlane{
         renderContext.stroke();
     }
 }
-class collisionModule_verticalPlane{
+class collisionModule_verticalPlane extends collisionModule{
     constructor(range, mode = 1){
+        super();
         this.range = range;
         this.mode = mode;
     }

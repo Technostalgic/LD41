@@ -18,6 +18,7 @@ class projectile extends physicsObject{
 
     static fire(projType, pos, speed, angle, ignoreTypes = []){
         var proj = new projType();
+        proj._lastVPos = pos.clone();
         proj.pos = pos.clone();
         proj.updateHitBox();
         proj.vel = vec2.fromAng(angle, speed);
@@ -135,6 +136,67 @@ class proj_shotgun extends projectile{
         super();
         this.dmg = 5;
         this.knockback = 225;
+    }
+}
+class proj_sniper extends projectile{
+    constructor(){
+        super();
+        this.dmg = 10;
+        this.knockback = 275;
+
+        this.colRay = null;
+        this.rayCols = [];
+    }
+
+    calculateCollisionRay(){
+        this.colRay = ray.fromPoints(this.getLastPos(), this.pos);
+    }
+    getCollisionRay(){
+        if(!this.colRay) this.calculateCollisionRay();
+        return this.colRay;
+    }
+
+    checkObjectCollision(obj){
+        if(obj == this) return;
+        if(this.ignoresType(obj)) return;
+        var coll = obj.hitBox.getRayCollision(this.getCollisionRay());
+        if(coll)
+            this.rayCols.push({ob: obj, col:coll});
+    }
+    checkTerrainCollision(terrain){
+        if(terrain instanceof terrain_platform) return;
+        var coll = terrain.hitBox.getRayCollision(this.getCollisionRay());
+        if(coll)
+            this.rayCols.push({ob: terrain, col:coll});
+    }
+    handleTerrainCollisions(terrains){
+        this.onGround = false;
+
+        var ths = this;
+        terrains.forEach(function(terrain){
+            ths.checkTerrainCollision(terrain);
+        });
+    }
+    collide(){
+        var closestCol = this.rayCols[0];
+        if(this.rayCols.length > 1)
+            for(var i = 1; i < this.rayCols.length; i++){
+                if(this.rayCols[i].col.point.distance(this.pos) < closestCol.col.point.distance(this.pos))
+                    closestCol = this.rayCols[i];
+            }
+        this.pos = closestCol.col.point.clone();
+        if(closestCol.ob instanceof physicsObject)
+            this.objectCollide(closestCol.ob, collisionBox.fromPoint(closestCol.col.point));
+        else this.terrainCollide(closestCol.ob, collisionBox.fromPoint(closestCol.col.point));
+    }
+
+    update(){
+        if(this.rayCols.length > 0){
+            this.collide();
+            return;
+        }
+        super.update();
+        this.colRay = null;
     }
 }
 

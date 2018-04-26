@@ -26,7 +26,8 @@ var highScore = 0,
 function init(){
 	getCanvas();
 	load();
-	state = new gameState_startScreen();//new gameState_startScreen();
+	preventKeyScrolling();
+	state = new gameState_startScreen(); //new gameState_startScreen();
 	controlState.init();
 
 	requestAnimationFrame(step);
@@ -65,6 +66,17 @@ function load(){
 	loadHighScore();
 }
 
+function preventKeyScrolling(){
+	// prevents arrow key / space scrolling on the web page
+	window.addEventListener("keydown", function(e) {
+		if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+			e.preventDefault();
+		}
+	}, false);
+	window.addEventListener("touchmove", function(e) {
+		e.preventDefault();
+	}, false);
+}
 function loadHighScore(){
 	try{
 		var hsdat = localStorage.getItem(savekey);
@@ -92,6 +104,15 @@ function loseGame(score){
 	state = new gameState_gameoverScreen(score);
 }
 
+function drawLine(startPos, endPos, color = color.Black(), lineWidth = 1){
+	renderContext.strokeStyle = color.toRGBA();
+	renderContext.lineWidth = lineWidth;
+	
+	renderContext.beginPath();
+	renderContext.moveTo(startPos.x, startPos.y);
+	renderContext.lineTo(endPos.x, endPos.y);
+	renderContext.stroke();
+}
 function drawText(txt, pos, size, fillCol = color.White(), outlineCol = color.Black(), outlineThickness = 4){
 	outlineText(txt, pos, size, outlineCol, outlineThickness);
 	fillText(txt, pos, size, fillCol);

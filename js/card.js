@@ -80,7 +80,7 @@ class card{
     }
 
     static randomCard(){
-        //return new card_c4();
+        //return new card_sniper();
         var m = [
             card_revolver,
             card_eyeball,
@@ -89,7 +89,8 @@ class card{
             card_medkit,
             card_crossbow,
             card_lazer,
-            card_c4
+            card_c4,
+            card_sniper
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
@@ -178,7 +179,7 @@ class card_revolver extends card{
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
         playSound(sfx.revolver);
-        projectile.fire(projectile, off, 250, ang, [player]);
+        projectile.fire(projectile, off, 250, ang, [player, cardCollectable]);
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
@@ -218,7 +219,7 @@ class card_shotgun extends card{
         for(let i = 5; i > 0; i--){
             let spread = ((Math.random() - 0.5) * (Math.random() - 0.5)) * 1.5;
             let spdVar = Math.random() * 25;
-            projectile.fire(proj_shotgun, off, 350 + spdVar, ang + spread, [player]);
+            projectile.fire(proj_shotgun, off, 350 + spdVar, ang + spread, [player, cardCollectable]);
         }
     }
     drawOnPlayer(plr){
@@ -256,7 +257,7 @@ class card_crossbow extends card{
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
         playSound(sfx.revolver);
-        var proj = projectile.fire(proj_arrow, off, 350, ang, [player]);
+        var proj = projectile.fire(proj_arrow, off, 350, ang, [player, cardCollectable]);
         proj.ang = ang;
         proj.isFlipped = plr.isFlipped;
     }
@@ -277,10 +278,77 @@ class card_crossbow extends card{
         plr.drawHand(off.plus(hOff));
     }
 }
+class card_sniper extends card{
+    constructor(){
+        super();
+        this.name = "Sniper";
+        this.graphic = 8;
+        this.type = "ATK - Ranged";
+        this.text = ["Damage: 8", "Laser Sight"];
+        
+        this.uses = 4;
+        this.coolDown = 750;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+
+        playSound(sfx.revolver);
+        var proj = projectile.fire(proj_sniper, off, 750, ang, [player, cardCollectable]);
+        proj.ang = ang;
+        proj.isFlipped = plr.isFlipped;
+    }
+    drawOnPlayer(plr){
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 3).plus(vec2.fromAng(ang, -3));
+
+        var laserRay = new ray(off, ang, 1000);
+        var laserCols = [];
+        var dummybullet = new proj_sniper();
+        state.terrain.forEach(function(terrain){
+            if(terrain instanceof terrain_platform)
+                return;
+            let tcol = terrain.hitBox.getRayCollision(laserRay);
+            if(tcol)
+                laserCols.push(tcol);
+        });
+        state.physObjects.forEach(function(obj){
+            if(dummybullet.ignoresType(obj) || obj instanceof projectile)
+                return;
+            let tcol = obj.hitBox.getRayCollision(laserRay);
+            if(tcol)
+                laserCols.push(tcol);
+        });
+        var closestCol = {point: off.plus(vec2.fromAng(ang, 1000))};
+        laserCols.forEach(function(col){
+            if(col.point.distance(off) < closestCol.point.distance(off))
+                closestCol = col;
+        });
+        drawLine(
+            off.rounded().plus(new vec2(0.5, -0.5)), 
+            closestCol.point.rounded().plus(new vec2(0.5, -0.5)), 
+            color.fromHex("#F00")
+        );
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(33, 0),new vec2(13, 6))
+        );
+        sprite.bounds.setCenter(off.rounded());
+        sprite.rotation = ang;
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
+    }
+}
 class card_c4 extends card{
     constructor(){
         super();
-        this.name = "C4 Charge";
+        this.name = "C-4";
         this.graphic = 7;
         this.type = "EXP - Trap";
         this.text = ["Damage: 12", "Remote", "Detonation"];
@@ -389,7 +457,7 @@ class card_eyeball extends card{
         this.name = "Eyeball";
         this.graphic = 5;
         this.type = "Misc.";
-        this.text = ["Reveals cards"];
+        this.text = ["+1 Card", "Reveals cards"];
         this.uses = 1;
         this.lastUsed = 0;
         this.coolDown = 250;
@@ -398,6 +466,7 @@ class card_eyeball extends card{
     use(plr){
         if(!super.use(plr)) return;
 
+        state.addCard(card.randomCard());
         state.cardSlots.forEach(function(card){
             if(!card) return;
             card.isFlipped = true;

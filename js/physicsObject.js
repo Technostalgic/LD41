@@ -33,6 +33,10 @@ class physicsObject{
         this.vel.x *= f;
     }
 
+    getLastPos(){
+        if(!this._lastVPos) return this.pos.clone();
+        return this._lastVPos.clone();
+    }
 	getVDisplacement(){
 		// the difference between the pos and the last pos that it was drawn at
 		if(this._lastVPos)

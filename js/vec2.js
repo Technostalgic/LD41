@@ -64,9 +64,13 @@ class vec2{
 			Math.abs(this.x - vec.x) <= leniency) && (
 			Math.abs(this.y - vec.y) <= leniency);
 	}
+	
 	round(){
 		this.x = Math.round(this.x);
 		this.y = Math.round(this.y);
+	}
+	rounded(){
+		return new vec2(Math.round(this.x), Math.round(this.y));
 	}
 	
 	direction(){
@@ -252,6 +256,9 @@ class collisionBox{
 	}
 	static fromSides(left, top, right, bottom){
 		return new collisionBox(new vec2(left, top), new vec2(right - left, bottom - top));
+	}
+	static fromPoint(point){
+		return new collisionBox(point.clone(), new vec2(1));
 	}
 	
 	get left(){ return (this.pos.x); }
