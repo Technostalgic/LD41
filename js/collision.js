@@ -24,8 +24,8 @@ class collisionModule{
     getBoundingBox(){
         return new collisionBox();
     }
-	getRayCollision(ray){
-		return ray.getBoxCollision(this.getBoundingBox());
+	getRayCollision(rayOb){
+		return rayOb.getBoxCollision(this.getBoundingBox());
 	}
     getCollision(other){
         if(other instanceof collisionModule_horizontalPlane) return this.getCollision_hPlane(other);
@@ -87,7 +87,29 @@ class collisionModule_circle extends collisionModule{
 
         return r;
     }
-
+	getRayCollision(rayOb){
+		var vec = rayOb.getCircleCollisionPoint(this.origin, this.radius);
+		var qds = rayOb.getQuadrantDirections();
+		var si = side.none;
+		
+		if(qds.length == 1){
+			si =  invertedSide(qds[0]);
+			return {point: vec, colSide: si};
+		}
+		
+		var dRayPos = rayOb.getEndPosition().minus(rayOb.getPosition());
+		if(dRayPos.y >= dRayPos.x){
+			if(qds.includes(side.down)) si = side.up;
+			else si = side.downl
+		}
+		else{
+			if(qds.includes(side.right)) si = side.left;
+			else si = side.right;
+		}
+		
+		return {point: vec, colSide: si};
+	}
+	
     draw(col = color.Blue()){
         var verts = 16;
         var angIncrement = (Math.PI * 2) / verts;

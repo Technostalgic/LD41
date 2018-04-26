@@ -462,6 +462,37 @@ class ray{
 		}
 	}
 	
+	getQuadrantDirections(){
+		var pos = this.getPosition();
+		var epos = this.getEndPosition();
+		var dpos = epos.minus(pos);
+		var r = [];
+		
+		dpos = new vec2(Math.sign(dpos.x), Math.sign(dpos.y));
+		if(dpos.x != 0){
+			if(dpos.x > 0) r.push(side.right);
+			else r.push(side.left);
+		}
+		if(dpos.y != 0){
+			if(dpos.y > 0) r.push(side.down);
+			else r.push(side.up);
+		}
+		
+		return r;
+	}
+	getCircleCollisionPoint(origin, radius){
+		var epos = this.getEndPosition();
+		if(epos.distance(origin) <= radius) return epos;
+		var mag = this.getPosition().distance(origin);
+		if(mag <= radius) return this.getPosition();
+		if(mag > this.length) return null;
+		
+		var projectedPos = this.getPosition().plus(vec2.fromAng(this.getAngle(), mag));
+		if(this.getEndPosition().plus(this.getPosition()).multiply(0.5).distance(projectedPos) > this.length / 2) return null;
+		if(projectedPos.distance(origin) > radius) return null;
+		
+		return projectedPos;
+	}
 	getBoxCollision(colBox){
 		var siders = [];
 		
