@@ -451,6 +451,22 @@ class card_anvil extends card{
         state.physObjects.push(anv);
     }
 }
+class card_crate extends card{
+    constructor(){
+        super();
+        this.name = "Crate";
+        this.graphic = 3;
+        this.type = "Misc.";
+        this.text = ["Good for stacking", "or for smashing"];
+
+        this.uses = 2;
+        this.coolDown = 200;
+    }
+
+    use(plr){
+
+    }
+}
 class card_eyeball extends card{
     constructor(){
         super();
