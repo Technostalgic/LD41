@@ -80,7 +80,7 @@ class card{
     }
 
     static randomCard(){
-        //return new card_sniper();
+        return new card_crate();
         var m = [
             card_revolver,
             card_eyeball,
@@ -345,31 +345,6 @@ class card_sniper extends card{
         plr.drawHand(off.plus(hOff));
     }
 }
-class card_c4 extends card{
-    constructor(){
-        super();
-        this.name = "C-4";
-        this.graphic = 7;
-        this.type = "EXP - Trap";
-        this.text = ["Damage: 12", "Remote", "Detonation"];
-        
-        this.uses = 2;
-        this.coolDown = 250;
-        this.charge = null;
-    }
-
-    use(plr){
-        if(!super.use(plr)) return;
-        if(!this.charge){
-            this.charge = projectile.fire(proj_c4charge, plr.pos, 200, plr.getAim());
-            this.charge.vel = this.charge.vel.plus(plr.vel.multiply(0.5));
-            this.uses++;
-            return;
-        }
-        this.charge.detonate();
-        this.charge = null;
-    }
-}
 class card_lazer extends card{
     constructor(){
         super();
@@ -406,6 +381,46 @@ class card_lazer extends card{
         sprite.draw();
     }
 }
+
+class card_crowbar extends card{
+    constructor(){
+        super();
+        this.name = "Crowbar";
+        this.graphic = 10;
+        this.type = "ATK - Melee";
+        this.text = ["Damage: 10", "Anti-headcrab"];
+
+        this.uses = 4;
+        this.coolDown = 150;
+    }
+}
+
+class card_c4 extends card{
+    constructor(){
+        super();
+        this.name = "C-4";
+        this.graphic = 7;
+        this.type = "EXP - Trap";
+        this.text = ["Damage: 12", "Remote", "Detonation"];
+        
+        this.uses = 2;
+        this.coolDown = 250;
+        this.charge = null;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        if(!this.charge){
+            this.charge = projectile.fire(proj_c4charge, plr.pos, 200, plr.getAim());
+            this.charge.vel = this.charge.vel.plus(plr.vel.multiply(0.5));
+            this.uses++;
+            return;
+        }
+        this.charge.detonate();
+        this.charge = null;
+    }
+}
+
 class card_medkit extends card{
     constructor(){
         super();
@@ -455,16 +470,24 @@ class card_crate extends card{
     constructor(){
         super();
         this.name = "Crate";
-        this.graphic = 3;
+        this.graphic = 9;
         this.type = "Misc.";
         this.text = ["Good for stacking", "or for smashing"];
 
-        this.uses = 2;
+        this.uses = 1;
         this.coolDown = 200;
     }
 
     use(plr){
-
+        if(!super.use(plr)) return;
+        var off = new vec2(15 * (plr.isFlipped ? -1 : 1), -5);
+        var tpos = plr.pos.plus(off);
+        
+        var crt = new crate();
+        crt.pos = tpos;
+        crt.vel = plr.vel.clone();
+        crt.updateHitBox();
+        state.physObjects.push(crt);
     }
 }
 class card_eyeball extends card{

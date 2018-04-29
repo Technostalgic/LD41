@@ -308,9 +308,17 @@ class gameState_gamePlay extends gameState{
         });
     }
     draw(){
-        this.physObjects.slice().reverse().forEach(function(obj){
+        this.physObjects.forEach(function(obj){
+            if(obj instanceof player) return;
+            if(obj instanceof enemy) return;
             obj.draw();
         });
+        this.enemies.forEach(function(en){
+            en.draw();
+        })
+
+        if(this.player.health > 0)
+            this.player.draw();
         
         this.terrain.forEach(function(terrain){
             terrain.draw();

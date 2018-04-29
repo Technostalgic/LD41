@@ -41,6 +41,7 @@ function load(){
 	loadGraphic("cardItem.png", "cardItem");
 	loadGraphic("cardGraphics.png", "cardGraphics");
 	loadGraphic("projectile.png", "projectile");
+	loadGraphic("prop.png", "prop");
 	loadGraphic("giblets.png", "giblets");
 	loadGraphic("weapons.png", "weapons");
 	loadGraphic("lazerFace.png", "lazerFace");

@@ -14,15 +14,17 @@ class projectile extends physicsObject{
         this.dmg = 5;
         this.knockback = 100;
         this.lifetime = 5;
+        this.ignoreTypes = [dynamicPlatform];
     }
 
     static fire(projType, pos, speed, angle, ignoreTypes = []){
         var proj = new projType();
+        console.log(proj);
         proj._lastVPos = pos.clone();
         proj.pos = pos.clone();
         proj.updateHitBox();
         proj.vel = vec2.fromAng(angle, speed);
-        proj.ignoreTypes = ignoreTypes;
+        proj.ignoreTypes = proj.ignoreTypes.concat(ignoreTypes); 
 
         state.physObjects.push(proj)
         return proj;
@@ -81,7 +83,7 @@ class projectile extends physicsObject{
 class proj_enemyBullet extends projectile{
 	constructor(){
 		super();
-		this.ignoreTypes = [enemy];
+		this.ignoreTypes.push(enemy);
 		this.dmg = 8;
 		this.knockback = 200;
 	}

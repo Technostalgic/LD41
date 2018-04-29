@@ -13,8 +13,10 @@ class prop extends physicsObject{
 
 class dynamicPlatform extends prop{
     constructor(){super();}
+    objectCollide(obj, colbox){
+        terrainObject.handlePlatformCollision(this.hitBox, obj, colbox);
+    }
 }
-
 class anvil extends dynamicPlatform{
     constructor(){
         super();
@@ -32,7 +34,7 @@ class anvil extends dynamicPlatform{
     objectCollide(obj, colbox){
         if(this.ignoresType(obj)) return;
         if(this.onGround){
-            terrainObject.handlePlatformCollision(this.hitBox, obj, colbox);
+            super.objectCollide(obj, colbox);
             return;
         }
         if(this.vel.y <= 100)
@@ -58,6 +60,40 @@ class anvil extends dynamicPlatform{
         var sprBox = new spriteBox(new vec2(60,6), new vec2(20, 9));
         var sprite = new spriteContainer(
             gfx.cardGraphics,
+            sprBox
+        );
+        sprite.bounds.setCenter(this.pos)
+
+        sprite.draw();
+    }
+}
+class crate extends dynamicPlatform{
+    constructor(){
+        super();
+        this.fallThroughPlatforms = false;
+        this.hitBox = collisionModule.boxCollider(new vec2(20));
+        this.ignoreTypes = [projectile];
+        this.health = 10;
+    }
+
+    objectCollide(obj, colbox){
+        if(this.onGround){
+            super.objectCollide(obj, colbox);
+            return;
+        }
+    }
+
+    damage(dmg, colbox){
+        this.health -= dmg;
+        if(this.health <= 0)
+            this.remove();
+    }
+
+    draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(new vec2(), new vec2(20));
+        var sprite = new spriteContainer(
+            gfx.prop,
             sprBox
         );
         sprite.bounds.setCenter(this.pos)
