@@ -62,6 +62,7 @@ function load(){
 	loadSound("pickup.wav", "pickup");
 	loadSound("enemyShoot.wav", "enemyShoot");
 	loadSound("shotgun.wav", "shotgun");
+	loadSound("crossbow.wav", "crossbow");
 	loadSound("revolver.wav", "revolver");
 	loadSound("swoosh.wav", "swoosh");
 	

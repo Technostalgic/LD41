@@ -260,9 +260,14 @@ class card_crossbow extends card{
         if(!super.use(plr)) return;
         var ang = plr.getAim();
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+		var popVel = -35;
 
-        playSound(sfx.revolver);
+        playSound(sfx.crossbow);
         var proj = projectile.fire(proj_arrow, off, 350, ang, [player, cardCollectable]);
+		
+		if(plr.yAim == 0)
+			proj.vel.y += popVel;
+		
         proj.ang = ang;
         proj.isFlipped = plr.isFlipped;
     }
