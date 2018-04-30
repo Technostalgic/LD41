@@ -86,7 +86,14 @@ class crate extends dynamicPlatform{
     damage(dmg, colbox){
         this.health -= dmg;
         if(this.health <= 0)
-            this.remove();
+            this.destroy();
+    }
+    destroy(){
+        var crd = new cardCollectable();
+        crd.pos = this.pos;
+        crd.updateHitBox();
+        crd.add();
+        this.remove();
     }
 
     draw(){

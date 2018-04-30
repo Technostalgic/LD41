@@ -80,7 +80,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_crowbar();
+        //return new card_crate();
         var m = [
             card_revolver,
             card_eyeball,
@@ -90,7 +90,9 @@ class card{
             card_crossbow,
             card_lazer,
             card_c4,
-            card_sniper
+            card_sniper,
+            card_crate,
+            card_crowbar
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
@@ -418,25 +420,26 @@ class card_crowbar extends card{
 		state.physObjects.forEach(function(obj){
 				let colbox = hitArea.getCollision(obj.hitBox);
 				if(!colbox) return;
-				ths.hit(obj);
+				ths.hit(obj, ang, plr, colbox);
 			});
 		}
 	}
-	hit(obj, dirAng){
+	hit(obj, dirAng, plr, colbox){
 		if(obj instanceof player) return;
 		
 		var force = vec2.fromAng(dirAng, 350);
 		obj.vel = obj.vel.plus(force);
-		
+        plr.vel = force.multiply(-0.5);
+        
 		if(obj.damage)
-			obje.damage(10);
+			obj.damage(10, colbox);
 		
 		this.hitUsed = true;
 	}
 	
 	use(plr){
         if(!super.use(plr)) return;
-		
+		playSound(sfx.swoosh);
 	}
 	drawOnPlayer(plr){
 		var usePerc = Math.min(1, this.getUseElapsedTime() / this.coolDown);
@@ -454,12 +457,11 @@ class card_crowbar extends card{
 		var spriteAngOff = usePerc < 0.5 || usePerc == 1 ? 0 :
 			(plr.isFlipped ? -1 : 1) * Math.PI / 2;
 		var spriteSwingOff = usePerc < 0.5 || usePerc == 1 ? new vec2() :
-			new vec2(4, 4);
-		spriteSwingOff.rotate(ang);
+			new vec2(4, (plr.isFlipped ? -1 : 1) * 4);
+        spriteSwingOff = spriteSwingOff.rotate(ang);
 			
         sprite.bounds.setCenter(off.plus(spriteSwingOff));
         sprite.rotation = ang + spriteAngOff;
-		console.log(usePerc)
 
         sprite.draw();
         plr.drawHand(off.plus(hOff));
@@ -527,8 +529,6 @@ class card_anvil extends card{
         if(!super.use(plr)) return;
         var off = new vec2(15 * (plr.isFlipped ? -1 : 1), 0);
         var tpos = plr.pos.plus(off);
-
-        console.log(off);
 
         var anv = new anvil();
         anv.pos = tpos;

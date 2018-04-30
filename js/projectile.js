@@ -362,6 +362,7 @@ class explosion extends AOE{
     constructor(){
         super();
         this.isUpdated = false;
+        this.ignoreTypes = [];
     }
 
     static explode(pos, radius, dmg, force){

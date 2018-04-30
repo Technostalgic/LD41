@@ -63,6 +63,7 @@ function load(){
 	loadSound("enemyShoot.wav", "enemyShoot");
 	loadSound("shotgun.wav", "shotgun");
 	loadSound("revolver.wav", "revolver");
+	loadSound("swoosh.wav", "swoosh");
 	
 	loadHighScore();
 }
