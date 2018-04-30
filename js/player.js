@@ -154,7 +154,7 @@ class player extends physicsObject{
 
     handleEquippedItems(){
         if(this.getPrimary()) {
-            this.getPrimary().hold();
+            this.getPrimary().hold(this);
         }
     }
 

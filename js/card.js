@@ -80,7 +80,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_crate();
+        return new card_crowbar();
         var m = [
             card_revolver,
             card_eyeball,
@@ -110,8 +110,11 @@ class card{
     useHold(plyr){
     }
     canUse(){
-        return (state.timeElapsed >= this.lastUsed + this.coolDown);
+        return (this.getUseElapsedTime() >= this.coolDown);
     }
+	getUseElapsedTime(){
+		return (state.timeElapsed - this.lastUsed);
+	}
 
     remove(){
         var index = state.cardSlots.indexOf(this);
@@ -392,6 +395,74 @@ class card_crowbar extends card{
 
         this.uses = 4;
         this.coolDown = 150;
+		this.hitUsed = false;
+    }
+	    
+	hold(plr){
+		super.hold(plr);
+		
+		if(!this.canUse()){
+			if(this.getUseElapsedTime() <= this.coolDown / 2)
+				this.swing(plr);
+			else this.hitUsed = false;
+		}
+		else this.hitUsed = false;
+    }
+	swing(plr){
+		var ang = plr.getAim();
+        var tpos = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 15));
+		var hitArea = collisionModule.boxCollider(new vec2(6));
+		hitArea.centerAtPoint(tpos);
+		if(!this.hitUsed){
+		var ths = this;
+		state.physObjects.forEach(function(obj){
+				let colbox = hitArea.getCollision(obj.hitBox);
+				if(!colbox) return;
+				ths.hit(obj);
+			});
+		}
+	}
+	hit(obj, dirAng){
+		if(obj instanceof player) return;
+		
+		var force = vec2.fromAng(dirAng, 350);
+		obj.vel = obj.vel.plus(force);
+		
+		if(obj.damage)
+			obje.damage(10);
+		
+		this.hitUsed = true;
+	}
+	
+	use(plr){
+        if(!super.use(plr)) return;
+		
+	}
+	drawOnPlayer(plr){
+		var usePerc = Math.min(1, this.getUseElapsedTime() / this.coolDown);
+		var swPerc = 1 - Math.abs(usePerc * 2 - 1);
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8 + swPerc * 6));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 5).plus(vec2.fromAng(ang, -4));
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(46, 0), new vec2(8, 12))
+        );
+        sprite.isFlippedY = plr.isFlipped;
+		
+		var spriteAngOff = usePerc < 0.5 || usePerc == 1 ? 0 :
+			(plr.isFlipped ? -1 : 1) * Math.PI / 2;
+		var spriteSwingOff = usePerc < 0.5 || usePerc == 1 ? new vec2() :
+			new vec2(4, 4);
+		spriteSwingOff.rotate(ang);
+			
+        sprite.bounds.setCenter(off.plus(spriteSwingOff));
+        sprite.rotation = ang + spriteAngOff;
+		console.log(usePerc)
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
     }
 }
 
