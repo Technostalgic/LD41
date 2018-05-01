@@ -248,7 +248,7 @@ class gameState_gamePlay extends gameState{
         this.effects = [];
 
         this.score = 0;
-        this.cardSlots = [null, new card_metalBox(), null, null, null, null];
+        this.cardSlots = [new card_crowbar(), new card_crate(), null, null, null, null];
     }
     testSpawn(){
         for(let i = 6; i > 0; i--){

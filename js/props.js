@@ -93,6 +93,12 @@ class crate extends dynamicPlatform{
         crd.pos = this.pos;
         crd.updateHitBox();
         crd.add();
+
+        var advel = this.vel.clone();
+        if(this.onGround)
+            advel.y -= 100
+        giblet.spawnGibs(giblet_wood, this.pos, 6, advel);
+
         this.remove();
     }
 
@@ -132,6 +138,7 @@ class metalBox extends dynamicSolid{
 			if(this.onGround){
 				if(Math.abs(obj.vel.x) >= 100)
 					this.vel.x = Math.sign(obj.vel.x) * 100;
+                terrainObject.handleSolidCollision(this.hitBox, obj, colbox);
 			}
 			else{
 				terrainObject.handleSolidCollision(obj.hitBox, this, colbox);
@@ -176,7 +183,7 @@ class corpse extends prop{
         var advel = this.vel.clone();
         if(this.onGround)
             advel.y -= 100
-        giblet.spawnGibs(this.pos, 6, advel);
+        giblet.spawnGibs(giblet, this.pos, 6, advel);
         this.remove();
     }
 
@@ -209,7 +216,7 @@ class giblet extends prop{
         this.life = Math.random();
     }
 
-    static spawnGibs(pos, count, vel = new vec2(), pow = 150){
+    static spawnGibs(gibletType, pos, count, vel = new vec2(), pow = 150){
         var count = count;
         var angInc = 1 / count * Math.PI * 2;
         var addVel = vel;
@@ -217,7 +224,7 @@ class giblet extends prop{
         for(let i = count; i >= 0; i--){
             let ang = angInc * i + Math.random() * angInc;
             let fvel = vec2.fromAng(ang, 50 + Math.random() * pow);
-            let gib = new giblet();
+            let gib = new gibletType();
             gib.pos = pos.clone();
             gib.updateHitBox();
             gib.vel = addVel.plus(fvel);
@@ -246,6 +253,50 @@ class giblet extends prop{
         var sprite = new spriteContainer(
             gfx.giblets,
             sprBox
+        );
+        sprite.bounds.setCenter(this.pos);
+        sprite.rotation = this.rotation;
+        sprite.isFlippedX = this.isFlippedX;
+
+        sprite.draw();
+    }
+}
+class giblet_wood extends giblet{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.boxCollider(new vec2(10, 7));
+        this.gravity = 900;
+        this.airFriction = 0.925;
+        this.rotVel = 0;
+        this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
+        this.isFlipped = Math.random() >= 0.5;
+        this.spriteNum = Math.floor(Math.random() * 3);
+        this.life = Math.random() + 1;
+    }
+    draw(){
+        var frm = new spriteBox(
+            new vec2(0, 9),
+            new vec2(12, 7)
+        ); ;
+
+        switch(this.spriteNum){
+            case 0: frm = new spriteBox(
+                new vec2(0, 9),
+                new vec2(12, 7)
+            ); break;
+            case 1: frm = new spriteBox(
+                new vec2(13, 9),
+                new vec2(12, 7)
+            ); break;
+            case 2: frm = new spriteBox(
+                new vec2(26, 9),
+                new vec2(5, 7)
+            ); break;
+        }
+
+        var sprite = new spriteContainer(
+            gfx.giblets,
+            frm
         );
         sprite.bounds.setCenter(this.pos);
         sprite.rotation = this.rotation;

@@ -93,7 +93,7 @@ class card{
             card_sniper,
             card_crate,
             card_crowbar,
-            card_metalBox
+            //card_metalBox
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
@@ -571,7 +571,7 @@ class card_crate extends card{
 class card_metalBox extends card{
     constructor(){
         super();
-        this.name = "Crate";
+        this.name = "Metal Box";
         this.graphic = 9;
         this.type = "Misc.";
         this.text = ["Solid.", "Sturdy."];
