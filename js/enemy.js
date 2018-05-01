@@ -14,7 +14,8 @@ class enemy extends physicsObject{
         this.isSpawning = true;
         this.isFlipped = false;
         this.fallThroughPlatforms = false;
-
+        
+        this.isActivated = false;
         this.seekDir = new vec2(0, 0);
     }
 
@@ -50,6 +51,7 @@ class enemy extends physicsObject{
         state.physObjects.push(this);
     }
     finishSpawn(){
+        this.isActivated = true;
         this.isSpawning = false;
     }
 

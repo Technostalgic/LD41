@@ -18,6 +18,7 @@ class physicsObject{
         this.airFriction = 0.8;
         this.groundFriction = 0.5;
 
+        this.isActivated = true;
         this.ignoreTypes = [];
     }
 
@@ -51,6 +52,7 @@ class physicsObject{
         return false;
     }
     checkObjectCollision(obj){
+        if(!this.isActivated) return;
         if(this.ignoresType(obj)) return;
         if(obj == this) return;
         
@@ -67,6 +69,7 @@ class physicsObject{
     }
     remove(){
         var index = state.physObjects.indexOf(this);
+        this.isActivated = false;
         if(index >= 0)
             state.physObjects.splice(index, 1);
     }
