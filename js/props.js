@@ -109,6 +109,50 @@ class crate extends dynamicPlatform{
     }
 }
 
+class dynamicSolid extends prop{
+    constructor(){super();}
+    objectCollide(obj, colbox){
+        terrainObject.handleSolidCollision(this.hitBox, obj, colbox);
+    }
+}
+class metalBox extends dynamicSolid{
+    constructor(){
+		super();
+		this.fallThroughPlatforms = false;
+        this.hitBox = collisionModule.boxCollider(new vec2(25));
+        this.health = 45;
+	}
+	
+	objectCollide(obj, colbox){
+		if(obj instanceof projectile) {
+			super.objectCollide(obj, colbox);
+			return;
+		}
+		if(obj.onGround){
+			if(this.onGround){
+				if(Math.abs(obj.vel.x) >= 100)
+					this.vel.x = Math.sign(obj.vel.x) * 100;
+			}
+			else{
+				terrainObject.handleSolidCollision(obj.hitBox, this, colbox);
+				this.onGround = false;
+			}
+		}
+		else super.objectCollide(obj, colbox);
+	}
+	draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(new vec2(20, 0), new vec2(25));
+        var sprite = new spriteContainer(
+            gfx.prop,
+            sprBox
+        );
+        sprite.bounds.setCenter(this.pos)
+
+        sprite.draw();
+    }
+}
+
 class corpse extends prop{
     constructor(){
         super();

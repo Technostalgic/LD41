@@ -92,7 +92,8 @@ class card{
             card_c4,
             card_sniper,
             card_crate,
-            card_crowbar
+            card_crowbar,
+            card_metalBox
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
@@ -564,6 +565,30 @@ class card_crate extends card{
         crt.vel = plr.vel.clone();
         crt.updateHitBox();
         state.physObjects.push(crt);
+    }
+}
+class card_metalBox extends card{
+    constructor(){
+        super();
+        this.name = "Crate";
+        this.graphic = 9;
+        this.type = "Misc.";
+        this.text = ["Solid.", "Sturdy."];
+
+        this.uses = 1;
+        this.coolDown = 200;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+        var off = new vec2(18 * (plr.isFlipped ? -1 : 1), -8);
+        var tpos = plr.pos.plus(off);
+        
+        var mtlbx = new metalBox();
+        mtlbx.pos = tpos;
+        mtlbx.vel = plr.vel.clone();
+        mtlbx.updateHitBox();
+        state.physObjects.push(mtlbx);
     }
 }
 class card_eyeball extends card{
