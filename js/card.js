@@ -490,6 +490,7 @@ class card_c4 extends card{
     use(plr){
         if(!super.use(plr)) return;
         if(!this.charge){
+			playSound(sfx.swoosh);
             this.charge = projectile.fire(proj_c4charge, plr.pos, 200, plr.getAim());
             this.charge.vel = this.charge.vel.plus(plr.vel.multiply(0.5));
             this.uses++;
