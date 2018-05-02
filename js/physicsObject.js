@@ -86,6 +86,7 @@ class physicsObject{
     handleObjectCollisions(phyObjs){
         var ths = this;
         phyObjs.forEach(function(obj){
+			if(!obj.isActivated) return;
             ths.checkObjectCollision(obj);
         });
         this.updateHitBox();

@@ -36,7 +36,6 @@ class projectile extends physicsObject{
         for(let type of this.ignoreTypes)
             if(obj instanceof type) return;
         if((obj instanceof cardCollectable) || (obj instanceof projectile)) return;
-        if(obj instanceof enemy) if(obj.isSpawning) return;
         super.checkObjectCollision(obj);
     }
     objectCollide(obj, colbox){
