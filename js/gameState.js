@@ -248,7 +248,8 @@ class gameState_gamePlay extends gameState{
         this.effects = [];
 
         this.score = 0;
-        this.cardSlots = [new card_crowbar(), new card_crate(), null, null, null, null];
+        this.cardSlots = [null, null, null, null, null, null];
+		this.addCard(new card_crowbar());
     }
     testSpawn(){
         for(let i = 6; i > 0; i--){
@@ -271,7 +272,7 @@ class gameState_gamePlay extends gameState{
     addCard(cardOb){
         var slot = this.getTopCardSlot();
         if(slot < 0) return;
-        this.cardSlots[slot] = cardOb;
+        this.cardSlots[slot] = cardOb.setLastDrawPos(slot);
     }
     bumpCards(){
         var m = [];

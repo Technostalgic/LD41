@@ -77,6 +77,10 @@ class card{
         this.isFlipped = false;
         this.lastUsed = 0;
         this.coolDown = 250;
+		this.lastDrawPos = new vec2();
+		
+		this.animStartTime = state.timeElapsed;
+		this.isAnimating = false;
     }
 
     static randomCard(){
@@ -98,6 +102,17 @@ class card{
         return new m[Math.floor(m.length * Math.random())]();
     }
 
+	setLastDrawPos(slotNum){
+		this.lastDrawPos = new vec2(335 - (slotNum * 60), 10);
+		if(slotNum > 1) this.lastDrawPos.x -= 20;
+		this.isAnimating = false;
+		return this;
+	}
+	setLastDrawPosExact(vec){
+		this.lastDrawPos = vec;
+		this.isAnimating = false;
+	}
+	
     hold(plyr){ 
         if(this.uses <= 0)
             if(this.canUse())
@@ -125,8 +140,29 @@ class card{
         state.bumpCards();
     }
 
+	getAnimatedXPos(newPosX){
+		var animElapsed = state.timeElapsed - this.animStartTime;
+		animElapsed /= 200;
+		var dPosX = newPosX - this.lastDrawPos.x;
+		
+		return this.lastDrawPos.x + dPosX * animElapsed;
+	}
+	
     drawOnPlayer(plyr){ }
     drawOnHUD(slotXPos){
+		if(!this.isAnimating)
+			if(this.lastDrawPos.x != slotXPos){
+				this.isAnimating = true;
+				this.animStartTime = state.timeElapsed;
+			}
+			
+		var dposX = slotXPos;
+		if(this.isAnimating){
+			if(state.timeElapsed >= this.animStartTime + 200)
+				this.setLastDrawPosExact(new vec2(slotXPos, 10));
+			else dposX = this.getAnimatedXPos(slotXPos);
+		}
+		
         var frame = this.isFlipped ? 1 : 0;
         var sprBox = new spriteBox(
             new vec2(frame * 50, 0),
@@ -136,12 +172,12 @@ class card{
         var sprite = new spriteContainer(
             gfx.cardHUD,
             sprBox,
-            new collisionBox(new vec2(slotXPos, 10), sprBox.size.clone())
+            new collisionBox(new vec2(dposX, 10), sprBox.size.clone())
         );
         sprite.draw();
-        if(this.isFlipped) this.drawFace(slotXPos);
+        if(this.isFlipped) this.drawFace(dposX);
     }
-    drawFace(slotXPos){
+    drawFace(drawPosX){
         var frame = this.graphic;
         var sprBox = new spriteBox(
             new vec2(frame * 20, 0),
@@ -150,7 +186,7 @@ class card{
         var sprite = new spriteContainer(
             gfx.cardGraphics,
             sprBox,
-            new collisionBox(new vec2(slotXPos + 5, 22), sprBox.size.multiply(2))
+            new collisionBox(new vec2(drawPosX + 5, 22), sprBox.size.multiply(2))
         );
         sprite.draw();
 
