@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        //return new card_crate();
+        return new card_eyeball();
         var m = [
             card_revolver,
             card_eyeball,
@@ -648,5 +648,6 @@ class card_eyeball extends card{
             if(!card) return;
             card.isFlipped = true;
         });
+		state.checkCardsForStacking();
     }
 }

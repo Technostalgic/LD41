@@ -19,7 +19,6 @@ class projectile extends physicsObject{
 
     static fire(projType, pos, speed, angle, ignoreTypes = []){
         var proj = new projType();
-        console.log(proj);
         proj._lastVPos = pos.clone();
         proj.pos = pos.clone();
         proj.updateHitBox();

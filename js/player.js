@@ -57,7 +57,7 @@ class player extends physicsObject{
 		if(cardOb) if(cardOb.uses <= 0) return;
 		state.cardSlots[1] = state.cardSlots[0];
 		state.cardSlots[0] = cardOb;
-        state.bumpCards();
+		state.checkCardsForStacking();
     }
     action_useHoldPrimary(){
         var cardOb = this.getPrimary();

@@ -249,7 +249,7 @@ class gameState_gamePlay extends gameState{
 
         this.score = 0;
         this.cardSlots = [null, null, null, null, null, null];
-		this.addCard(new card_crowbar());
+		this.stackingCards = [];
     }
     testSpawn(){
         for(let i = 6; i > 0; i--){
@@ -272,7 +272,9 @@ class gameState_gamePlay extends gameState{
     addCard(cardOb){
         var slot = this.getTopCardSlot();
         if(slot < 0) return;
+		if(slot <= 2) cardOb.isFlipped = true;
         this.cardSlots[slot] = cardOb.setLastDrawPos(slot);
+		this.checkCardsForStacking();
     }
     bumpCards(){
         var m = [];
@@ -282,6 +284,27 @@ class gameState_gamePlay extends gameState{
         for(var i = 1; i < this.cardSlots.length; i++)
             this.cardSlots[i] = m.length > 0 ? m.splice(0, 1)[0] : null;
     }
+	checkCardsForStacking(){
+        for(var i0 = this.cardSlots.length - 1; i0 >= 0; i0--){
+			if(!this.cardSlots[i0]) continue;
+			if(this.cardSlots[i0].isFlipped){
+				for(var i1 = 0; i1 < i0; i1++){
+					if(!this.cardSlots[i1]) continue;
+					if(this.cardSlots[i1].uses < 1) continue;
+					if(this.cardSlots[i0].constructor.name == this.cardSlots[i1].constructor.name){
+						this.stackCards(i0, i1);
+						break;
+					}
+				}
+			}
+		}
+		this.bumpCards();
+	}
+	stackCards(indexToStack, indexOfStack){
+		this.cardSlots[indexOfStack].uses += this.cardSlots[indexToStack].uses;
+		this.stackingCards.push({cardOb: this.cardSlots[indexToStack], slot: indexOfStack});
+		this.cardSlots[indexToStack] = null;
+	}
 
 	pauseGame(){
 		state = new gameState_pauseScreen(this);
@@ -341,6 +364,8 @@ class gameState_gamePlay extends gameState{
         col.setFill();
         renderContext.fillRect(0, 0, renderCanvas.width, 125);
 
+		this.drawCards();
+		
         renderContext.beginPath();
         var x = 261.5;
         renderContext.moveTo(x, 25);
@@ -349,6 +374,20 @@ class gameState_gamePlay extends gameState{
         renderContext.lineWidth = 1;
         renderContext.stroke();
 
+
+        var scorepos = new vec2(200, 100);
+        var scoreString = "Score: " + this.score.toString();
+        fillText(scoreString, scorepos, 20, color.fromHex("#DA0"));
+        drawText("High: " + highScore, new vec2(200, 110), 16);
+
+        var borderSprite = new spriteContainer(
+            gfx.hud_border
+        );
+        borderSprite.bounds.pos = new vec2(200, 116);
+        borderSprite.draw();
+        this.drawHealthBar();
+    }
+	drawCards(){
         this.cardSlots.forEach(function(cardOb, i){
             var x = 335 - (i * 60);
             if(i > 1) x -= 20;
@@ -363,19 +402,16 @@ class gameState_gamePlay extends gameState{
                 cardOb.drawOnHUD(x);
             }
         });
-
-        var scorepos = new vec2(200, 100);
-        var scoreString = "Score: " + this.score.toString();
-        fillText(scoreString, scorepos, 20, color.fromHex("#DA0"));
-        drawText("High: " + highScore, new vec2(200, 110), 16);
-
-        var borderSprite = new spriteContainer(
-            gfx.hud_border
-        );
-        borderSprite.bounds.pos = new vec2(200, 116);
-        borderSprite.draw();
-        this.drawHealthBar();
-    }
+		
+		var ths = this;
+		this.stackingCards.forEach(function(stackOb, i){
+			let x = 335 - (stackOb.slot * 60);
+            if(i > 1) x -= 20;
+			stackOb.cardOb.drawOnHUD(x);
+			if(!stackOb.cardOb.isAnimating)
+				ths.stackingCards.splice(i, 1);
+		});
+	}
     drawHealthBar(){
         var healthPercent = Math.min(1, Math.max(this.player.health / 100, 0));
         
