@@ -111,3 +111,18 @@ class physicsObject{
 		this.updateLVPos();
     }
 }
+
+class destructableObject extends physicsObject{
+	constructor(){ 
+		super(); 
+		this.health = 10;
+	}
+	
+	damage(dmg, colbox){
+		this.health -= dmg;
+		if(this.health <= 0) this.destroy();
+	}
+	destroy(){
+		this.remove();
+	}
+}

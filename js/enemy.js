@@ -5,7 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
-class enemy extends physicsObject{
+class enemy extends lifeForm{
     constructor(){
         super();
         this.health = 10;
@@ -58,14 +58,12 @@ class enemy extends physicsObject{
     }
 
     damage(dmg, colbox){
-        this.health -= dmg;
         playSound(sfx.enemyHit);
-        if(this.health <= 0)
-            this.kill();
+		super.damage(dmg, colbox);
         this.findPlayer();
         if(colbox) effect.fx_hit(colbox.center);
     }
-    kill(){
+    destroy(){
         state.addScore(this.points);
         this.remove();
     }
@@ -173,9 +171,9 @@ class enemy_zombie extends enemy{
         this.vel.y = -jumpPow;
     }
     
-    kill(){
+    destroy(){
         this.spawnCorpse();
-        super.kill();
+        super.destroy();
     }
     spawnCorpse(){
         var c = new corpse();
@@ -372,9 +370,9 @@ class enemy_eyeball extends enemy{
         plr.damage(10);
     }
 
-    kill(){
+    destroy(){
         this.spawnCorpse();
-        super.kill();
+        super.destroy();
     }
     spawnCorpse(){
         var c = new corpse();

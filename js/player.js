@@ -5,7 +5,11 @@
 ///	twitter @technostalgicGM
 ///
 
-class player extends physicsObject{
+class lifeForm extends destructableObject{
+	constructor(){ super(); }
+}
+
+class player extends lifeForm{
     constructor(){
         super();
         this.hitBox = collisionModule.boxCollider(new vec2(8, 12));
@@ -89,9 +93,7 @@ class player extends physicsObject{
 
     damage(dmg){
         playSound(sfx.playerHit);
-        this.health -= dmg;
-        if(this.health <= 0)
-            this.kill();
+		super.damage(dmg);
     }
 
     handleMovement(){
@@ -158,7 +160,7 @@ class player extends physicsObject{
         }
     }
 
-    kill(){
+    destroy(){
         this.dead = true;
         this.remove();
         
