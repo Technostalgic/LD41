@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        //return new card_eyeball();
+        //return new card_revolver();
         var m = [
             card_revolver,
             card_eyeball,
@@ -209,19 +209,21 @@ class card_revolver extends card{
         this.name = "Revolver";
         this.graphic = 0;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 4"];
+        this.text = ["Damage: 6"];
         
         this.uses = 6;
-        this.coolDown = 200;
+        this.coolDown = 100;
     }
 
     use(plr){
         if(!super.use(plr)) return;
         var ang = plr.getAim();
+        ang += (0.25 *(Math.random() - 0.5));
         var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
 
         playSound(sfx.revolver);
-        projectile.fire(projectile, off, 250, ang, [player, cardCollectable]);
+        var proj = projectile.fire(projectile, off, 250, ang, [player, cardCollectable]);
+        proj.dmg = 6;
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
