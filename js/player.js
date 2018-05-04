@@ -55,6 +55,12 @@ class player extends lifeForm{
         if(cardOb){
             cardOb.use(this);
         }
+    }    
+	action_holdPrimary(){
+        var cardOb = this.getPrimary();
+        if(cardOb){
+            cardOb.useHold(this);
+        }
     }
     action_swapSecondary(){
 		var cardOb = this.getPrimary();

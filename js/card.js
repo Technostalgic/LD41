@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_crossbow();
+        return new card_plasmaGun();
         var m = [
             card_revolver,
             card_eyeball,
@@ -98,6 +98,7 @@ class card{
             card_crate,
             card_crowbar,
             card_grenade,
+            card_plasmaGun,
             //card_metalBox
         ];
         return new m[Math.floor(m.length * Math.random())]();
@@ -398,6 +399,51 @@ class card_sniper extends card{
         var sprite = new spriteContainer(
             gfx.weapons,
             new spriteBox(new vec2(33, 0),new vec2(13, 6))
+        );
+        sprite.bounds.setCenter(off.rounded());
+        sprite.rotation = ang;
+        sprite.isFlippedY = plr.isFlipped;
+
+        sprite.draw();
+        plr.drawHand(off.plus(hOff));
+    }
+}
+class card_plasmaGun extends card{
+    constructor(){
+        super();
+        this.name = "Plasma Gun";
+        this.graphic = 8;
+        this.type = "ATK - Ranged";
+        this.text = ["Damage: 6", "Automatic"];
+        
+        this.uses = 12;
+        this.coolDown = 85;
+    }
+
+	useHold(plr){
+		this.use(plr);
+	}
+    use(plr){
+        if(!super.use(plr)) return;
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+
+        playSound(sfx.crossbow);
+        var proj = projectile.fire(proj_plasma, off, 275, ang, [player, cardCollectable]);
+        proj.ang = ang;
+        proj.isFlipped = plr.isFlipped;
+		
+		var recoil = vec2.fromAng(ang + Math.PI, 90);
+		plr.vel = plr.vel.plus(recoil);
+    }
+    drawOnPlayer(plr){
+        var ang = plr.getAim();
+        var off = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 8));
+        var hOff = vec2.fromAng(ang + Math.PI / 4 * (plr.isFlipped ? -1 : 1), 3).plus(vec2.fromAng(ang, -3));
+
+        var sprite = new spriteContainer(
+            gfx.weapons,
+            new spriteBox(new vec2(33, 6),new vec2(13, 6))
         );
         sprite.bounds.setCenter(off.rounded());
         sprite.rotation = ang;

@@ -479,6 +479,9 @@ class gameState_gamePlay extends gameState{
             case controlState.controlEnum.jump:
                 this.player.action_jumpSustain();
                 break;
+            case controlState.controlEnum.primary:
+                this.player.action_holdPrimary();
+                break;
             case controlState.controlEnum.pause: break;
         }
     }

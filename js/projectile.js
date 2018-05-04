@@ -44,8 +44,7 @@ class projectile extends physicsObject{
         if(obj.damage)
             obj.damage(this.dmg, colbox);
 
-        var coll = this.hitBox.getCollision(obj.hitBox);
-        this.burst(coll);
+        this.burst(colbox);
     }
     terrainCollide(terrain, colbox){
         if(terrain instanceof terrain_platform) return;
@@ -196,6 +195,36 @@ class proj_sniper extends projectile{
         }
         super.update();
         this.colRay = null;
+    }
+}
+class proj_plasma extends projectile{
+    constructor(){
+        super();
+        this.dmg = 6;
+        this.knockback = 150;
+		this.ang = 0;
+    }
+
+	burst(colbox){
+		effect.fx_explosionBlue(colbox.center.clone());
+		this.remove();
+	}
+	
+	draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(
+            new vec2(16, 5),
+            new vec2(5, 3)
+        );
+        var sprite = new spriteContainer(
+            gfx.projectile,
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone())
+        );
+        sprite.bounds.setCenter(this.pos);
+		sprite.rotation = this.ang;
+
+        sprite.draw();
     }
 }
 
