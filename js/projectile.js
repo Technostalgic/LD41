@@ -287,21 +287,26 @@ class proj_grenade extends projectile{
         playSound(sfx.explosion);
         explosion.explode(this.pos, 16, 6, 250);
 		
+        this.hitBox = collisionModule.boxCollider(new vec2(10));
+        this.updateHitBox();
+        this.handleTerrainCollisions(state.terrain);
+
 		//fragments
 		var advel = new vec2(0, -100);
-		var count = 16;
+		var count = 12;
 		var angInc = Math.PI * 2 / count;
 		for(let i = count; i > 0; i--){
 			let ang = i * angInc + Math.random() * angInc;
 			let spd = 50 + Math.random() * 400;
 			let vel = vec2.fromAng(ang, spd).plus(advel);
 			let proj = new projectile();
-			proj.pos = this.pos.clone();
+            proj.pos = this.pos.clone();
+            proj.hitBox = collisionModule.circleCollider(4);
 			proj.updateHitBox();
 			proj.vel = vel;
-			proj.dmg = 4;
+			proj.dmg = 6;
 			proj.knockback = 250;
-			proj.airFriction = 0.8;
+			proj.airFriction = 0.9;
 			proj.gravity = 600;
 			
 			proj.add();
