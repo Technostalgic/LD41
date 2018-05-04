@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_grenade();
+        return new card_crossbow();
         var m = [
             card_revolver,
             card_eyeball,
@@ -97,6 +97,7 @@ class card{
             card_sniper,
             card_crate,
             card_crowbar,
+            card_grenade,
             //card_metalBox
         ];
         return new m[Math.floor(m.length * Math.random())]();
@@ -224,6 +225,9 @@ class card_revolver extends card{
         playSound(sfx.revolver);
         var proj = projectile.fire(projectile, off, 250, ang, [player, cardCollectable]);
         proj.dmg = 6;
+		
+		var recoil = vec2.fromAng(ang + Math.PI, 100);
+		plr.vel = plr.vel.plus(recoil);
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
@@ -265,6 +269,9 @@ class card_shotgun extends card{
             let spdVar = Math.random() * 25;
             projectile.fire(proj_shotgun, off, 350 + spdVar, ang + spread, [player, cardCollectable]);
         }
+		
+		var recoil = vec2.fromAng(ang + Math.PI, 300);
+		plr.vel = plr.vel.plus(recoil);
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
@@ -309,6 +316,9 @@ class card_crossbow extends card{
 		
         proj.ang = ang;
         proj.isFlipped = plr.isFlipped;
+		
+		var recoil = vec2.fromAng(ang + Math.PI, 150);
+		plr.vel = plr.vel.plus(recoil);
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
@@ -348,6 +358,9 @@ class card_sniper extends card{
         var proj = projectile.fire(proj_sniper, off, 750, ang, [player, cardCollectable]);
         proj.ang = ang;
         proj.isFlipped = plr.isFlipped;
+		
+		var recoil = vec2.fromAng(ang + Math.PI, 200);
+		plr.vel = plr.vel.plus(recoil);
     }
     drawOnPlayer(plr){
         var ang = plr.getAim();
