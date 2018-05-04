@@ -47,6 +47,7 @@ function load(){
 	loadGraphic("lazerFace.png", "lazerFace");
 	loadGraphic("enemy1.png", "enemy1");
 	loadGraphic("enemy2.png", "enemy2");
+	loadGraphic("enemy3.png", "enemy3");
 	loadGraphic("hit.png", "effect_hit");
 	loadGraphic("explosion.png", "effect_explosion");
 	loadGraphic("explosionBlue.png", "effect_explosionBlue");

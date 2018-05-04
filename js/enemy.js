@@ -20,9 +20,11 @@ class enemy extends physicsObject{
     }
 
     static randomEnemy(){
+        return enemy_slime();
         var m = [
             enemy_zombie,
-            enemy_eyeball
+            enemy_eyeball,
+            enemy_slime
         ];
 
         return new m[Math.floor(m.length * Math.random())]();
@@ -427,5 +429,18 @@ class enemy_eyeball extends enemy{
         sprite.isFlippedX = this.vel.x < 0;
 
         sprite.draw();
+    }
+}
+
+class enemy_slime extends enemy{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.boxCollider(new vec2(8, 6));
+        this.health = 5;
+        this.maxSpeed = 45 + Math.random() * 25;
+        this.acceleration = 250;
+
+        this.xMove = 0;
+        this.playerSeekCountdown = 0;
     }
 }
