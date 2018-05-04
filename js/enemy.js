@@ -20,7 +20,7 @@ class enemy extends physicsObject{
     }
 
     static randomEnemy(){
-        return enemy_slime();
+        return new enemy_slime();
         var m = [
             enemy_zombie,
             enemy_eyeball,
@@ -435,12 +435,106 @@ class enemy_eyeball extends enemy{
 class enemy_slime extends enemy{
     constructor(){
         super();
-        this.hitBox = collisionModule.boxCollider(new vec2(8, 6));
-        this.health = 5;
+        this.size = Math.floor(Math.random() * 2 - 0.5) + 1;
+        this.hitBox = collisionModule.boxCollider(new vec2(16, 10).multiply(this.size));
+        this.health = 5 * this.size;
         this.maxSpeed = 45 + Math.random() * 25;
         this.acceleration = 250;
 
         this.xMove = 0;
-        this.playerSeekCountdown = 0;
+        this.playerSeekCountdown = 0.5;
+    }
+    
+    findPlayer(){
+        if(!this.canSeePlayer()){
+            this.xMove = 2 * Math.floor(Math.random() * 2) - 1;
+            return;
+        }
+        if(state.player.hitBox.getBoundingBox().bottom > this.hitBox.getBoundingBox().bottom)
+            this.fallThroughPlatforms = true;
+        else this.fallThroughPlatforms = false;
+        if(this.pos.x < state.player.pos.x)
+            this.xMove = 1;
+        else 
+            this.xMove = -1;
+    }
+    seekPlayer(){
+        if(!this.onGround) return;
+
+        this.playerSeekCountdown -= dt;
+        if(this.playerSeekCountdown > 0)
+            return;
+        
+        this.findPlayer();
+        this.hop();
+    }
+    hop(){
+        var pow = 150 + Math.random() * 100;
+        if(Math.random() > 0.85)
+            pow *= 2;
+        
+        this.vel = new vec2(this.xMove * 225, -pow);
+
+        this.playerSeekCountdown = (pow * 2 * this.size) / 1000;
+    }
+
+    objectCollide(obj, colbox){
+        if(obj instanceof player)
+            this.hitPlayer(obj, colbox);
+    }
+    hitPlayer(plr, colbox){
+        super.hitPlayer(plr, colbox);
+        plr.damage(10);
+
+        var force = Math.sign(plr.pos.x - this.pos.x) * 300;
+        plr.vel.x = force;
+        plr.vel.y = -150;
+
+        this.vel.x = -force;
+        this.vel.y = -150;
+
+        this.findPlayer();
+    }
+
+    update(){
+        if(!super.update()) return false;
+        this.seekPlayer();
+        return true;
+    }
+    draw(){
+		this.updateLVPos();
+        if(this.isSpawning){
+            this.drawSpawning()
+            return false;
+        }
+        var frame = 4;
+        var frameSize = new vec2(20);
+        if(this.onGround){
+            frameSize = new vec2(20, 14);
+            frame = Math.floor(state.timeElapsed / 125) % 5;
+            frame = Math.max(frame - 1, 0);
+            if(frame > 2) frame = 1;
+        }
+
+        var sprBox = new spriteBox(
+            new vec2(20 * frame, 0),
+            frameSize
+        );
+        if(frame == 4)
+            sprBox = new spriteBox(
+                new vec2(0, 14),
+                frameSize
+            );
+
+        var sprite = new spriteContainer(
+            gfx.enemy3,
+            sprBox
+        );
+
+        sprite.bounds.size = sprite.bounds.size.multiply(this.size);
+        sprite.bounds.setCenter(this.pos.plus(new vec2(0, -2)));
+        sprite.isFlippedX = this.xMove < 0;
+
+        sprite.draw();
     }
 }
