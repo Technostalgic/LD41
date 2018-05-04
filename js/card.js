@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        //return new card_revolver();
+        return new card_grenade();
         var m = [
             card_revolver,
             card_eyeball,
@@ -536,6 +536,26 @@ class card_c4 extends card{
         }
         this.charge.detonate();
         this.charge = null;
+    }
+}
+class card_grenade extends card{
+    constructor(){
+        super();
+        this.name = "Grenade";
+        this.graphic = 11;
+        this.type = "EXP - Bomb";
+        this.text = ["Damage: 15", "Fragments"];
+        
+        this.uses = 3;
+        this.coolDown = 250;
+    }
+
+    use(plr){
+        if(!super.use(plr)) return;
+		
+		playSound(sfx.swoosh);
+        var proj = projectile.fire(proj_grenade, plr.pos, 250, plr.getAim());
+        proj.vel = proj.vel.plus(plr.vel.multiply(0.75));
     }
 }
 

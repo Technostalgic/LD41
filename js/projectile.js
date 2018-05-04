@@ -49,8 +49,7 @@ class projectile extends physicsObject{
     }
     terrainCollide(terrain, colbox){
         if(terrain instanceof terrain_platform) return;
-        var coll = this.hitBox.getCollision(terrain.hitBox);
-        this.burst(coll);
+        this.burst(colbox);
     }
     burst(collision){
         this.remove();
@@ -235,6 +234,72 @@ class proj_c4charge extends projectile{
         var sprBox = new spriteBox(
             new vec2(8, 0),
             new vec2(8, 8)
+        );
+        var sprite = new spriteContainer(
+            gfx.projectile,
+            sprBox,
+            new collisionBox(new vec2(), sprBox.size.clone())
+        );
+        sprite.bounds.setCenter(this.pos);
+
+        sprite.draw();
+    }
+}
+class proj_grenade extends projectile{
+    constructor(){
+        super();
+        this.hitBox = collisionModule.boxCollider(new vec2(5));
+        this.gravity = 600;
+		this.fuse = 1.5;
+    }
+
+    detonate(){
+        effect.fx_explosion(this.pos, 1);
+        playSound(sfx.explosion);
+        explosion.explode(this.pos, 16, 6, 250);
+		
+		//fragments
+		var advel = new vec2(0, -100);
+		var count = 16;
+		var angInc = Math.PI * 2 / count;
+		for(let i = count; i > 0; i--){
+			let ang = i * angInc + Math.random() * angInc;
+			let spd = 50 + Math.random() * 400;
+			let vel = vec2.fromAng(ang, spd).plus(advel);
+			let proj = new projectile();
+			proj.pos = this.pos.clone();
+			proj.updateHitBox();
+			proj.vel = vel;
+			proj.dmg = 4;
+			proj.knockback = 250;
+			proj.airFriction = 0.8;
+			proj.gravity = 600;
+			
+			proj.add();
+		}
+		
+        this.remove();
+    }
+
+	objectCollide(obj, colbox){ }
+    terrainCollide(terrain, colbox){
+		if(terrain instanceof terrain_platform)
+			return;
+		if(this.fuse > 0.25)
+			this.fuse = 0.25;
+	}
+
+    update(){
+		this.fuse -= dt;
+		if(this.fuse <= 0)
+			this.detonate();
+        super.update();
+    }
+    draw(){
+		this.updateLVPos();
+        var sprBox = new spriteBox(
+            new vec2(16, 0),
+            new vec2(5)
         );
         var sprite = new spriteContainer(
             gfx.projectile,
