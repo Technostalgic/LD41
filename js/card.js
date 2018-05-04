@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_plasmaGun();
+        //return new card_plasmaGun();
         var m = [
             card_revolver,
             card_eyeball,
@@ -412,7 +412,7 @@ class card_plasmaGun extends card{
     constructor(){
         super();
         this.name = "Plasma Gun";
-        this.graphic = 8;
+        this.graphic = 12;
         this.type = "ATK - Ranged";
         this.text = ["Damage: 6", "Automatic"];
         

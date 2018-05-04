@@ -75,6 +75,14 @@ class controlState{
         state.preInput();
         
         var controlsPressed = controlState.getControlsPressed();
+        
+        // ensure the primary control is always the last in the list of pressed controls
+        var primIndex = controlsPressed.indexOf(controlState.controlEnum.primary);
+        if(primIndex >= 0){
+            controlsPressed.splice(primIndex, 1);
+            controlsPressed.push(controlState.controlEnum.primary);
+        }
+
         controlsPressed.forEach(function(controlID){
             state.controlPress(controlID);
         });
