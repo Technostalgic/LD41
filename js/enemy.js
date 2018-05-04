@@ -20,11 +20,11 @@ class enemy extends lifeForm{
     }
 
     static randomEnemy(){
-        return new enemy_slime();
+        //return new enemy_slime();
         var m = [
+            enemy_slime,
             enemy_zombie,
-            enemy_eyeball,
-            enemy_slime
+            enemy_eyeball
         ];
 
         return new m[Math.floor(m.length * Math.random())]();
@@ -88,6 +88,7 @@ class enemy extends lifeForm{
         var rayTest = ray.fromPoints(this.pos, state.player.pos);
         var raycols = [];
         state.terrain.forEach(function(terrain){
+			if(terrain instanceof terrain_platform) return;
             let col = rayTest.getBoxCollision(terrain.hitBox.getBoundingBox());
             if(col)
                 raycols.push(col);
