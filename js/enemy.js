@@ -49,8 +49,7 @@ class enemy extends lifeForm{
     spawn(){
         this.pos = this.findSpawnPos();
 
-        state.enemies.push(this);
-        state.physObjects.push(this);
+		this.add();
     }
     finishSpawn(){
         this.isActivated = true;
@@ -67,7 +66,11 @@ class enemy extends lifeForm{
         state.addScore(this.points);
         this.remove();
     }
-    remove(){
+    add(){
+        state.enemies.push(this);
+        state.physObjects.push(this);
+	}
+	remove(){
         var index = state.enemies.indexOf(this); 
         if(index >= 0)
             state.enemies.splice(index, 1);
@@ -431,13 +434,15 @@ class enemy_eyeball extends enemy{
 }
 
 class enemy_slime extends enemy{
-    constructor(){
+    constructor(size){
         super();
-        this.size = Math.floor(Math.random() * 2 - 0.5) + 1;
+		var sz = size;
+		if(!size)
+			//sz = Math.max(1, Math.floor(Math.random() * 2 - 0.5) + 1);
+			sz = 2;
+        this.size = sz;
         this.hitBox = collisionModule.boxCollider(new vec2(16, 10).multiply(this.size));
         this.health = 5 * this.size;
-        this.maxSpeed = 45 + Math.random() * 25;
-        this.acceleration = 250;
 
         this.xMove = 0;
         this.playerSeekCountdown = 0.5;
@@ -482,7 +487,7 @@ class enemy_slime extends enemy{
     }
     hitPlayer(plr, colbox){
         super.hitPlayer(plr, colbox);
-        plr.damage(10);
+        plr.damage(7);
 
         var force = Math.sign(plr.pos.x - this.pos.x) * 300;
         plr.vel.x = force;
@@ -494,6 +499,41 @@ class enemy_slime extends enemy{
         this.findPlayer();
     }
 
+	destroy(){
+		super.destroy();
+		if(this.size > 1){
+			this.spawnBabies();
+			return;
+		}
+		this.spawnCorpse();
+	}
+	spawnBabies(){
+		var bbsize = this.size - 1;
+		for(let i = this.size; i > 0; i--){
+			var bbang = i * (Math.PI * 2 / this.size);
+			var bbpos = this.pos.plus(vec2.fromAng(bbang, this.hitBox.getBoundingBox().height / 2));
+			var bbvel = this.vel.plus(vec2.fromAng(bbang, 250));
+			bbvel.y -= 200;
+			var bb = new enemy_slime(bbsize);
+			bb.vel = bbvel;
+			bb.pos = bbpos;
+			bb.updateHitBox();
+			bb.tilSpawn = -1;
+			bb.isSpawning = false;
+			bb.isActivated = true;
+			bb.add();
+		}
+	}
+	spawnCorpse(){
+        var c = new corpse_slime();
+        c.pos = this.pos;
+        c.updateHitBox();
+        c.vel = this.vel.clone();
+        c.isFlipped = this.isFlipped;
+
+        state.physObjects.push(c);
+	}
+	
     update(){
         if(!super.update()) return false;
         this.seekPlayer();

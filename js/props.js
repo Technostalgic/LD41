@@ -203,6 +203,48 @@ class corpse extends prop{
         sprite.draw();
     }
 }
+class corpse_slime extends corpse{
+	constructor(){
+		super();
+		this.spritesheet = gfx.enemy3;
+	}
+	
+	terrainCollide(terrain, colbox){
+		this.burst();
+	}
+	
+	getSpriteBox(){
+		return new spriteBox(
+			new vec2(20, 14),
+			new vec2(20, 20)
+		);
+	}
+	
+	burst(){
+        var advel = this.vel.clone();
+        if(this.onGround)
+            advel.y -= 100
+		giblet.spawnGibs(giblet_slime, this.pos, 6, advel, 200);
+		this.remove();
+	}
+
+    draw(){
+		this.updateLVPos();
+        
+		if(this.vel.x != 0)
+			this.isFlipped = this.vel.x < 0;
+        
+		var sprite = new spriteContainer(this.spritesheet, this.getSpriteBox());
+        sprite.bounds.setCenter(this.pos);
+        sprite.bounds.pos.round();
+        
+        sprite.isFlippedX = this.isFlipped;
+		sprite.isFlippedY = this.vel.y < 0;
+		
+        sprite.draw();
+    }
+}
+
 class giblet extends prop{
     constructor(){
         super();
@@ -231,7 +273,7 @@ class giblet extends prop{
             gib.add();
         }
     }
-
+	
     terrainCollide(terrain){
         if(terrain instanceof terrain_platform) return;
         this.rotVel = 0;
@@ -239,7 +281,7 @@ class giblet extends prop{
         if(this.life <= 0)
             this.remove();
     }
-    handleObjectCollisions(){ }
+    handleObjectCollisions(){}
 
     update(){
         super.update();
@@ -297,6 +339,71 @@ class giblet_wood extends giblet{
         var sprite = new spriteContainer(
             gfx.giblets,
             frm
+        );
+        sprite.bounds.setCenter(this.pos);
+        sprite.rotation = this.rotation;
+        sprite.isFlippedX = this.isFlippedX;
+
+        sprite.draw();
+    }
+}
+class giblet_slime extends giblet{
+	constructor(){
+		super();
+        this.gravity = 900;
+        this.airFriction = 0.925;
+        this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
+        this.rotVel = 0;
+        this.isFlipped = Math.random() >= 0.5;
+        this.spriteNum = Math.floor(Math.random() * 4);
+        this.life = Math.random() * 3 + 5;
+		this.isFrozen = false;
+	}
+	
+	terrainCollide(terrain){
+        if(terrain instanceof terrain_platform) return;
+		this.isFrozen = true;
+    }
+	objectCollide(obj, colbox){
+		if(obj instanceof destructableObject)
+			obj.damage(3);
+		
+		var force = vec2.fromAng(this.vel.direction(), 100);
+		obj.vel = obj.vel.plus(force);
+		
+		this.remove();
+	}
+	handleObjectCollisions(phyObjs){
+		if(this.isFrozen) return;
+        var ths = this;
+        phyObjs.forEach(function(obj){
+			if(!obj.isActivated) return;
+            ths.checkObjectCollision(obj);
+        });
+        this.updateHitBox();
+    }
+	handleTerrainCollisions(terrains){
+		if(this.isFrozen) return;
+		super.handleTerrainCollisions(terrains);
+	}
+	
+	update(){
+		if(this.isFrozen){
+			this.life -= dt;
+			if(this.life <= 0)
+				this.remove();
+			return;
+		}
+		super.update();
+	}    
+	draw(){
+        var sprBox = new spriteBox(
+            new vec2(8 * this.spriteNum, 16),
+            new vec2(8)
+        );
+        var sprite = new spriteContainer(
+            gfx.giblets,
+            sprBox
         );
         sprite.bounds.setCenter(this.pos);
         sprite.rotation = this.rotation;

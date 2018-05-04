@@ -137,6 +137,8 @@ class terrain_bottomBoundary extends terrainObject{
     collideWith(obj, colbox){
         obj.onGround = true;
         obj.pos.y -= colbox.height;
+        if(obj.vel.y >= 150)
+            playSound(sfx.bump);
         obj.vel.y = Math.min(0, obj.vel.y);
         obj.updateHitBox();
     }
