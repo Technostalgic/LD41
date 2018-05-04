@@ -130,11 +130,23 @@ class enemy extends lifeForm{
     drawSpawning(){
         var box = this.hitBox.getBoundingBox();
 
-        var fillColor = state.timeElapsed / 100 % 2 < 1 ? 
+        var lineColor = state.timeElapsed / 100 % 2 < 1 ? 
             color.fromHex("#F00", 1) : color.fromHex("#800", 1);
         box.pos.round();
-        box.drawOutline(renderContext, color.Black().toRGBA(), 2);
-        box.drawFill(renderContext, fillColor.toRGBA());
+		box.pos = box.pos.plus(new vec2(0.5));
+        box.drawOutline(renderContext, lineColor.toRGBA(), 1);
+		
+		var frm = Math.floor((state.timeElapsed / 100) % 2);
+		
+		var sprt = new spriteContainer(
+			gfx.spawnWarning,
+			new spriteBox(
+				new vec2(frm * 16, 0),
+				new vec2(16)
+			)
+		);
+		sprt.bounds.setCenter(this.pos);
+		sprt.draw();
     }
 }
 

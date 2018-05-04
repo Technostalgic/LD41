@@ -51,6 +51,7 @@ function load(){
 	loadGraphic("hit.png", "effect_hit");
 	loadGraphic("explosion.png", "effect_explosion");
 	loadGraphic("explosionBlue.png", "effect_explosionBlue");
+	loadGraphic("spawnWarning.png", "spawnWarning");
 
 	loadSound("enemyHit.wav", "enemyHit");
 	loadSound("playerHit.wav", "playerHit");
