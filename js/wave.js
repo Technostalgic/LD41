@@ -10,13 +10,13 @@ class wave{
 		this.timeElapsed = 0;
 		
         this.difficulty = dif;
-        this.enemiesLeft = 10 + dif * 5;
-        this.enemyGroupSize = 2 + Math.floor(dif / 2);
+        this.enemiesLeft = 6 + dif * 3;
+        this.enemyGroupSize = 1 + Math.floor(dif / 2);
         this.enemyGroupThreshold = 1 + dif;
-        this.enemySpawnInterval = Math.max(15 - (dif), 7.5);
+        this.enemySpawnInterval = Math.max(7.5 - (dif / 2), 3.5);
         this.enemyDifficulty = dif;
 
-        this.cardSpawnInterval = 7.5;
+        this.cardSpawnInterval = 6.5;
         this.cardSpawnThreshold = 2 + (dif / 4);
 
         this._nextEnemySpawn = 0;
@@ -42,7 +42,7 @@ class wave{
             e.spawn();
             this.enemiesLeft -= 1;
         }
-        this._nextGroupSpawn = state.timeElapsed + 1000 * (this.enemySpawnInterval * 3);
+        this._nextGroupSpawn = state.timeElapsed + 1000 * (this.enemySpawnInterval * 2.5);
     }
     spawnEnemy(){
         var e = enemy.randomEnemy();

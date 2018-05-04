@@ -530,7 +530,7 @@ class card_c4 extends card{
         super();
         this.name = "C-4";
         this.graphic = 7;
-        this.type = "EXP - Trap";
+        this.type = "EXP - Bomb";
         this.text = ["Damage: 12", "Remote", "Detonation"];
         
         this.uses = 2;
