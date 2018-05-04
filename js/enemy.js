@@ -438,11 +438,12 @@ class enemy_slime extends enemy{
         super();
 		var sz = size;
 		if(!size)
-			//sz = Math.max(1, Math.floor(Math.random() * 2 - 0.5) + 1);
-			sz = 2;
+			sz = Math.max(1, Math.floor(Math.random() * 2 - 0.5) + 1);
         this.size = sz;
         this.hitBox = collisionModule.boxCollider(new vec2(16, 10).multiply(this.size));
         this.health = 5 * this.size;
+		
+        this.points = 100 * (this.size - 1) + 50;
 
         this.xMove = 0;
         this.playerSeekCountdown = 0.5;
@@ -503,6 +504,10 @@ class enemy_slime extends enemy{
 		super.destroy();
 		if(this.size > 1){
 			this.spawnBabies();
+			var advel = this.vel.clone();
+			if(this.onGround)
+				advel.y -= 100
+			giblet.spawnGibs(giblet_slime, this.pos, 10, advel, 200);
 			return;
 		}
 		this.spawnCorpse();
