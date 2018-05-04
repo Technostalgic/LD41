@@ -162,7 +162,8 @@ class player extends physicsObject{
         this.dead = true;
         this.remove();
         
-        giblet.spawnGibs(this.pos, 10);
+
+        giblet.spawnGibs(giblet, this.pos, 10);
         
 		// lose the game 2.5 seconds after the player dies
 		setTimeout(function(){
