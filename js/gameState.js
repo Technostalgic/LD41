@@ -351,11 +351,14 @@ class gameState_gamePlay extends gameState{
         this.effects.slice().reverse().forEach(function(effect){
             effect.draw();
         });
+		
+		if(this.currentWave.timeElapsed <= 3.5)
+			this.currentWave.drawStartingText();
+        else if(!!this.currentWave.finalEnemyKilled)
+            if(this.currentWave.timeElapsed >= 2.5 + this.currentWave.finalEnemyKilled)
+                this.currentWave.drawEndingText();
 
         this.drawHUD();
-		
-		if(this.currentWave.timeElapsed <= 2.5)
-			this.currentWave.drawStartingText();
     }
 
     drawHUD(){
@@ -437,6 +440,18 @@ class gameState_gamePlay extends gameState{
 
         emptySprite.draw();
         fullSprite.draw();
+    }
+
+    goToNewTerrainLayout(){
+        this.terrain = getRandomTerrainLayout();
+        this.player.pos = new vec2(renderCanvas.width / 2);
+        this.player.vel = new vec2();
+        this.player.health = Math.min(this.player.health + 35, 100);
+        
+        this.physObjects = [];
+        this.physObjects.push(this.player);
+        this.enemies = [];
+        this.cardItems = [];
     }
 
     preInput(){

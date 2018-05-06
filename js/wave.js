@@ -7,7 +7,8 @@
 
 class wave{
     constructor(dif = 1){
-		this.timeElapsed = 0;
+        this.timeElapsed = 0;
+        this.finalEnemyKilled = null;
 		
         this.difficulty = dif;
         this.enemiesLeft = 6 + dif * 3;
@@ -57,7 +58,11 @@ class wave{
 		
         this.handleSpawning();
         if(this.enemiesLeft <= 0 && state.enemies.length <= 0)
-            this.nextWave();
+            if(!this.finalEnemyKilled){
+                this.finalEnemyKilled = this.timeElapsed;
+            }
+            else if(this.timeElapsed >= 5.5 + this.finalEnemyKilled)
+                this.nextWave();
     }
     handleSpawning(){
         this.handleCardSpawning();
@@ -65,6 +70,7 @@ class wave{
             this.handleEnemySpawning();
     }
     handleCardSpawning(){
+        if(this.enemiesLeft <= 0 && state.enemies.length <= 0) return;
         if(state.cardItems.length < this.cardSpawnThreshold)
             if(state.timeElapsed >= this._nextCardSpawn)
                 this.spawnCard();
@@ -85,8 +91,17 @@ class wave{
 	drawStartingText(){
 		var tpos = new vec2(200);
 		drawText("Wave " + this.difficulty, tpos, 36);
+    }	
+    drawEndingText(){
+        clearScreen(color.fromHex("#000"));
+
+        var tpos = new vec2(200);
+        var col = color.fromHex("#060");
+        if(this.timeElapsed % 0.35 > 0.175) 
+            col = color.fromHex("#0F0");
+		drawText("Completed Wave " + this.difficulty, tpos, 36, col, color.fromHex("#020"));
 		
-		var pts = wave.wavePoints(this.difficulty - 1);
+		var pts = wave.wavePoints(this.difficulty);
 		if(pts > 0)
 		drawText("+" + pts + " pts", tpos.plus(new vec2(0, 20)), 24, color.fromHex("#FF0"), color.fromHex("#330"));
 	}
@@ -94,5 +109,6 @@ class wave{
     nextWave(){
 		state.addScore(wave.wavePoints(this.difficulty));
         state.currentWave = new wave(this.difficulty + 1);
+        state.goToNewTerrainLayout();
     }
 }

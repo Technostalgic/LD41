@@ -221,7 +221,7 @@ function getTerrainScreenBounds(ceiling = true){
     return r;
 }
 function getRandomTerrainLayout(){
-	return getTerrainLayout4();
+	//return getTerrainLayout4();
 	var m = [
 		getTerrainLayout1,
 		getTerrainLayout2,
