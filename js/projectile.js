@@ -349,7 +349,7 @@ class proj_grenade extends projectile{
 class proj_lazer extends projectile{
     constructor(){
         super();
-        this.dmg = 65;
+        this.dmg = 150;
         this.knockback = 100;
         this.lifetime = 0.5;
 

@@ -379,6 +379,7 @@ function getTerrainLayout3(){
         new vec2(100, 10)
     );
     r.push(new terrain_platform(b));
+    
     b = new collisionBox(
         new vec2(120, 295),
         new vec2(20, 10)
@@ -386,6 +387,16 @@ function getTerrainLayout3(){
     r.push(new terrain_platform(b));
     b = new collisionBox(
         new vec2(260, 295),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(120, 200),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(260, 200),
         new vec2(20, 10)
     );
     r.push(new terrain_platform(b));
