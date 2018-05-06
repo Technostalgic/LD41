@@ -221,11 +221,12 @@ function getTerrainScreenBounds(ceiling = true){
     return r;
 }
 function getRandomTerrainLayout(){
-	//return getTerrainLayout3();
+	return getTerrainLayout4();
 	var m = [
 		getTerrainLayout1,
 		getTerrainLayout2,
-		getTerrainLayout3
+		getTerrainLayout3,
+		getTerrainLayout4
 	];
 	
 	return m[Math.floor(Math.random() * m.length)]();
@@ -445,4 +446,87 @@ function getTerrainLayout3(){
     r.push(new terrain_solid(b));
 	
 	return r;
+}
+function getTerrainLayout4(){
+    var r = getTerrainScreenBounds();
+    
+    var b = new collisionBox(
+        new vec2(230, 335),
+        new vec2(50, 30)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(200, 320),
+        new vec2(50, 30)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(170, 305),
+        new vec2(50, 45)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(140, 290),
+        new vec2(50, 15)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(110, 275),
+        new vec2(50, 15)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(80, 260),
+        new vec2(50, 15)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(50, 245),
+        new vec2(50, 15)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(20, 230),
+        new vec2(50, 15)
+    );
+    r.push(new terrain_solid(b));
+
+    b = new collisionBox(
+        new vec2(0, 230),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(0, 260),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(0, 290),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(0, 320),
+        new vec2(20, 10)
+    );
+    r.push(new terrain_platform(b));
+
+    b = new collisionBox(
+        new vec2(130, 230),
+        new vec2(170, 10)
+    );
+    r.push(new terrain_platform(b));
+    b = new collisionBox(
+        new vec2(300, 230),
+        new vec2(100, 20)
+    );
+    r.push(new terrain_solid(b));
+    b = new collisionBox(
+        new vec2(285, 120),
+        new vec2(15, 70)
+    );
+    r.push(new terrain_solid(b));
+
+    return r;
 }
