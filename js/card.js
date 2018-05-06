@@ -84,7 +84,7 @@ class card{
     }
 
     static randomCard(){
-        return new card_grenade();
+        //return new card_grenade();
         var m = [
             card_revolver,
             card_eyeball,

@@ -523,7 +523,11 @@ class enemy_slime extends enemy{
 			giblet.spawnGibs(giblet_slime, this.pos, 10, advel, 200);
 			return;
 		}
-		this.spawnCorpse();
+        var advel = this.vel.clone();
+        if(this.onGround)
+            advel.y -= 100
+		giblet.spawnGibs(giblet_slime, this.pos, 25, advel, 350);
+		this.remove();
 	}
 	spawnBabies(){
 		var bbsize = this.size - 1;
@@ -546,7 +550,7 @@ class enemy_slime extends enemy{
         var c = new corpse_slime();
         c.pos = this.pos;
         c.updateHitBox();
-        c.vel = this.vel.clone();
+        c.vel = this.vel.clone().plus(new vec2(0, -100));
         c.isFlipped = this.isFlipped;
 
         state.physObjects.push(c);

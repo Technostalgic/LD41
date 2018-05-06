@@ -224,7 +224,7 @@ class corpse_slime extends corpse{
         var advel = this.vel.clone();
         if(this.onGround)
             advel.y -= 100
-		giblet.spawnGibs(giblet_slime, this.pos, 6, advel, 200);
+		giblet.spawnGibs(giblet_slime, this.pos, 16, advel, 200);
 		this.remove();
 	}
 
@@ -239,7 +239,7 @@ class corpse_slime extends corpse{
         sprite.bounds.pos.round();
         
         sprite.isFlippedX = this.isFlipped;
-		sprite.isFlippedY = this.vel.y < 0;
+		sprite.isFlippedY = this.vel.y > 0;
 		
         sprite.draw();
     }
