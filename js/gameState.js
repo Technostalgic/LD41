@@ -278,13 +278,19 @@ class gameState_gamePlay extends gameState{
     }
     bumpCards(){
         var m = [];
-        for(var i = 1; i < this.cardSlots.length; i++)
+        for(let i = 1; i < this.cardSlots.length; i++)
             if(this.cardSlots[i]) m.push(this.cardSlots[i]);
             
-        for(var i = 1; i < this.cardSlots.length; i++)
+        for(let i = 1; i < this.cardSlots.length; i++)
             this.cardSlots[i] = m.length > 0 ? m.splice(0, 1)[0] : null;
+
+        for(let i = 0; i <= 2; i++)
+            if(this.cardSlots[i])
+                this.cardSlots[i].isFlipped = true;
+        this.checkCardsForStacking(false);
     }
-	checkCardsForStacking(){
+	checkCardsForStacking(bump = true){
+        var nbum = !!this.cardSlots[2];
         for(var i0 = this.cardSlots.length - 1; i0 >= 0; i0--){
 			if(!this.cardSlots[i0]) continue;
 			if(this.cardSlots[i0].isFlipped){
@@ -297,8 +303,9 @@ class gameState_gamePlay extends gameState{
 					}
 				}
 			}
-		}
-		this.bumpCards();
+        }
+        if(bump || (!this.cardSlots[2] && nbum))
+		    this.bumpCards();
 	}
 	stackCards(indexToStack, indexOfStack){
 		this.cardSlots[indexOfStack].uses += this.cardSlots[indexToStack].uses;
