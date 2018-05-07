@@ -99,7 +99,7 @@ class card{
             card_crowbar,
             card_grenade,
             card_plasmaGun,
-            card_metalBox
+            //card_metalBox
         ];
         return new m[Math.floor(m.length * Math.random())]();
     }
