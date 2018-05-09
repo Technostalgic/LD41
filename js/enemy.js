@@ -162,6 +162,8 @@ class enemy_zombie extends enemy{
         this.maxSpeed = (45 + Math.random() * 25) / (this.size / 2 + 0.5);
         this.acceleration = 250;
 
+        this.points = 50 * ((this.size - 1) * 150);
+		
         this.xMove = 0;
         this.playerSeekCountdown = 0;
     }
@@ -214,6 +216,7 @@ class enemy_zombie extends enemy{
         );
         c.vel = this.vel;
         c.isFlipped = this.xMove > 0;
+		c.inflate(this.size);
 
         state.physObjects.push(c);
     }

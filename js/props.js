@@ -169,11 +169,18 @@ class corpse extends prop{
         this.risingSprite = null;
         this.lyingSprite = new spriteBox();
         this.isFlipped = false;
+		this.size = 1;
         this.health = 15;
     }
 
     handleObjectCollisions(){}
 
+	inflate(factor){
+		this.size *= factor;
+		this.hitBox.expand(factor);
+        this.health *= factor;
+	}
+	
     damage(dmg){
         this.health -= dmg;
         if(this.health <= 0)
@@ -182,8 +189,8 @@ class corpse extends prop{
     burst(){
         var advel = this.vel.clone();
         if(this.onGround)
-            advel.y -= 100
-        giblet.spawnGibs(giblet, this.pos, 6, advel);
+            advel.y -= 200
+        giblet.spawnGibs(giblet, this.pos, 6 * this.size, advel);
         this.remove();
     }
 
@@ -196,6 +203,7 @@ class corpse extends prop{
     draw(){
 		this.updateLVPos();
         var sprite = new spriteContainer(this.spritesheet, this.getSpriteBox());
+		sprite.bounds.size = sprite.bounds.size.multiply(this.size);
         sprite.bounds.setCenter(this.pos);
         sprite.bounds.pos.round();
         
@@ -255,7 +263,7 @@ class giblet extends prop{
         this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
-        this.life = Math.random();
+        this.life = Math.random() + 1;
     }
 
     static spawnGibs(gibletType, pos, count, vel = new vec2(), pow = 150){

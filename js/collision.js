@@ -20,6 +20,7 @@ class collisionModule{
         return r;
     }
 
+	expand(factor){}
     centerAtPoint(point){ }
     getBoundingBox(){
         return new collisionBox();
@@ -78,6 +79,9 @@ class collisionModule_circle extends collisionModule{
         this.origin = new vec2();
     }
     
+	expand(factor){
+		this.radius *= factor;
+	}
     centerAtPoint(point){
         this.origin = point;
     }
@@ -135,6 +139,9 @@ class collisionModule_box extends collisionModule{
         this.colBox = colBox;
     }
 
+	expand(factor){
+		this.colBox = this.colBox.inflated(factor);
+	}
     centerAtPoint(point){
         this.colBox.setCenter(point);
     }
