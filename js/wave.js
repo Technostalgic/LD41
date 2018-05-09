@@ -137,7 +137,7 @@ class wave{
     }
 
 	chooseRandomEnemy(){
-		return new enemy_eyeball(2);
+		//return new enemy_eyeball(2);
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
