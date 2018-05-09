@@ -105,7 +105,7 @@ class proj_enemyBullet extends projectile{
 class proj_arrow extends projectile{
     constructor(){
         super();
-        this.dmg = 12;
+        this.dmg = 15;
         this.knockback = 250;
         this.ang = 0;
         this.isFlipped = false;

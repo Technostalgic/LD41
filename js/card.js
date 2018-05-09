@@ -297,7 +297,7 @@ class card_crossbow extends card{
         this.name = "Crossbow";
         this.graphic = 4;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 12"];
+        this.text = ["Damage: 15"];
         
         this.uses = 3;
         this.coolDown = 1000;
@@ -344,7 +344,7 @@ class card_sniper extends card{
         this.name = "Sniper";
         this.graphic = 8;
         this.type = "ATK - Ranged";
-        this.text = ["Damage: 8", "Laser Sight"];
+        this.text = ["Damage: 10", "Laser Sight"];
         
         this.uses = 4;
         this.coolDown = 750;
@@ -459,7 +459,7 @@ class card_lazer extends card{
         this.name = "Lazer";
         this.graphic = 2;
         this.type = "ATK - LAZER";
-        this.text = ["Damage: 25", "IMA FIRIN' MAH", "LAAAAZERR!!"];
+        this.text = ["Damage: 40", "IMA FIRIN' MAH", "LAAAAZERR!!"];
         
         this.uses = 1;
         this.coolDown = 1000;
@@ -516,7 +516,7 @@ class card_crowbar extends card{
 	swing(plr){
 		var ang = plr.getAim();
         var tpos = plr.pos.plus(new vec2(0, -4)).plus(vec2.fromAng(ang, 15));
-		var hitArea = collisionModule.boxCollider(new vec2(6));
+		var hitArea = collisionModule.boxCollider(new vec2(12));
 		hitArea.centerAtPoint(tpos);
 		if(!this.hitUsed){
 		var ths = this;
