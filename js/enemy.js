@@ -317,10 +317,13 @@ class enemy_zombie extends enemy{
 }
 
 class enemy_eyeball extends enemy{
-    constructor(){
+    constructor(size = null){
         super();
-        this.hitBox = collisionModule.circleCollider(8);
-        this.health = 20;
+		this.size = size;
+		if(!this.size)
+			this.size = Math.floor(Math.random() * 2) + 1;
+        this.hitBox = collisionModule.circleCollider(8 * this.size);
+        this.health = 20 * this.size;
         this.points = 100;
         this.maxSpeed = 20 + Math.random() * 10;
         this.moveDir = new vec2();
@@ -334,6 +337,15 @@ class enemy_eyeball extends enemy{
         if(this.bulletCooldown > 0) return;
         playSound(sfx.enemyShoot);
         this.bulletCooldown = 0.5;
+		if(this.size > 1){
+			var count = 8;
+			var anginc = Math.PI * 2 / count;
+			for(let i = count; i > 0; i--){
+				let ang = i * anginc;
+				projectile.fire(proj_enemyBullet, this.pos.clone(), 100, ang, [enemy]);
+			}
+			return;
+		}
 		var dir = this.seekDir.minus(this.pos).direction();
 		dir += (Math.random() - 0.5) * 0.35;
 		projectile.fire(proj_enemyBullet, this.pos.clone(), 100, dir, [enemy]);
@@ -396,9 +408,23 @@ class enemy_eyeball extends enemy{
 
     destroy(){
         this.spawnCorpse();
+		if(this.size > 1){
+			var bb = new enemy_eyeball(this.size - 1);
+			bb.pos = this.pos.clone();
+			bb.updateHitBox();
+			bb.vel = this.vel.multiply(0.5);
+			bb.tilSpawn = -1;
+			bb.isSpawning = false;
+			bb.isActivated = true;
+			bb.add();
+		}
         super.destroy();
     }
     spawnCorpse(){
+		if(this.size > 1){
+			giblet.spawnGibs(giblet, this.pos, 10, this.vel, 200);
+			return;
+		}
         var c = new corpse();
         c.hitBox = collisionModule.boxCollider(new vec2(13, 8));
         c.pos = this.pos;
@@ -447,6 +473,7 @@ class enemy_eyeball extends enemy{
             gfx.enemy2,
             sprBox
         );
+		sprite.bounds.size = sprite.bounds.size.multiply(this.size);
         sprite.bounds.setCenter(this.pos);
         sprite.isFlippedX = this.vel.x < 0;
 

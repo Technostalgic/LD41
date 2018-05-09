@@ -58,20 +58,57 @@ class wave{
 				[enemy_slime, 2],
 				[enemy_zombie, 1],
 				[enemy_zombie, 1],
+				[enemy_zombie, 2],
+				];
+			case 5:
+				return [
+				[enemy_slime, 2],
+				[enemy_slime, 3],
+				[enemy_zombie, 2],
+				[enemy_zombie, 2],
+				];
+			case 6:
+				return [
+				[enemy_slime, 1],
+				[enemy_slime, 2],
+				[enemy_slime, 2],
+				[enemy_zombie, 1],
+				[enemy_zombie, 1],
+				[enemy_zombie, 2],
+				[enemy_eyeball, 1],
 				[enemy_eyeball, 1]
 				];
 				
+			// special level
+			case 10:
+				return [
+				[enemy_slime, 3],
+				[enemy_zombie, 2],
+				[enemy_eyeball, 2]
+				];
 		}
+		if(difficulty < 10)
+			return [
+				[enemy_slime, 1],
+				[enemy_slime, 2],
+				[enemy_slime, 3],
+				[enemy_zombie, 1],
+				[enemy_zombie, 1],
+				[enemy_zombie, 2],
+				[enemy_eyeball, 1],
+				[enemy_eyeball, 1],
+				[enemy_eyeball, 2]
+			];
+			
 		return [
-			[enemy_slime, 1],
 			[enemy_slime, 2],
-			[enemy_slime, 2],
+			[enemy_slime, 3],
 			[enemy_zombie, 1],
-			[enemy_zombie, 1],
-			[enemy_zombie, 1],
+			[enemy_zombie, 2],
+			[enemy_zombie, 2],
 			[enemy_eyeball, 1],
-			[enemy_eyeball, 1],
-			[enemy_eyeball, 1]
+			[enemy_eyeball, 2],
+			[enemy_eyeball, null]
 		];
 	}
 	
@@ -100,8 +137,7 @@ class wave{
     }
 
 	chooseRandomEnemy(){
-		return new enemy_zombie(2);
-		//return new enemy_slime(3);
+		return new enemy_eyeball(2);
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
