@@ -422,7 +422,7 @@ class enemy_eyeball extends enemy{
     }
     spawnCorpse(){
 		if(this.size > 1){
-			giblet.spawnGibs(giblet, this.pos, 10, this.vel, 200);
+			giblet.spawnGibs(giblet_gore, this.pos, 10, this.vel, 200);
 			return;
 		}
         var c = new corpse();

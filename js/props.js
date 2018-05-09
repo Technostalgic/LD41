@@ -319,8 +319,8 @@ class giblet_gore extends giblet{
 	constructor(){
 		super();
 		this.isFrozen = false;
-		this.bloodTrail = Math.random() * 1.5 + 0.5;
-		this.btDeteriorate = 14 - (Math.random() * Math.random() * 6);
+		this.bloodTrail = Math.random() * 1.25 + 1.25;
+		this.btDeteriorate = 10 - (Math.random() * Math.random() * 8);
 	}
 	
 	terrainCollide(terrain){
@@ -415,7 +415,7 @@ class giblet_slime extends giblet{
         this.airFriction = 0.925;
         this.spriteNum = Math.floor(Math.random() * 4);
         this.life = Math.random();
-		this.bloodTrail = Math.random() * 2 + 1.5;
+		this.bloodTrail = Math.random() * 2 + 0.5;
 		this.btDeteriorate = 25 - (Math.random() * Math.random() * 15);
 		this.isFrozen = false;
 	}

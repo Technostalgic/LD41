@@ -169,9 +169,8 @@ class player extends lifeForm{
     destroy(){
         this.dead = true;
         this.remove();
-        
 
-        giblet.spawnGibs(giblet, this.pos, 10);
+        giblet.spawnGibs(giblet_gore, this.pos, 10);
         
 		// lose the game 2.5 seconds after the player dies
 		setTimeout(function(){
