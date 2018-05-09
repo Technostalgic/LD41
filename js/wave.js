@@ -85,7 +85,7 @@ class wave{
     spawnEnemyGroup(){
         var count = this.enemyGroupSize + (Math.random() * 0.25 * this.enemyGroupSize);
         for(let i = count; i > 0; i--){
-            var e = enemy.randomEnemy();
+            var e = this.chooseRandomEnemy();
             e.spawn();
             this.enemiesLeft -= 1;
         }
@@ -100,6 +100,9 @@ class wave{
     }
 
 	chooseRandomEnemy(){
+		//return new enemy_zombie(2);
+		return new enemy_slime(3);
+		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
 	}

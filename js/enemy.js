@@ -151,11 +151,15 @@ class enemy extends lifeForm{
 }
 
 class enemy_zombie extends enemy{
-    constructor(){
+    constructor(size = null){
         super();
-        this.hitBox = collisionModule.boxCollider(new vec2(12, 19));
-        this.health = 10;
-        this.maxSpeed = 45 + Math.random() * 25;
+		this.size = size;
+		if(!this.size)
+			this.size = Math.floor(Math.random() * 2) + 1;
+        this.hitBox = collisionModule.boxCollider(new vec2(12, 19).multiply(this.size));
+		
+        this.health = 10 + ((this.size - 1) * 25);
+        this.maxSpeed = (45 + Math.random() * 25) / (this.size / 2 + 0.5);
         this.acceleration = 250;
 
         this.xMove = 0;
@@ -300,6 +304,7 @@ class enemy_zombie extends enemy{
             sprBox,
             new collisionBox(new vec2(), sprBox.size.clone())
         );
+		sprite.bounds.size = sprite.bounds.size.multiply(this.size);
         sprite.bounds.setCenter(this.pos);
         sprite.isFlippedX = this.xMove < 0;
 
@@ -454,7 +459,7 @@ class enemy_slime extends enemy{
 			sz = Math.max(1, Math.floor(Math.random() * 2 - 0.5) + 1);
         this.size = sz;
         this.hitBox = collisionModule.boxCollider(new vec2(16, 10).multiply(this.size));
-        this.health = 5 * this.size;
+        this.health = 5 + (this.size - 1) * 10;
 		
         this.points = 100 * (this.size - 1) + 50;
 
@@ -531,7 +536,7 @@ class enemy_slime extends enemy{
 	}
 	spawnBabies(){
 		var bbsize = this.size - 1;
-		for(let i = this.size; i > 0; i--){
+		for(let i = 2; i > 0; i--){
 			var bbang = i * (Math.PI * 2 / this.size);
 			var bbpos = this.pos.plus(vec2.fromAng(bbang, this.hitBox.getBoundingBox().height / 2));
 			var bbvel = this.vel.plus(vec2.fromAng(bbang, 250));
