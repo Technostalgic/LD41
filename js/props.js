@@ -189,8 +189,8 @@ class corpse extends prop{
     burst(){
         var advel = this.vel.clone();
         if(this.onGround)
-            advel.y -= 200
-        giblet.spawnGibs(giblet, this.pos, 6 * this.size, advel);
+            advel.y = -200;
+        giblet.spawnGibs(giblet_gore, this.pos, 6 + ((this.size - 1) * 10), advel, 250 + ((this.size - 1) * 125));
         this.remove();
     }
 
@@ -263,7 +263,7 @@ class giblet extends prop{
         this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
-        this.life = Math.random() + 1;
+        this.life = Math.random() * 2 + 2;
     }
 
     static spawnGibs(gibletType, pos, count, vel = new vec2(), pow = 150){
@@ -287,10 +287,14 @@ class giblet extends prop{
         this.rotVel = 0;
         this.life -= dt;
         if(this.life <= 0)
-            this.remove();
+            this.destroy();
     }
     handleObjectCollisions(){}
-
+	
+	destroy(){
+		this.remove();
+	}
+	
     update(){
         super.update();
         this.rotation += this.rotVel * dt;
@@ -311,6 +315,40 @@ class giblet extends prop{
         sprite.draw();
     }
 }
+class giblet_gore extends giblet{
+	constructor(){
+		super();
+		this.isFrozen = false;
+	}
+	
+	terrainCollide(terrain){
+		if(terrain instanceof terrain_platform) return;
+		if(!this.onGround) 
+			this.isFrozen = true;
+		super.terrainCollide(terrain);
+	}
+	handleTerrainCollisions(terrains){
+		if(this.isFrozen) return;
+		super.handleTerrainCollisions(terrains);
+	}
+	
+	destroy(){
+		if(this.onGround) this.remove();
+		this.vel = new vec2();
+		this.isFrozen = false;
+		this.life += Math.random() + 1;
+	}
+	
+	update(){
+		if(this.isFrozen){
+			this.life -= dt;
+			if(this.life <= 0)
+				this.destroy();
+			return;
+		}
+		super.update();
+	}  
+}
 class giblet_wood extends giblet{
     constructor(){
         super();
@@ -321,7 +359,7 @@ class giblet_wood extends giblet{
         this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 3);
-        this.life = Math.random() + 1;
+        this.life = Math.random() * 2 + 2;
     }
     draw(){
         var frm = new spriteBox(

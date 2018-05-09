@@ -36,12 +36,12 @@ class wave{
 				return [
 				[enemy_slime, 1],
 				[enemy_slime, 1],
-				[enemy_zombie, 1]
 				];
 			case 2:
 				return [
 				[enemy_slime, 1],
 				[enemy_slime, 2],
+				[enemy_zombie, 1],
 				[enemy_zombie, 1]
 				];
 			case 3:
@@ -49,6 +49,7 @@ class wave{
 				[enemy_slime, 1],
 				[enemy_slime, 2],
 				[enemy_slime, 2],
+				[enemy_zombie, 1],
 				[enemy_zombie, 1],
 				[enemy_zombie, 1]
 				];
@@ -126,18 +127,18 @@ class wave{
             e.spawn();
             this.enemiesLeft -= 1;
         }
-        this._nextGroupSpawn = state.timeElapsed + 1000 * (this.enemySpawnInterval * 2.5);
+        this._nextGroupSpawn = this.timeElapsed + 1 * (this.enemySpawnInterval * 2.5);
     }
     spawnEnemy(){
         var e = this.chooseRandomEnemy();
         e.spawn();
         this.enemiesLeft -= 1;
-        this._nextEnemySpawn = state.timeElapsed + 1000 *
+        this._nextEnemySpawn = this.timeElapsed + 1 *
             (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
     }
 
 	chooseRandomEnemy(){
-		//return new enemy_eyeball(2);
+		return new enemy_zombie(1);
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
