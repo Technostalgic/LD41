@@ -9,6 +9,8 @@ var renderCanvas,
 	renderContext,
 	textCanvas,
 	textContext,
+	goreCanvas,
+	goreContext,
 	scaleCanvas,
 	scaleContext;
 
@@ -109,6 +111,15 @@ function loseGame(score){
 	state = new gameState_gameoverScreen(score);
 }
 
+function drawBloodTrail(startPos, endPos, thickness){
+	goreContext.strokeStyle = color.fromHex("#A00").toRGBA();
+	goreContext.lineWidth = thickness;
+	
+	goreContext.beginPath();
+	goreContext.moveTo(startPos.x, startPos.y);
+	goreContext.lineTo(endPos.x, endPos.y);
+	goreContext.stroke();
+}
 function drawLine(startPos, endPos, color = color.Black(), lineWidth = 1){
 	renderContext.strokeStyle = color.toRGBA();
 	renderContext.lineWidth = lineWidth;
@@ -160,6 +171,12 @@ function getCanvas(){
 	renderCanvas.height = scaleCanvas.height / 2;
 	renderContext = renderCanvas.getContext("2d");
 	
+	//create the canvas and context for rendering all the blood on to
+	goreCanvas = document.createElement("canvas");
+	goreCanvas.width = renderCanvas.width;
+	goreCanvas.height = renderCanvas.height;
+	goreContext = goreCanvas.getContext("2d");
+	
 	// create high resolution canvas for rendering legible text
 	textCanvas = document.createElement("canvas");
 	textCanvas.width = scaleCanvas.width;
@@ -187,12 +204,16 @@ function clearScreen(col = color.Grey()){
 	renderContext.fillRect(0,0,renderCanvas.width, renderCanvas.height);
 	textContext.clearRect(0,0, textCanvas.width, textCanvas.height);
 }
+function clearGore(){
+	goreContext.clearRect(0, 0, goreCanvas.width, goreCanvas.height);
+}
 
 function playSound(sound, forceRepeat = true){
 	if(forceRepeat) sound.currentTime = 0;
 	sound.play();
 }
 function startGame(){
+	clearGore();
 	state = new gameState_gamePlay();
 }
 

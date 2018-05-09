@@ -202,5 +202,6 @@ class wave{
 		state.addScore(wave.wavePoints(this.difficulty));
         state.currentWave = new wave(this.difficulty + 1);
         state.goToNewTerrainLayout();
+		clearGore();
     }
 }

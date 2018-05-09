@@ -259,11 +259,12 @@ class giblet extends prop{
         this.hitBox = collisionModule.circleCollider(1);
         this.gravity = 900;
         this.airFriction = 0.925;
-        this.rotVel = (Math.random() - 0.5) * 10;
         this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
         this.life = Math.random() * 2 + 2;
+		this.bloodTrail = Math.random() * 2 + 1;
+		this.btDeteriorate = 14 - (Math.random() * Math.random() * 6);
     }
 
     static spawnGibs(gibletType, pos, count, vel = new vec2(), pow = 150){
@@ -284,7 +285,6 @@ class giblet extends prop{
 	
     terrainCollide(terrain){
         if(terrain instanceof terrain_platform) return;
-        this.rotVel = 0;
         this.life -= dt;
         if(this.life <= 0)
             this.destroy();
@@ -297,10 +297,17 @@ class giblet extends prop{
 	
     update(){
         super.update();
-        this.rotation += this.rotVel * dt;
+		if(this.bloodTrail > 0) this.bloodTrail -= dt * this.btDeteriorate;
+		if(this.bloodTrail < 0) this.bloodTrail = 0;
     }
     draw(){
-        var sprBox = new spriteBox(
+		var lpos = this.getLastPos();
+		if(this.bloodTrail > 0)
+			drawBloodTrail(lpos, this.pos, this.bloodTrail);
+		
+		this.updateLVPos();
+        
+		var sprBox = new spriteBox(
             new vec2(8 * this.spriteNum, 0),
             new vec2(8)
         );
