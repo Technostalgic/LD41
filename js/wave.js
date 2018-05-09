@@ -11,7 +11,8 @@ class wave{
         this.finalEnemyKilled = null;
 		
         this.difficulty = dif;
-        this.enemiesLeft = 6 + dif * 3;
+        this.enemiesLeft = 6 + dif * 2;
+		this.enemyThreshold = 2 + (dif) / 2;
         this.enemyGroupSize = 1 + Math.floor(dif / 2);
         this.enemyGroupThreshold = 1 + dif;
         this.enemySpawnInterval = Math.max(7.5 - (dif / 2), 3.5);
@@ -77,13 +78,14 @@ class wave{
     }
     handleEnemySpawning(){
 		if(this.timeElapsed < 3.5) return;
-        if(state.timeElapsed >= this._nextEnemySpawn)
-            this.spawnEnemy();
+		if(state.enemies.length < this.enemyThreshold)
+			if(this.timeElapsed >= this._nextEnemySpawn)
+				this.spawnEnemy();
 
-        if(state.enemies.length <= this.enemyGroupThreshold && state.timeElapsed >= this._nextGroupSpawn){
+        if(state.enemies.length <= this.enemyGroupThreshold && this.timeElapsed >= this._nextGroupSpawn){
             if(Math.random() >= 0.6)
                 this.spawnEnemyGroup();
-            else this._nextGroupSpawn = state.timeElapsed + 1000 *
+            else this._nextGroupSpawn = this.timeElapsed + 1000 *
                 (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
         }
     }
