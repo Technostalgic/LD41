@@ -138,7 +138,7 @@ class wave{
     }
 
 	chooseRandomEnemy(){
-		return new enemy_zombie(1);
+		//return new enemy_zombie(1);
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])

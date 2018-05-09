@@ -191,6 +191,7 @@ class corpse extends prop{
         if(this.onGround)
             advel.y = -200;
         giblet.spawnGibs(giblet_gore, this.pos, 6 + ((this.size - 1) * 10), advel, 250 + ((this.size - 1) * 125));
+		drawBloodSplotch(this.pos, Math.random() * 5 + 6);
         this.remove();
     }
 
@@ -263,8 +264,6 @@ class giblet extends prop{
         this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
         this.life = Math.random() * 2 + 2;
-		this.bloodTrail = Math.random() * 2 + 1;
-		this.btDeteriorate = 14 - (Math.random() * Math.random() * 6);
     }
 
     static spawnGibs(gibletType, pos, count, vel = new vec2(), pow = 150){
@@ -297,14 +296,8 @@ class giblet extends prop{
 	
     update(){
         super.update();
-		if(this.bloodTrail > 0) this.bloodTrail -= dt * this.btDeteriorate;
-		if(this.bloodTrail < 0) this.bloodTrail = 0;
     }
-    draw(){
-		var lpos = this.getLastPos();
-		if(this.bloodTrail > 0)
-			drawBloodTrail(lpos, this.pos, this.bloodTrail);
-		
+    draw(ctx = renderContext){
 		this.updateLVPos();
         
 		var sprBox = new spriteBox(
@@ -319,17 +312,20 @@ class giblet extends prop{
         sprite.rotation = this.rotation;
         sprite.isFlippedX = this.isFlippedX;
 
-        sprite.draw();
+        sprite.draw(ctx);
     }
 }
 class giblet_gore extends giblet{
 	constructor(){
 		super();
 		this.isFrozen = false;
+		this.bloodTrail = Math.random() * 1.5 + 0.5;
+		this.btDeteriorate = 14 - (Math.random() * Math.random() * 6);
 	}
 	
 	terrainCollide(terrain){
 		if(terrain instanceof terrain_platform) return;
+		drawBloodSplotch(this.pos, Math.min(this.vel.distance() / 75, 5) + Math.random());
 		if(!this.onGround) 
 			this.isFrozen = true;
 		super.terrainCollide(terrain);
@@ -340,13 +336,19 @@ class giblet_gore extends giblet{
 	}
 	
 	destroy(){
-		if(this.onGround) this.remove();
+		if(this.onGround || Math.random() > 0.5){
+			this.draw(goreContext);
+			this.remove();
+			return;
+		}
 		this.vel = new vec2();
 		this.isFrozen = false;
 		this.life += Math.random() + 1;
 	}
 	
 	update(){
+		if(this.bloodTrail > 0) this.bloodTrail -= dt * this.btDeteriorate;
+		if(this.bloodTrail < 0) this.bloodTrail = 0;
 		if(this.isFrozen){
 			this.life -= dt;
 			if(this.life <= 0)
@@ -354,7 +356,13 @@ class giblet_gore extends giblet{
 			return;
 		}
 		super.update();
-	}  
+	}
+	draw(ctx = renderContext){
+		var lpos = this.getLastPos();
+		if(this.bloodTrail > 0)
+			drawBloodTrail(lpos, this.pos, this.bloodTrail);
+		super.draw(ctx);
+	}
 }
 class giblet_wood extends giblet{
     constructor(){
@@ -405,11 +413,10 @@ class giblet_slime extends giblet{
 		super();
         this.gravity = 900;
         this.airFriction = 0.925;
-        this.rotation = Math.PI / 2 * (Math.floor(Math.random() * 4) - 2);
-        this.rotVel = 0;
-        this.isFlipped = Math.random() >= 0.5;
         this.spriteNum = Math.floor(Math.random() * 4);
-        this.life = Math.random() * 3 + 5;
+        this.life = Math.random();
+		this.bloodTrail = Math.random() * 2 + 1.5;
+		this.btDeteriorate = 25 - (Math.random() * Math.random() * 15);
 		this.isFrozen = false;
 	}
 	
@@ -439,17 +446,28 @@ class giblet_slime extends giblet{
 		if(this.isFrozen) return;
 		super.handleTerrainCollisions(terrains);
 	}
+		
+	destroy(){
+		this.draw(goreContext);
+		console.log(this);
+		this.remove();
+	}
 	
 	update(){
+		if(this.bloodTrail > 0) this.bloodTrail -= dt * this.btDeteriorate;
+		if(this.bloodTrail < 0) this.bloodTrail = 0;
 		if(this.isFrozen){
 			this.life -= dt;
 			if(this.life <= 0)
-				this.remove();
+				this.destroy();
 			return;
 		}
 		super.update();
 	}    
-	draw(){
+	draw(ctx = renderContext){
+		if(this.bloodTrail > 0)
+			drawBloodTrail(this.getLastPos(), this.pos, this.bloodTrail, color.fromHex("#0C0"));
+		this.updateLVPos();
         var sprBox = new spriteBox(
             new vec2(8 * this.spriteNum, 16),
             new vec2(8)
@@ -462,6 +480,6 @@ class giblet_slime extends giblet{
         sprite.rotation = this.rotation;
         sprite.isFlippedX = this.isFlippedX;
 
-        sprite.draw();
+        sprite.draw(ctx);
     }
 }

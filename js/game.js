@@ -111,15 +111,40 @@ function loseGame(score){
 	state = new gameState_gameoverScreen(score);
 }
 
-function drawBloodTrail(startPos, endPos, thickness){
-	goreContext.strokeStyle = color.fromHex("#A00").toRGBA();
+function drawBloodTrail(startPos, endPos, thickness, col = color.fromHex("#A00")){
+	goreContext.strokeStyle = col.toRGBA();
 	goreContext.lineWidth = thickness;
 	
 	goreContext.beginPath();
 	goreContext.moveTo(startPos.x, startPos.y);
 	goreContext.lineTo(endPos.x, endPos.y);
 	goreContext.stroke();
+	goreContext.stroke();
+	goreContext.stroke();
+	goreContext.stroke();
 }
+function drawBloodSplotch(pos, size, col = color.fromHex("#A00")){
+	var sideCount = Math.min(Math.max(3, size / 2), 12);
+	var angInc = Math.PI * 2 / sideCount;
+	
+	goreContext.fillStyle = col.toRGBA();
+	goreContext.beginPath();
+	var dmove = false;
+	for(let i = sideCount; i > 0; i--){
+		let ang = i * angInc + Math.random() * angInc;
+		let tpos = vec2.fromAng(ang, size).plus(pos);
+		if(!dmove)
+			goreContext.moveTo(tpos.x, tpos.y);
+		else 
+			goreContext.lineTo(tpos.x, tpos.y);
+		dmove = true;
+	}
+	goreContext.closePath();
+	goreContext.fill();
+	goreContext.fill();
+	goreContext.fill();
+}
+
 function drawLine(startPos, endPos, color = color.Black(), lineWidth = 1){
 	renderContext.strokeStyle = color.toRGBA();
 	renderContext.lineWidth = lineWidth;
