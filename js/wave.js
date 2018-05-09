@@ -17,6 +17,7 @@ class wave{
         this.enemyGroupThreshold = 1 + dif;
         this.enemySpawnInterval = Math.max(7.5 - (dif / 2), 3.5);
         this.enemyDifficulty = dif;
+		this.spawnPool = wave.getSpawnPool(dif);
 
         this.cardSpawnInterval = 6.5;
         this.cardSpawnThreshold = 2 + (dif / 4);
@@ -28,6 +29,50 @@ class wave{
 	
 	static wavePoints(waveNum){
 		return (waveNum) * 250;
+	}
+	static getSpawnPool(difficulty){
+		switch(difficulty){
+			case 1:
+				return [
+				[enemy_slime, 1],
+				[enemy_slime, 1],
+				[enemy_zombie, 1]
+				];
+			case 2:
+				return [
+				[enemy_slime, 1],
+				[enemy_slime, 2],
+				[enemy_zombie, 1]
+				];
+			case 3:
+				return [
+				[enemy_slime, 1],
+				[enemy_slime, 2],
+				[enemy_slime, 2],
+				[enemy_zombie, 1],
+				[enemy_zombie, 1]
+				];
+			case 4:
+				return [
+				[enemy_slime, 1],
+				[enemy_slime, 2],
+				[enemy_zombie, 1],
+				[enemy_zombie, 1],
+				[enemy_eyeball, 1]
+				];
+				
+		}
+		return [
+			[enemy_slime, 1],
+			[enemy_slime, 2],
+			[enemy_slime, 2],
+			[enemy_zombie, 1],
+			[enemy_zombie, 1],
+			[enemy_zombie, 1],
+			[enemy_eyeball, 1],
+			[enemy_eyeball, 1],
+			[enemy_eyeball, 1]
+		];
 	}
 	
     spawnCard(){
@@ -47,13 +92,18 @@ class wave{
         this._nextGroupSpawn = state.timeElapsed + 1000 * (this.enemySpawnInterval * 2.5);
     }
     spawnEnemy(){
-        var e = enemy.randomEnemy();
+        var e = this.chooseRandomEnemy();
         e.spawn();
         this.enemiesLeft -= 1;
         this._nextEnemySpawn = state.timeElapsed + 1000 *
             (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
     }
 
+	chooseRandomEnemy(){
+		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
+		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
+	}
+	
     update(){
 		this.timeElapsed += dt;
 		
