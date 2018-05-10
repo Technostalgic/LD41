@@ -198,6 +198,7 @@ class gameState_pauseScreen extends gameState{
 	}
 	
 	resumeGame(){
+        resumeMusic();
 		state = this.resumeState;
 	}
 	
@@ -314,6 +315,7 @@ class gameState_gamePlay extends gameState{
 	}
 
 	pauseGame(){
+        pauseMusic();
 		state = new gameState_pauseScreen(this);
 	}
     addScore(points){

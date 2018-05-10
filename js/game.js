@@ -55,6 +55,7 @@ function load(){
 	loadGraphic("explosionBlue.png", "effect_explosionBlue");
 	loadGraphic("spawnWarning.png", "spawnWarning");
 
+	loadSound("music.mp3", "music");
 	loadSound("enemyHit.wav", "enemyHit");
 	loadSound("playerHit.wav", "playerHit");
 	loadSound("explosion.wav", "explosion");
@@ -237,8 +238,20 @@ function playSound(sound, forceRepeat = true){
 	if(forceRepeat) sound.currentTime = 0;
 	sound.play();
 }
+function startLoopingMusic(){
+	sfx.music.play();
+	sfx.music.onended = function(){ sfx.music.play(); }
+}
+function pauseMusic(){
+	sfx.music.pause();
+}
+function resumeMusic(){
+	sfx.music.play();
+}
+
 function startGame(){
 	clearGore();
+	startLoopingMusic();
 	state = new gameState_gamePlay();
 }
 
