@@ -171,8 +171,26 @@ class corpse extends prop{
         this.isFlipped = false;
 		this.size = 1;
         this.health = 15;
+		
+		this.isBleeding = true;
     }
 
+	terrainCollide(terrain, colbox){
+		this.isBleeding = false;
+		super.terrainCollide(terrain, colbox);
+		if(this.vel.distance >= 200){
+			drawBloodSplotch(colbox.center, (this.vel.distance - 200) / 50 + 5);
+			for(var i = (this.vel.distance - 200) / 25 + 3; i > 0; i--){
+				var bd = new blood();
+				if(Math.random() >= 0.75)
+					bd = new blood_drip;
+				
+				bd.pos = this.pos.plus(new vec2(this.hitBox.getBoundingBox().width / 2 * Math.random(), this.hitBox.getBoundingBox().height / 2 * Math.random()));
+				bd.vel = vec2.fromAng(Math.PI * 2 * Math.random()), (Math.random() + 0.5) * this.vel.distance();
+				bd.add();
+			}
+		}
+	}
     handleObjectCollisions(){}
 
 	inflate(factor){
@@ -201,6 +219,22 @@ class corpse extends prop{
         return this.fallingSprite;
     }
 
+	update(){
+		super.update();
+		if(!this.onGround){
+			if(this.isBleeding){
+				if(this.vel.distance() / 100 * dt > Math.random()){
+					var bd = new blood();
+					if(Math.random() >= 0.75)
+						bd = new blood_drip;
+					
+					bd.pos = this.pos.plus(new vec2(this.hitBox.getBoundingBox().width / 2 * Math.random(), this.hitBox.getBoundingBox().height / 2 * Math.random()));
+					bd.vel = this.vel.plus(vec2.fromAng(Math.PI * 2 * Math.random()), Math.random() * 150);
+					bd.add();
+				}
+			}
+		}
+	}
     draw(){
 		this.updateLVPos();
         var sprite = new spriteContainer(this.spritesheet, this.getSpriteBox());
@@ -326,8 +360,15 @@ class giblet_gore extends giblet{
 	terrainCollide(terrain){
 		if(terrain instanceof terrain_platform) return;
 		drawBloodSplotch(this.pos, Math.min(this.vel.distance() / 75, 5) + Math.random());
-		if(!this.onGround) 
+		if(!this.onGround){
 			this.isFrozen = true;
+			if(Math.random() >= 0.5){
+				var drp = new blood_drip();
+				drp.pos = colbox.center;
+				bld.vel = vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150);
+				bld.add();
+			}
+		}
 		super.terrainCollide(terrain);
 	}
 	handleTerrainCollisions(terrains){
@@ -482,4 +523,48 @@ class giblet_slime extends giblet{
 
         sprite.draw(ctx);
     }
+}
+
+class blood extends giblet{
+	constructor(){
+		super();
+		this.bloodTrail = Math.random() * 0.5 + 0.5;
+		this.btDeteriorate = 15 - (Math.random() * Math.random() * 10);
+		this.airFriction = 0.8;
+		this.gravity = 1250;
+		this.col = color.fromHex("#A00");
+	}
+	
+	handleTerrainCollisions(){}
+	handleObjectCollisions(){}
+	
+	update(){
+		this.bloodTrail -= dt * this.btDeteriorate;
+		super.update();
+	}
+	
+	draw(){
+		var lpos = this.getLastPos();
+		if(this.bloodTrail > 0)
+			drawBloodTrail(lpos, this.pos, this.bloodTrail, this.col);
+		else this.destroy();
+		this.updateLVPos();
+	}
+}
+class blood_drip extends blood{
+	constructor(){
+		super();
+		this.bloodTrail = Math.random() * 2 + 0.5;
+		this.btDeteriorate = Math.random() + 1;
+		this.airFriction = Math.random() * 0.2 + 0.4;
+		this.gravity = 600 + Math.random() * 700;
+	}
+	
+	draw(){
+		var lpos = this.getLastPos();
+		if(this.bloodTrail > 0)
+			drawBloodTrail(lpos, this.pos, 0.95);
+		else this.destroy();
+		this.updateLVPos();
+	}
 }

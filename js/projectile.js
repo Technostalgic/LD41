@@ -41,8 +41,35 @@ class projectile extends physicsObject{
         var force = this.vel.normalized(this.knockback);
         obj.vel = obj.vel.plus(force);
 
-        if(obj.damage)
+        if(obj.damage){
             obj.damage(this.dmg, colbox);
+			if(obj instanceof enemy_zombie || obj instanceof enemy_eyeball || obj instanceof player){
+				drawBloodSplotch(colbox.center, Math.random() * 2 + 1);
+				for(let i = 3; i > 0; i--){
+					let bld = new blood();
+					bld.pos = colbox.center;
+					bld.vel = this.vel.plus(vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150));
+					bld.add();
+				}
+				
+				if(Math.random() * Math.random() * this.dmg > 4){
+					let drp = new blood_drip();
+					drp.pos = colbox.center;
+					drp.vel = this.vel.multiply(0.45).plus(vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 350));
+					drp.add();
+				}
+			}
+			else if(obj instanceof enemy_slime){
+				drawBloodSplotch(colbox.center, Math.random() * 2 + 1, color.fromHex("#0C0"));
+				for(let i = 3; i > 0; i--){
+					let bld = new blood();
+					bld.col = color.fromHex("#0C0");
+					bld.pos = colbox.center;
+					bld.vel = this.vel.plus(vec2.fromAng(obj.pos.minus(this.pos).direction() + (Math.random() - 0.5) * Math.PI, Math.random() * 200));
+					bld.add();
+				}
+			}
+		}
 
         this.burst(colbox);
     }

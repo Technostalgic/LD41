@@ -13,103 +13,120 @@ class wave{
         this.difficulty = dif;
         this.enemiesLeft = 6 + dif * 2;
 		this.enemyThreshold = 2 + (dif) / 2;
-        this.enemyGroupSize = 1 + Math.floor(dif / 2);
-        this.enemyGroupThreshold = 1 + dif;
+        this.enemyGroupSize = dif <= 7 ? 3 : 4; //1 + Math.floor(dif / 2);
+        this.enemyGroupThreshold = Math.min(1 + dif / 1.75, 4);
         this.enemySpawnInterval = Math.max(7.5 - (dif / 2), 3.5);
         this.enemyDifficulty = dif;
-		this.spawnPool = wave.getSpawnPool(dif);
+		
+		this.boss = null;
+		this.spawnPool = this.getSpawnPool(dif);
 
         this.cardSpawnInterval = 6.5;
         this.cardSpawnThreshold = 2 + (dif / 4);
 
         this._nextEnemySpawn = 0;
-        this._nextGroupSpawn = 0;
+        this._nextGroupSpawn = 10;
         this._nextCardSpawn = 0;
     }
 	
 	static wavePoints(waveNum){
 		return (waveNum) * 250;
 	}
-	static getSpawnPool(difficulty){
-		switch(difficulty){
+	
+	getSpawnPool(difficulty){
+		switch(difficulty = this.difficulty){
 			case 1:
+				this.boss = [[enemy_slime, 2]];
 				return [
-				[enemy_slime, 1],
-				[enemy_slime, 1],
+				[[enemy_slime, 1]],
 				];
 			case 2:
+				this.boss = [[enemy_zombie, 2]];
 				return [
-				[enemy_slime, 1],
-				[enemy_slime, 2],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1]
+				[[enemy_zombie, 1]],
+				[[enemy_zombie, 1], [enemy_zombie, 1], [enemy_zombie, 1]],
 				];
 			case 3:
 				return [
-				[enemy_slime, 1],
-				[enemy_slime, 2],
-				[enemy_slime, 2],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1]
+				[[enemy_slime, 1]],
+				[[enemy_zombie, 1]],
+				[[enemy_zombie, 1], [enemy_zombie, 1]]
 				];
 			case 4:
+				this.boss = [[enemy_slime, 3]];
 				return [
-				[enemy_slime, 1],
-				[enemy_slime, 2],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1],
-				[enemy_zombie, 2],
+				[[enemy_slime, 1]],
+				[[enemy_slime, 1]],
+				[[enemy_zombie, 1]],
+				[[enemy_zombie, 1], [enemy_slime, 2], [enemy_zombie, 1]]
 				];
 			case 5:
+				this.boss = [[enemy_eyeball, 2]];
 				return [
-				[enemy_slime, 2],
-				[enemy_slime, 3],
-				[enemy_zombie, 2],
-				[enemy_zombie, 2],
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 1]],
+				[[enemy_zombie, 1], [enemy_eyeball, 1], [enemy_zombie, 1]],
 				];
 			case 6:
+				this.boss = [[enemy_slime, 3], [enemy_slime, 3]];
 				return [
-				[enemy_slime, 1],
-				[enemy_slime, 2],
-				[enemy_slime, 2],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1],
-				[enemy_zombie, 2],
-				[enemy_eyeball, 1],
-				[enemy_eyeball, 1]
+				[[enemy_slime, 1], [enemy_slime, 2], [enemy_slime, 1]],
+				[[enemy_zombie, 1]],
+				[[enemy_zombie, 2]],
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 1], [enemy_slime, 2], [enemy_slime, 2]],
+				];
+			case 7:
+				this.boss = [[enemy_slime, 3], [enemy_eyeball, 2]];
+				return [
+				[[enemy_slime, 1], [enemy_slime, 2], [enemy_slime, 3]],
+				[[enemy_slime, 2], [enemy_slime, 2]],
+				[[enemy_zombie, 1], [enemy_zombie, 1]],
+				[[enemy_zombie, 2]],
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 1], [enemy_eyeball, 1]],
+				];
+			case 8:
+				this.boss = [[enemy_zombie, 2], [enemy_zombie, 2]];
+				return [
+				[[enemy_slime, 2], [enemy_slime, 2], [enemy_slime, 3]],
+				[[enemy_slime, 1], [enemy_slime, 1]],
+				[[enemy_zombie, 1], [enemy_zombie, 1]],
+				[[enemy_zombie, 2]],
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 2]],
 				];
 				
 			// special level
-			case 10:
-				return [
-				[enemy_slime, 3],
-				[enemy_zombie, 2],
-				[enemy_eyeball, 2]
-				];
+			//case 10:
+			//	return [
+			//	[enemy_slime, 3],
+			//	[enemy_zombie, 2],
+			//	[enemy_eyeball, 2]
+			//	];
 		}
-		if(difficulty < 10)
-			return [
-				[enemy_slime, 1],
-				[enemy_slime, 2],
-				[enemy_slime, 3],
-				[enemy_zombie, 1],
-				[enemy_zombie, 1],
-				[enemy_zombie, 2],
-				[enemy_eyeball, 1],
-				[enemy_eyeball, 1],
-				[enemy_eyeball, 2]
-			];
-			
+		//if(difficulty < 10)
+		//	return [
+		//		[enemy_slime, 1],
+		//		[enemy_slime, 2],
+		//		[enemy_slime, 3],
+		//		[enemy_zombie, 1],
+		//		[enemy_zombie, 1],
+		//		[enemy_zombie, 2],
+		//		[enemy_eyeball, 1],
+		//		[enemy_eyeball, 1],
+		//		[enemy_eyeball, 2]
+		//	];
+		
+		this.boss = [[enemy_eyeball, 2], [enemy_eyeball, 2]];
 		return [
-			[enemy_slime, 2],
-			[enemy_slime, 3],
-			[enemy_zombie, 1],
-			[enemy_zombie, 2],
-			[enemy_zombie, 2],
-			[enemy_eyeball, 1],
-			[enemy_eyeball, 2],
-			[enemy_eyeball, null]
+			[[enemy_slime, 2], [enemy_slime, 2], [enemy_slime, 3]],
+			[[enemy_slime, 1], [enemy_slime, 1]],
+			[[enemy_zombie, 1], [enemy_zombie, 1]],
+			[[enemy_zombie, 2]],
+			[[enemy_eyeball, 1]],
+			[[enemy_eyeball, 2]],
 		];
 	}
 	
@@ -120,28 +137,22 @@ class wave{
         this._nextCardSpawn = state.timeElapsed + 1000 * 
             (this.cardSpawnInterval + Math.random() * this.cardSpawnInterval * 0.25);
     }
-    spawnEnemyGroup(){
-        var count = this.enemyGroupSize + (Math.random() * 0.25 * this.enemyGroupSize);
-        for(let i = count; i > 0; i--){
-            var e = this.chooseRandomEnemy();
-            e.spawn();
-            this.enemiesLeft -= 1;
-        }
-        this._nextGroupSpawn = this.timeElapsed + 1 * (this.enemySpawnInterval * 2.5);
-    }
-    spawnEnemy(){
-        var e = this.chooseRandomEnemy();
-        e.spawn();
+    spawnEnemy(){		
+        var e = this.chooseRandomEnemySpawns();
+		if(this.boss && this.enemiesLeft <= 1) e = this.boss;
+		
+		for(var i = e.length - 1; i >= 0; i--)
+			new e[i][0](e[i][1]).spawn();
         this.enemiesLeft -= 1;
         this._nextEnemySpawn = this.timeElapsed + 1 *
             (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
     }
 
-	chooseRandomEnemy(){
-		return new enemy_zombie(1);
+	chooseRandomEnemySpawns(){
+		return [[enemy_zombie, 1]];
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
-		return new this.spawnPool[poolInd][0](this.spawnPool[poolInd][1])
+		return this.spawnPool[poolInd];
 	}
 	
     update(){
@@ -171,13 +182,6 @@ class wave{
 		if(state.enemies.length < this.enemyThreshold)
 			if(this.timeElapsed >= this._nextEnemySpawn)
 				this.spawnEnemy();
-
-        if(state.enemies.length <= this.enemyGroupThreshold && this.timeElapsed >= this._nextGroupSpawn){
-            if(Math.random() >= 0.6)
-                this.spawnEnemyGroup();
-            else this._nextGroupSpawn = this.timeElapsed + 1000 *
-                (this.enemySpawnInterval + Math.random() * 0.5 * this.enemySpawnInterval);
-        }
     }
 	
 	drawStartingText(){

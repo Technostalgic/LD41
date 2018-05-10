@@ -124,7 +124,7 @@ function drawBloodTrail(startPos, endPos, thickness, col = color.fromHex("#A00")
 	goreContext.stroke();
 }
 function drawBloodSplotch(pos, size, col = color.fromHex("#A00")){
-	var sideCount = Math.min(Math.max(3, size / 2), 12);
+	var sideCount = Math.min(Math.max(3, size / 1.5), 12);
 	var angInc = Math.PI * 2 / sideCount;
 	
 	goreContext.fillStyle = col.toRGBA();

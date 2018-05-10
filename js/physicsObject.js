@@ -59,9 +59,9 @@ class physicsObject{
         var coll = obj.hitBox.getCollision(this.hitBox)
         if(coll) this.objectCollide(obj, coll);
     }
-    objectCollide(obj){
+    objectCollide(obj, colbox){
     }
-    terrainCollide(terrain){
+    terrainCollide(terrain, colbox){
     }
 
     add(){

@@ -40,12 +40,13 @@ class effect{
         r.scale = scale;
         r.add();
     }
-    static fx_explosionBlue(pos){
+    static fx_explosionBlue(pos, vel, spread){
         var r = effect.build(gfx.effect_explosionBlue, 7, 33);
         r.pos = pos.clone();
         r.add();
     }
-
+	
+	
     add(){
         state.effects.push(this);
     }

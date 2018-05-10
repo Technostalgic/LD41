@@ -60,7 +60,9 @@ class enemy extends lifeForm{
         playSound(sfx.enemyHit);
 		super.damage(dmg, colbox);
         this.findPlayer();
-        if(colbox) effect.fx_hit(colbox.center);
+        if(colbox) {
+			effect.fx_hit(colbox.center);
+		}
     }
     destroy(){
         state.addScore(this.points);
@@ -193,6 +195,11 @@ class enemy_zombie extends enemy{
         this.vel.y = -jumpPow;
     }
     
+	damage(dmg, colbox){
+		super.damage(dmg, colbox);
+		if(this.health <= 0)
+			drawBloodSplotch(colbox.center, Math.random() * 5 + 5);
+	}
     destroy(){
         this.spawnCorpse();
         super.destroy();
@@ -223,7 +230,7 @@ class enemy_zombie extends enemy{
 
     hitPlayer(plr, colbox){
         super.hitPlayer(plr, colbox);
-        plr.damage(15);
+        plr.damage(15 + (this.size - 1) * 10);
 
         var force = Math.sign(plr.pos.x - this.pos.x) * 300;
         plr.vel.x = force;
@@ -405,7 +412,12 @@ class enemy_eyeball extends enemy{
 
         plr.damage(10);
     }
-
+	
+	damage(dmg, colbox){
+		super.damage(dmg, colbox);
+		if(this.health <= 0)
+			drawBloodSplotch(colbox.center, Math.random() * 5 + 6);
+	}
     destroy(){
         this.spawnCorpse();
 		if(this.size > 1){
@@ -512,7 +524,7 @@ class enemy_slime extends enemy{
     }
     seekPlayer(){
         if(!this.onGround) return;
-
+		
         this.playerSeekCountdown -= dt;
         if(this.playerSeekCountdown > 0)
             return;
@@ -594,6 +606,8 @@ class enemy_slime extends enemy{
     update(){
         if(!super.update()) return false;
         this.seekPlayer();
+		if(!onGround)
+			this.vel.x = this.xMove * 225;
         return true;
     }
     draw(){
