@@ -316,7 +316,7 @@ class giblet extends prop{
         }
     }
 	
-    terrainCollide(terrain){
+    terrainCollide(terrain, colbox){
         if(terrain instanceof terrain_platform) return;
         this.life -= dt;
         if(this.life <= 0)
@@ -357,7 +357,7 @@ class giblet_gore extends giblet{
 		this.btDeteriorate = 10 - (Math.random() * Math.random() * 8);
 	}
 	
-	terrainCollide(terrain){
+	terrainCollide(terrain, colbox){
 		if(terrain instanceof terrain_platform) return;
 		drawBloodSplotch(this.pos, Math.min(this.vel.distance() / 75, 5) + Math.random());
 		if(!this.onGround){
@@ -365,8 +365,8 @@ class giblet_gore extends giblet{
 			if(Math.random() >= 0.5){
 				var drp = new blood_drip();
 				drp.pos = colbox.center;
-				bld.vel = vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150);
-				bld.add();
+				drp.vel = vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150);
+				drp.add();
 			}
 		}
 		super.terrainCollide(terrain);
@@ -467,7 +467,7 @@ class giblet_slime extends giblet{
     }
 	objectCollide(obj, colbox){
 		if(obj instanceof destructableObject)
-			obj.damage(3);
+			obj.damage(3, colbox);
 		
 		var force = vec2.fromAng(this.vel.direction(), 100);
 		obj.vel = obj.vel.plus(force);
@@ -490,7 +490,6 @@ class giblet_slime extends giblet{
 		
 	destroy(){
 		this.draw(goreContext);
-		console.log(this);
 		this.remove();
 	}
 	
@@ -507,7 +506,7 @@ class giblet_slime extends giblet{
 	}    
 	draw(ctx = renderContext){
 		if(this.bloodTrail > 0)
-			drawBloodTrail(this.getLastPos(), this.pos, this.bloodTrail, color.fromHex("#0C0"));
+			drawBloodTrail(this.getLastPos(), this.pos, this.bloodTrail, slimeColor);
 		this.updateLVPos();
         var sprBox = new spriteBox(
             new vec2(8 * this.spriteNum, 16),
@@ -532,7 +531,7 @@ class blood extends giblet{
 		this.btDeteriorate = 15 - (Math.random() * Math.random() * 10);
 		this.airFriction = 0.8;
 		this.gravity = 1250;
-		this.col = color.fromHex("#A00");
+		this.col = goreColor;
 	}
 	
 	handleTerrainCollisions(){}

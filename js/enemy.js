@@ -5,6 +5,9 @@
 ///	twitter @technostalgicGM
 ///
 
+var slimeColor = color.fromHex("#0B0");
+var goreColor = color.fromHex("#900");
+
 class enemy extends lifeForm{
     constructor(){
         super();
@@ -198,7 +201,7 @@ class enemy_zombie extends enemy{
 	damage(dmg, colbox){
 		super.damage(dmg, colbox);
 		if(this.health <= 0)
-			drawBloodSplotch(colbox.center, Math.random() * 5 + 5);
+			drawBloodSplotch(colbox.center, Math.random() * 2 + 2);
 	}
     destroy(){
         this.spawnCorpse();
@@ -416,7 +419,7 @@ class enemy_eyeball extends enemy{
 	damage(dmg, colbox){
 		super.damage(dmg, colbox);
 		if(this.health <= 0)
-			drawBloodSplotch(colbox.center, Math.random() * 5 + 6);
+			drawBloodSplotch(colbox.center, Math.random() * 3 + 2);
 	}
     destroy(){
         this.spawnCorpse();
@@ -606,8 +609,8 @@ class enemy_slime extends enemy{
     update(){
         if(!super.update()) return false;
         this.seekPlayer();
-		if(!onGround)
-			this.vel.x = this.xMove * 225;
+		//if(!this.onGround)
+		//	this.vel.x = this.xMove * 225;
         return true;
     }
     draw(){

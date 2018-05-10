@@ -137,7 +137,7 @@ class wave{
         this._nextCardSpawn = state.timeElapsed + 1000 * 
             (this.cardSpawnInterval + Math.random() * this.cardSpawnInterval * 0.25);
     }
-    spawnEnemy(){		
+    spawnEnemy(){
         var e = this.chooseRandomEnemySpawns();
 		if(this.boss && this.enemiesLeft <= 1) e = this.boss;
 		
@@ -149,7 +149,7 @@ class wave{
     }
 
 	chooseRandomEnemySpawns(){
-		return [[enemy_zombie, 1]];
+		//return [[enemy_zombie, 1]];
 		
 		var poolInd = Math.floor(Math.random() * this.spawnPool.length);
 		return this.spawnPool[poolInd];

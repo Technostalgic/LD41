@@ -339,7 +339,8 @@ class gameState_gamePlay extends gameState{
         });
     }
     draw(){
-		renderContext.drawImage(goreCanvas, 0, 0, renderCanvas.width, renderCanvas.height);
+        renderContext.drawImage(goreCanvas, 0, 0, renderCanvas.width, renderCanvas.height);
+        handleGoreCanvasDrying();
 		
         this.physObjects.forEach(function(obj){
             if(obj instanceof player) return;

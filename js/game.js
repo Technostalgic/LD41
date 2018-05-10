@@ -111,7 +111,7 @@ function loseGame(score){
 	state = new gameState_gameoverScreen(score);
 }
 
-function drawBloodTrail(startPos, endPos, thickness, col = color.fromHex("#A00")){
+function drawBloodTrail(startPos, endPos, thickness, col = goreColor){
 	goreContext.strokeStyle = col.toRGBA();
 	goreContext.lineWidth = thickness;
 	
@@ -119,11 +119,11 @@ function drawBloodTrail(startPos, endPos, thickness, col = color.fromHex("#A00")
 	goreContext.moveTo(startPos.x, startPos.y);
 	goreContext.lineTo(endPos.x, endPos.y);
 	goreContext.stroke();
-	goreContext.stroke();
-	goreContext.stroke();
-	goreContext.stroke();
+	//goreContext.stroke();
+	//goreContext.stroke();
+	//goreContext.stroke();
 }
-function drawBloodSplotch(pos, size, col = color.fromHex("#A00")){
+function drawBloodSplotch(pos, size, col = goreColor){
 	var sideCount = Math.min(Math.max(3, size / 1.5), 12);
 	var angInc = Math.PI * 2 / sideCount;
 	
@@ -141,8 +141,8 @@ function drawBloodSplotch(pos, size, col = color.fromHex("#A00")){
 	}
 	goreContext.closePath();
 	goreContext.fill();
-	goreContext.fill();
-	goreContext.fill();
+	//goreContext.fill();
+	//goreContext.fill();
 }
 
 function drawLine(startPos, endPos, color = color.Black(), lineWidth = 1){
@@ -266,6 +266,15 @@ function printScreen(){
 	scaleContext.drawImage(renderCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 	scaleContext.drawImage(textCanvas, 0, 0, scaleCanvas.width, scaleCanvas.height);
 	textContext.globalAlpha = 1;
+}
+function handleGoreCanvasDrying(){
+	return;
+	goreContext.globalCompositeOperation = "destination-in";
+
+	goreContext.fillStyle = color.fromHex("#888", 0.1).toRGBA();
+	goreContext.fillRect(0, 0, goreCanvas.width, goreCanvas.height);
+	
+	goreCanvas.globalCompositeOperation = "source-over"
 }
 
 function getRandomScreenPos(){

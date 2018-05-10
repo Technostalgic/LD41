@@ -60,10 +60,10 @@ class projectile extends physicsObject{
 				}
 			}
 			else if(obj instanceof enemy_slime){
-				drawBloodSplotch(colbox.center, Math.random() * 2 + 1, color.fromHex("#0C0"));
+				drawBloodSplotch(colbox.center, Math.random() * 2 + 1, slimeColor);
 				for(let i = 3; i > 0; i--){
 					let bld = new blood();
-					bld.col = color.fromHex("#0C0");
+					bld.col = slimeColor;
 					bld.pos = colbox.center;
 					bld.vel = this.vel.plus(vec2.fromAng(obj.pos.minus(this.pos).direction() + (Math.random() - 0.5) * Math.PI, Math.random() * 200));
 					bld.add();
@@ -391,7 +391,7 @@ class proj_lazer extends projectile{
 
     objectCollide(obj, colbox){
         if(obj.damage)
-            obj.damage(this.dmg * dt);
+            obj.damage(this.dmg * dt, colbox);
 
         effect.fx_explosionBlue(colbox.center);
         obj.vel = this.vel.clone();
@@ -505,7 +505,7 @@ class explosion extends AOE{
         var fdir = obj.pos.minus(this.pos).direction();
         var force = vec2.fromAng(fdir, this.force);
         if(obj.damage)
-            obj.damage(this.dmg);
+            obj.damage(this.dmg, hitBox);
         obj.vel = force;
     }
     handleObjectCollisions(physObjs){
