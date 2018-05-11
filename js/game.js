@@ -236,7 +236,8 @@ function clearScreen(col = color.Grey()){
 	textContext.clearRect(0,0, textCanvas.width, textCanvas.height);
 }
 function clearGore(){
-	goreContext.clearRect(0, 0, goreCanvas.width, goreCanvas.height);
+	goreContext.fillStyle = "#999";
+	goreContext.fillRect(0, 0, goreCanvas.width, goreCanvas.height);
 }
 
 function playSound(sound, forceRepeat = true){
@@ -288,13 +289,13 @@ function printScreen(){
 	textContext.globalAlpha = 1;
 }
 function handleGoreCanvasDrying(){
-	return;
-	goreContext.globalCompositeOperation = "destination-in";
+	if(dt * 5 < Math.random()) return;
+	goreContext.globalCompositeOperation = "source-over";
 
-	goreContext.fillStyle = color.fromHex("#888", 0.1).toRGBA();
+	goreContext.fillStyle = color.fromHex("#888", 0.004).toRGBA();
 	goreContext.fillRect(0, 0, goreCanvas.width, goreCanvas.height);
 	
-	goreCanvas.globalCompositeOperation = "source-over"
+	goreCanvas.globalCompositeOperation = "source-over";
 }
 
 function getRandomScreenPos(){

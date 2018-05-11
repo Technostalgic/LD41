@@ -168,7 +168,10 @@ class proj_sniper extends projectile{
         super();
         this.dmg = 10;
         this.knockback = 275;
-
+        this.ignoreTypes.push(cardCollectable);
+        this.ignoreTypes.push(blood);
+        this.ignoreTypes.push(giblet);
+        
         this.colRay = null;
         this.rayCols = [];
     }

@@ -175,21 +175,27 @@ class corpse extends prop{
         this.isFlipped = false;
 		this.size = 1;
         this.health = 15;
+        this.lastVel = null;
 		
 		this.isBleeding = Math.random() * 0.5 + 0.5;
     }
 
 	terrainCollide(terrain, colbox){
-		super.terrainCollide(terrain, colbox);
-		if(this.vel.distance >= 200){
-			drawBloodSplotch(colbox.center, (this.vel.distance - 200) / 50 + 5);
-			for(var i = (this.vel.distance - 200) / 25 + 3; i > 0; i--){
-				var bd = new blood();
-				if(Math.random() >= 0.75)
-					bd = new blood_drip;
+        super.terrainCollide(terrain, colbox);
+        if(terrain instanceof terrain_platform) return;
+
+        var vdist = Math.min(this.getlastVel().distance(), 500);
+		if(vdist >= 100){
+			drawBloodSplotch(colbox.center, (vdist - 100) / 50 + 5);
+			for(var i = (vdist - 100) / 50 + 1; i > 0; i--){
+                var bd = new blood();
+                
+                if(vdist >= 150)
+				    if(Math.random() >= 0.75)
+					    bd = new blood_drip;
 				
 				bd.pos = this.pos.plus(new vec2(this.hitBox.getBoundingBox().width / 2 * Math.random(), this.hitBox.getBoundingBox().height / 2 * Math.random()));
-				bd.vel = vec2.fromAng(Math.PI * 2 * Math.random()), (Math.random() + 0.5) * this.vel.distance();
+				bd.vel = vec2.fromAng(Math.PI * 2 * Math.random(), (Math.random() + 0.5) * vdist);
 				bd.add();
 			}
 		}
@@ -223,6 +229,12 @@ class corpse extends prop{
         return this.fallingSprite;
     }
 
+    getlastVel(){
+        if(!this.lastVel)
+            return this.vel;
+        return this.lastVel;
+    }
+
 	update(){
         super.update();
         if(this.isBleeding > 0)
@@ -231,7 +243,6 @@ class corpse extends prop{
             this.isBleeding = 0;
 		if(!this.onGround){
 			if(this.isBleeding > 0){
-                console.log(this.isBleeding);
 				if(this.isBleeding * 100 * dt > Math.random()){
 					var bd = new blood();
 					if(Math.random() >= 0.75)
@@ -242,7 +253,8 @@ class corpse extends prop{
 					bd.add();
 				}
 			}
-		}
+        }
+        this.lastVel = this.vel.clone();
 	}
     draw(){
 		this.updateLVPos();

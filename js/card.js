@@ -495,7 +495,7 @@ class card_crowbar extends card{
         this.name = "Crowbar";
         this.graphic = 10;
         this.type = "ATK - Melee";
-        this.text = ["Damage: 10", "Anti-headcrab"];
+        this.text = ["Damage: 10", "Anti-headcrab", "Opens crates"];
 
         this.uses = 4;
         this.coolDown = 150;

@@ -5,7 +5,7 @@
 ///	twitter @technostalgicGM
 ///
 
-var slimeColor = color.fromHex("#0B0");
+var slimeColor = color.fromHex("#0C0");
 var goreColor = color.fromHex("#900");
 
 class enemy extends lifeForm{

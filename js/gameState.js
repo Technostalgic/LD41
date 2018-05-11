@@ -351,11 +351,11 @@ class gameState_gamePlay extends gameState{
         renderContext.drawImage(goreCanvas, 0, 0, renderCanvas.width, renderCanvas.height);
         handleGoreCanvasDrying();
 		
-        this.physObjects.forEach(function(obj){
-            if(obj instanceof player) return;
-            if(obj instanceof enemy) return;
-            obj.draw();
-        });
+        for(let i = this.physObjects.length - 1; i >= 0; i--){
+            if(this.physObjects[i] instanceof player) continue;
+            if(this.physObjects[i] instanceof enemy) continue;
+            this.physObjects[i].draw();
+        };
         this.enemies.forEach(function(en){
             en.draw();
         })
