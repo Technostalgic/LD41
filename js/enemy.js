@@ -564,6 +564,7 @@ class enemy_slime extends enemy{
     }
 
 	destroy(){
+        playSound(sfx.corpseBurst);
 		super.destroy();
 		if(this.size > 1){
 			this.spawnBabies();

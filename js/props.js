@@ -209,6 +209,7 @@ class corpse extends prop{
             this.burst();
     }
     burst(){
+        playSound(sfx.corpseBurst);
         var advel = this.vel.clone();
         if(this.onGround)
             advel.y = -200;
@@ -247,47 +248,6 @@ class corpse extends prop{
         sprite.bounds.pos.round();
         
         sprite.isFlippedX = this.isFlipped;
-        sprite.draw();
-    }
-}
-class corpse_slime extends corpse{
-	constructor(){
-		super();
-		this.spritesheet = gfx.enemy3;
-	}
-	
-	terrainCollide(terrain, colbox){
-		this.burst();
-	}
-	
-	getSpriteBox(){
-		return new spriteBox(
-			new vec2(20, 14),
-			new vec2(20, 20)
-		);
-	}
-	
-	burst(){
-        var advel = this.vel.clone();
-        if(this.onGround)
-            advel.y -= 100
-		giblet.spawnGibs(giblet_slime, this.pos, 16, advel, 200);
-		this.remove();
-	}
-
-    draw(){
-		this.updateLVPos();
-        
-		if(this.vel.x != 0)
-			this.isFlipped = this.vel.x < 0;
-        
-		var sprite = new spriteContainer(this.spritesheet, this.getSpriteBox());
-        sprite.bounds.setCenter(this.pos);
-        sprite.bounds.pos.round();
-        
-        sprite.isFlippedX = this.isFlipped;
-		sprite.isFlippedY = this.vel.y > 0;
-		
         sprite.draw();
     }
 }

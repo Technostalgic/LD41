@@ -58,6 +58,7 @@ function load(){
 	loadSound("music.mp3", "music");
 	loadSound("enemyHit.wav", "enemyHit");
 	loadSound("playerHit.wav", "playerHit");
+	loadSound("corpseBurst.wav", "corpseBurst");
 	loadSound("explosion.wav", "explosion");
 	loadSound("heal.wav", "heal");
 	loadSound("jump.wav", "jump");
@@ -74,7 +75,6 @@ function load(){
 	loadSound("lowHealth.wav", "lowHealth");
 	loadSound("gameover.wav", "gameover");
 	loadSound("menuSelect.wav", "menuSelect");
-
 
 	loadHighScore();
 }
