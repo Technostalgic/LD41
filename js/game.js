@@ -59,18 +59,23 @@ function load(){
 	loadSound("enemyHit.wav", "enemyHit");
 	loadSound("playerHit.wav", "playerHit");
 	loadSound("explosion.wav", "explosion");
-	loadSound("gameover.wav", "gameover");
 	loadSound("heal.wav", "heal");
 	loadSound("jump.wav", "jump");
 	loadSound("bump.wav", "bump");
 	loadSound("lazer.wav", "lazer");
-	loadSound("pickup.wav", "pickup");
 	loadSound("enemyShoot.wav", "enemyShoot");
 	loadSound("shotgun.wav", "shotgun");
 	loadSound("crossbow.wav", "crossbow");
 	loadSound("revolver.wav", "revolver");
 	loadSound("swoosh.wav", "swoosh");
-	
+	loadSound("objectHit.wav", "objectHit");
+	loadSound("revealCards.wav", "revealCards");
+	loadSound("pickup.wav", "pickup");
+	loadSound("lowHealth.wav", "lowHealth");
+	loadSound("gameover.wav", "gameover");
+	loadSound("menuSelect.wav", "menuSelect");
+
+
 	loadHighScore();
 }
 
@@ -239,6 +244,8 @@ function playSound(sound, forceRepeat = true){
 	sound.play();
 }
 function startLoopingMusic(){
+	sfx.music.currentTime = 0;
+	sfx.music.volume = 0.3;
 	sfx.music.play();
 	sfx.music.onended = function(){ sfx.music.play(); }
 }

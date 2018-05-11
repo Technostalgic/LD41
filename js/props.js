@@ -12,7 +12,10 @@ class prop extends physicsObject{
 }
 
 class dynamicPlatform extends prop{
-    constructor(){super();}
+    constructor(){
+        super();
+        this.ignoresTypes = [blood, giblet];
+    }
     objectCollide(obj, colbox){
         terrainObject.handlePlatformCollision(this.hitBox, obj, colbox);
     }
@@ -22,7 +25,7 @@ class anvil extends dynamicPlatform{
         super();
         this.fallThroughPlatforms = false;
         this.hitBox = collisionModule.boxCollider(new vec2(14, 9));
-        this.ignoreTypes = [projectile];
+        this.ignoreTypes.push(projectile);
         this.health = 30;
     }
 
@@ -47,6 +50,7 @@ class anvil extends dynamicPlatform{
         if(obj instanceof dynamicPlatform)
             return;
 
+        playSound(sfx.objectHit);
         obj.vel.y = this.vel.y;
 
         if(obj.damage)
@@ -72,7 +76,7 @@ class crate extends dynamicPlatform{
         super();
         this.fallThroughPlatforms = false;
         this.hitBox = collisionModule.boxCollider(new vec2(20));
-        this.ignoreTypes = [projectile];
+        this.ignoreTypes.push(projectile);
         this.health = 10;
     }
 

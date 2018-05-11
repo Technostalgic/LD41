@@ -528,7 +528,9 @@ class card_crowbar extends card{
 	}
 	hit(obj, dirAng, plr, colbox){
 		if(obj instanceof player) return;
-		
+        
+        playSound(sfx.objectHit);
+        
 		var force = vec2.fromAng(dirAng, 200);
 		obj.vel = obj.vel.plus(force);
         plr.vel = force.multiply(-0.5);
@@ -722,6 +724,8 @@ class card_eyeball extends card{
 
     use(plr){
         if(!super.use(plr)) return;
+
+        playSound(sfx.revealCards);
 
         state.addCard(card.randomCard());
         state.cardSlots.forEach(function(card){

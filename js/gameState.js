@@ -126,8 +126,9 @@ class gameState_startScreen extends gameState{
 	}
 	nextScreen(){
 		if(!this.drawInstructions)
-			this.drawInstructions = true;
-		else startGame();
+            this.drawInstructions = true;
+        else startGame();
+        playSound(sfx.menuSelect);
 	}
 	
 	draw(){
@@ -160,8 +161,10 @@ class gameState_gameoverScreen extends gameState{
 	}
 	
 	controlTap(controlID){
-		if(controlID == controlState.controlEnum.start)
-			startGame();
+		if(controlID == controlState.controlEnum.start){
+            playSound(sfx.menuSelect);
+            startGame();
+        }
 	}
 	
 	draw(){
@@ -191,10 +194,14 @@ class gameState_pauseScreen extends gameState{
 	}
 	
 	controlTap(controlID){
-		if(controlID == controlState.controlEnum.pause)
-			this.resumeGame();
-		if(controlID == controlState.controlEnum.start)
-			this.drawInstructions = true;
+		if(controlID == controlState.controlEnum.pause){
+            playSound(sfx.menuSelect);
+            this.resumeGame();
+        }
+		if(controlID == controlState.controlEnum.start){
+            playSound(sfx.menuSelect);
+            this.drawInstructions = true;
+        }
 	}
 	
 	resumeGame(){

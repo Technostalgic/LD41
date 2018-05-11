@@ -99,7 +99,10 @@ class player extends lifeForm{
 
     damage(dmg){
         playSound(sfx.playerHit);
-		super.damage(dmg);
+        super.damage(dmg);
+        
+        if(this.health <= 30)
+            playSound(sfx.lowHealth);
     }
 
     handleMovement(){
@@ -170,8 +173,11 @@ class player extends lifeForm{
         this.dead = true;
         this.remove();
 
-        giblet.spawnGibs(giblet_gore, this.pos, 10);
-        
+        giblet.spawnGibs(giblet_gore, this.pos, 10, this.vel.multiply(0.5), 250);
+
+        pauseMusic();
+        playSound(sfx.gameover);
+
 		// lose the game 2.5 seconds after the player dies
 		setTimeout(function(){
 			loseGame(state.score)
