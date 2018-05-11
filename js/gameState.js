@@ -140,7 +140,8 @@ class gameState_startScreen extends gameState{
 			renderContext.fillStyle = "#000";
 			renderContext.fillRect(0, 0, 800, 700);
 			this.drawTitle();
-			this.drawStartPrompt();
+            this.drawStartPrompt();
+            this.drawCredits();
 		}
 	}
 	drawStartPrompt(){
@@ -152,7 +153,13 @@ class gameState_startScreen extends gameState{
 	drawTitle(){
 		var tpos = new vec2(200, 75);
 		drawText("A҉ Tribute to M̶̦̱̕͢ͅa͈̫̤̘̗̙͘͝y̵҉̡̖̻̮͈ḩ̣̣͖̖͈̖͔̩̺͙̗̖̤͇͓͕́͞ͅè̳̗͖̟̝̰̼̪̲̕͟͠m̨̢̨̨̬̩͔͎͍͓̹̦̻̰͈̺͎̤̠̦", tpos, 56, color.fromHex("#FAA"), color.fromHex("#600"), 8);
-	}
+    }
+    drawCredits(){
+		var tpos = new vec2(200, 340);
+		drawText("Game by Technostalgic | technostalgic.itch.io", tpos, 10, color.fromHex("#0F0"));
+		tpos.y += 7;
+		drawText("Music by Mark Sparling | @markymark665", tpos, 10, color.fromHex("#0F0"));
+    }
 }
 class gameState_gameoverScreen extends gameState{
 	constructor(score){
