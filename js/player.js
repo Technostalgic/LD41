@@ -101,7 +101,7 @@ class player extends lifeForm{
         playSound(sfx.playerHit);
         super.damage(dmg);
         
-        if(this.health <= 30)
+        if(this.health <= 30 && this.health > 0)
             playSound(sfx.lowHealth);
     }
 

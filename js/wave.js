@@ -77,6 +77,14 @@ class wave{
 				[[enemy_eyeball, 1]],
 				[[enemy_eyeball, 1], [enemy_slime, 2], [enemy_slime, 2]],
 				];
+			case 5:
+				this.boss = [[enemy_eyeball, 2]];
+				return [
+				[[enemy_eyeball, 1]],
+				[[enemy_eyeball, 1], [enemy_zombie, 1]],
+				[[enemy_eyeball, 1], [enemy_eyeball, 1],],
+				[[enemy_zombie, 1], [enemy_eyeball, 1], [enemy_zombie, 1]],
+				];
 			case 7:
 				this.boss = [[enemy_slime, 3], [enemy_eyeball, 2]];
 				return [
@@ -106,18 +114,6 @@ class wave{
 			//	[enemy_eyeball, 2]
 			//	];
 		}
-		//if(difficulty < 10)
-		//	return [
-		//		[enemy_slime, 1],
-		//		[enemy_slime, 2],
-		//		[enemy_slime, 3],
-		//		[enemy_zombie, 1],
-		//		[enemy_zombie, 1],
-		//		[enemy_zombie, 2],
-		//		[enemy_eyeball, 1],
-		//		[enemy_eyeball, 1],
-		//		[enemy_eyeball, 2]
-		//	];
 		
 		this.boss = [[enemy_eyeball, 2], [enemy_eyeball, 2]];
 		return [

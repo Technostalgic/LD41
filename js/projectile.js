@@ -43,12 +43,12 @@ class projectile extends physicsObject{
 
         if(obj.damage){
             obj.damage(this.dmg, colbox);
-			if(obj instanceof enemy_zombie || obj instanceof enemy_eyeball || obj instanceof player){
+			if(obj instanceof enemy_zombie || obj instanceof enemy_eyeball || obj instanceof player || obj instanceof corpse){
 				drawBloodSplotch(colbox.center, Math.random() * 2 + 1);
-				for(let i = 3; i > 0; i--){
+				for(let i = this.dmg / 3 + 2; i > 0; i--){
 					let bld = new blood();
 					bld.pos = colbox.center;
-					bld.vel = this.vel.plus(vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150));
+					bld.vel = this.vel.plus(vec2.fromAng(Math.random() * Math.PI * 2, Math.random() * 150 * (this.dmg / 2)));
 					bld.add();
 				}
 				

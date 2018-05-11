@@ -176,11 +176,10 @@ class corpse extends prop{
 		this.size = 1;
         this.health = 15;
 		
-		this.isBleeding = true;
+		this.isBleeding = Math.random() * 0.5 + 0.5;
     }
 
 	terrainCollide(terrain, colbox){
-		this.isBleeding = false;
 		super.terrainCollide(terrain, colbox);
 		if(this.vel.distance >= 200){
 			drawBloodSplotch(colbox.center, (this.vel.distance - 200) / 50 + 5);
@@ -225,10 +224,15 @@ class corpse extends prop{
     }
 
 	update(){
-		super.update();
+        super.update();
+        if(this.isBleeding > 0)
+            this.isBleeding -= dt;
+        if(this.isBleeding < 0)
+            this.isBleeding = 0;
 		if(!this.onGround){
-			if(this.isBleeding){
-				if(this.vel.distance() / 100 * dt > Math.random()){
+			if(this.isBleeding > 0){
+                console.log(this.isBleeding);
+				if(this.isBleeding * 100 * dt > Math.random()){
 					var bd = new blood();
 					if(Math.random() >= 0.75)
 						bd = new blood_drip;
